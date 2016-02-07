@@ -1,5 +1,7 @@
 require 'yaml'
 require_relative 'prometheus'
+require_relative 'tools/atlas'
+require_relative 'tools/consul'
 
 class EnvironmentReader
   def initialize(path = Prometheus::CONFIG)
@@ -57,7 +59,7 @@ class Environment
     end
 
     def tf_module
-      @params['stack'] || @name
+      @params['module'] || @name
     end
 
     def state_stores
@@ -88,6 +90,8 @@ class Environment
     def config
       if @backend.downcase == 'atlas'
         Atlas::get_state_store(self.to_s)
+      elsif @backend.downcase == 'consul'
+        Consul::get_state_store(self.to_s)
       end
     end
   end
