@@ -38,14 +38,14 @@ env_rdr.environments.each do |environ|
           tf.clean()
           tf.remote_config(store_args)
           tf.get()
-          tf.plan(input_args += ' -input=false -module-depth=-1')
+          tf.plan("#{input_args} -input=false -module-depth=-1")
         end
 
         desc "Create destruction plan for the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :plan_destroy do
           tf.clean()
           tf.get()
-          tf.plan("-destroy #{input_args}")
+          tf.plan("#{input_args} -destroy -input=false -module-depth=-1")
         end
 
         desc "Apply changes to the #{stack.to_s} stack of the #{environ.to_s} environment"
@@ -53,7 +53,7 @@ env_rdr.environments.each do |environ|
           tf.clean()
           tf.remote_config(store_args)
           tf.get()
-          tf.plan(input_args += ' -input=false -module-depth=-1')
+          tf.plan("#{input_args} -input=false -module-depth=-1")
           tf.apply(input_args)
         end
 
@@ -62,7 +62,7 @@ env_rdr.environments.each do |environ|
           tf.clean()
           tf.remote_config(store_args)
           tf.get()
-          tf.plan(input_args += ' -destroy -module-depth=-1')
+          tf.plan("#{input_args} -destroy -input=false -module-depth=-1")
           tf.destroy(input_args)
         end
 
@@ -70,7 +70,7 @@ env_rdr.environments.each do |environ|
         task :sync do
           tf.clean()
           tf.remote_config(store_args)
-          
+
           stack.state_stores.drop(1).each do |store|
             tf.remote_config('-disable')
             tf.remote_config("#{store.config} -pull=false")

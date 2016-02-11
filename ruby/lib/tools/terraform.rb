@@ -5,10 +5,14 @@ module Terraform
   STACKS_DIR = Prometheus::TERRAFORM
   TF_ENV = ENV['TERRAFORM_ENV'] || "TF_VAR_atlas_token=$ATLAS_TOKEN"
   TF_CMD = ENV['TERRAFORM_CMD'] || "terraform"
+  TF_MODE = ENV['TERRAFORM_MODE'] || ""
 
   class Stack
-    def initialize(name, dir: STACKS_DIR)
+    def initialize(name, dir: STACKS_DIR, env: TF_ENV, cmd: TF_CMD, mode: TF_MODE)
       self.path = File.join(dir, name)
+      @env = env
+      @cmd = cmd
+      @mode = mode
     end
 
     def path=(path)
@@ -46,7 +50,7 @@ module Terraform
 
     def clean()
       Dir.chdir(@path) do
-        Rake.sh "rm -fr .terraform *.tfstate*"
+        Rake.sh "rm -fr .terraform *.tfstate*" unless @mode == "test"
       end
     end
 
@@ -61,7 +65,7 @@ module Terraform
     end
 
     def run_rake_cmd(cmd, args='')
-      Rake.sh "#{TF_ENV} #{TF_CMD} #{cmd} #{args}"
+      Rake.sh "#{@env} #{@cmd} #{cmd} #{args}" unless @mode == "test"
     end
   end
 end
