@@ -1,0 +1,19 @@
+##### Prometheus configuration data #####
+#
+## Define deployment environments ##
+#
+environments:
+  rspec:
+    - myapp:
+        state:
+          - atlas:
+              name: 'example/myapp'
+        vars:
+          label: 'test'
+    - module_test:
+        module: 'myapp2'
+        state:
+          - atlas:
+              name: 'example/myapp'
+        vars:
+          label: 'test'

@@ -40,9 +40,16 @@ class Environment
   class Stack
     attr_reader :name, :environment
     def initialize(name, env, params)
+      required_params = [
+        'vars',
+        'state'
+      ]
+      required_params.each do |param|
+        raise "Missing #{param} hash for the #{name} stack of the #{env} environment" unless params.has_key?(param)
+      end
+
       @name = name
       @environment = env
-      raise "Missing 'vars' parameter" unless params.has_key? 'vars'
       @params = params
     end
 
@@ -63,6 +70,7 @@ class Environment
     end
 
     def state_stores
+      raise "State store array cannot be empty" unless !@params['state'].empty?
       @params['state'].map{|s| StateStore.new(s.first.first, s.first[1]) }
     end
 
@@ -75,7 +83,7 @@ class Environment
     def initialize(backend, params)
       @backend = backend
 
-      raise "Missing #{param} parameter" unless params.has_key? 'name'
+      raise "Missing 'name' parameter for the #{backend} state store" unless params.has_key? 'name'
       @name = params['name']
     end
 
