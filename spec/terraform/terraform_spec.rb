@@ -51,22 +51,24 @@ describe Stack do
   end
 
   it "executes terraform commands with defaults settings" do
+    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, mode: "standard")
     cmd = "TF_VAR_atlas_token=$ATLAS_TOKEN terraform plan -input=false -module-depth=-1"
     expect(Rake::AltSystem).to receive(:system).with(cmd).and_return(true)
-    @stack.plan("-input=false -module-depth=-1")
+    @cmd_test.plan("-input=false -module-depth=-1")
   end
 
   it "executes terraform commands with custom settings" do
-    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, env: "TEST=thisisatest", cmd: "docker run --rm unifio/terraform:latest")
+    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, env: "TEST=thisisatest", cmd: "docker run --rm unifio/terraform:latest", mode: "standard")
     cmd = "TEST=thisisatest docker run --rm unifio/terraform:latest plan "
     expect(Rake::AltSystem).to receive(:system).with(cmd).and_return(true)
     @cmd_test.plan
   end
 
   it "cleans up existing state data from the given stack directory" do
+    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, mode: "standard")
     cmd = "rm -fr .terraform *.tfstate*"
     expect(Rake::AltSystem).to receive(:system).with(cmd).and_return(true)
-    @stack.clean
+    @cmd_test.clean
   end
 
   it "processes Terraform inputs" do
