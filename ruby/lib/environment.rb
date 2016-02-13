@@ -77,6 +77,7 @@ class Environment
     def vars
       @params['vars']
     end
+  end
 
   class StateStore
     attr_reader :name, :backend
