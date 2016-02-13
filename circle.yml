@@ -1,0 +1,6 @@
+machine:
+  environment:
+    ATLAS_TOKEN: GryCCpG3GRBqQw.atlasv1.1ASD0jMKyVmLmUVlqP7ca6xdxqzY1nNroAVtTSKRBYR7fnLxciPCboidfwKR6bXBaWQ
+test:
+  override:
+    - bundle exec rake
