@@ -1,5 +1,6 @@
 require 'json'
 require 'rest-client'
+require 'base64'
 
 module Consul
 
@@ -15,13 +16,12 @@ module Consul
   URL = ENV['CONSUL_HTTP_ADDR'] || 'localhost:8500'
 
   def self.reset_cache()
-    @cache = Hash.new
+    @cache = Hash.new{|h,k| h[k] = Hash.new}
   end
 
   reset_cache
 
   def self.get_key(name)
-    ensure_atlas_token_set
 
     @cache['root'][name] ||= begin
       # Create and execute HTTP request
@@ -38,7 +38,19 @@ module Consul
       end
 
       # Parse JSON response
-      parsed = JSON.parse(response)
+      begin
+        parsed = JSON.parse(response)
+        encoded = parsed.first['Value']
+      rescue JSON::ParserError => err
+        fail "No results or unable to parse response: " + err.message
+      end
+
+      # Return decoded value
+      if encoded != nil
+        Base64.decode64(encoded)
+      else
+        fail "Requested key '#{name}' not found"
+      end
     end
   end
 
