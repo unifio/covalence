@@ -1,0 +1,13 @@
+{
+    "modules": [
+        {
+            "path": [
+                "root"
+            ],
+            "outputs": {
+                "vpc_id": "vpc-12345678"
+            },
+            "resources": {}
+        }
+    ]
+}
