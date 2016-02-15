@@ -7,10 +7,10 @@ GEM
     diff-lcs (1.2.5)
     domain_name (0.5.20160128)
       unf (>= 0.0.5, < 1.0.0)
-    hashdiff (0.2.3)
+    hashdiff (0.3.0)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
-    json (1.8.1)
+    json (1.8.3)
     mime-types (2.99)
     multi_json (1.11.2)
     net-scp (1.2.1)
@@ -40,13 +40,13 @@ GEM
       rspec-support (~> 3.4.0)
     rspec-support (3.4.1)
     safe_yaml (1.0.4)
-    serverspec (2.29.1)
+    serverspec (2.29.2)
       multi_json
       rspec (~> 3.0)
       rspec-its
       specinfra (~> 2.48)
     sfl (2.2)
-    specinfra (2.50.4)
+    specinfra (2.51.1)
       net-scp
       net-ssh (>= 2.7, < 3.1)
       net-telnet
