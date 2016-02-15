@@ -55,13 +55,18 @@ environments:
     - openvpn:                                            // Stack name. Independent Terraform stack.
         module: 'vpn'                                     // Terraform module directory if different than the stack name.
         state:                                            // Terraform state stores. The first is used as the primary with others as targets for synchronization
-          - atlas:
-              name: 'unifio/openvpn'                      // State store slug.
+          - atlas:                                        // State store type.
+              name: 'unifio/openvpn'
           - consul:
               name: 'infrastructure/ops/openvpn'
         vars:                                             // Input variables
           app_label: 'ops'
           instances: 2
+          ami:                                            // Variables that are hashes are passed to the plug-in framework for processing
+            type: 'atlas.artifact'                        // <backend>.<lookup_type>. Supported types vary per backend.
+            slug: 'unifio/openvpn/amazon.ami'
+            version: 1                                    // Defaults to 'latest'.
+            metadata: 'region.us-west-2'
 ```
 
 This configuration yields the following Rake tasks as returned by `rake -T`:

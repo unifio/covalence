@@ -87,4 +87,57 @@ RSpec.describe Consul do
       expect(config).to eql('-backend-config="path=unifio/example-vpc" -backend=Consul')
     end
   end
+
+  context "Key lookup" do
+    context "Key" do
+      before(:each) do
+        @stub = stub_request(:any, /#{Consul::URL}.*/).
+          to_return(:body => File.new('./spec/consul/key_response.json'), :status => 200)
+        Consul::reset_cache
+        @type = 'key'
+        @params = {
+          'type' => 'consul.key',
+          'key' => 'conf/example_ip'
+        }
+      end
+
+      it "verifies required parameters" do
+        @params.delete('key')
+        expect {
+          Consul::lookup(@type,@params)
+        }.to raise_error(RuntimeError)
+      end
+
+      it "is returned given all required parameters" do
+        result = Consul::lookup(@type,@params)
+        expect(result).to eql('172.16.2.238')
+      end
+    end
+
+    context "State" do
+      before(:each) do
+        @stub = stub_request(:any, /#{Consul::URL}.*/).
+          to_return(:body => File.new('./spec/consul/state_response.json'), :status => 200)
+        Consul::reset_cache
+        @type = 'state'
+        @params = {
+          'type' => 'consul.state',
+          'key' => 'vpc_id',
+          'stack' => 'unifio/vpc'
+        }
+      end
+
+      it "verifies required parameters" do
+        @params.delete('key')
+        expect {
+          Consul::lookup(@type,@params)
+        }.to raise_error(RuntimeError)
+      end
+
+      it "is returned given all required parameters" do
+        result = Consul::lookup(@type,@params)
+        expect(result).to eql('vpc-12345678')
+      end
+    end
+  end
 end

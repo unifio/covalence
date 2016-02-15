@@ -15,5 +15,15 @@ environments:
         state:
           - atlas:
               name: 'example/myapp'
+    - artifact_test:
+        module: 'myapp2'
+        state:
+          - atlas:
+              name: 'example/myapp'
         vars:
           label: 'test'
+          ami:
+            type: 'atlas.artifact'
+            slug: 'unifio/centos-base/amazon.ami'
+            version: 1
+            metadata: 'region.us-west-2'

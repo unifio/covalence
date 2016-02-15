@@ -16,7 +16,7 @@ describe "rspec:myapp:verify" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1")
     subject.invoke
   end
 end
