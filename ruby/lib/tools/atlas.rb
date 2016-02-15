@@ -13,29 +13,29 @@ module Atlas
 
   reset_cache
 
-  def self.get_artifact(slug, version, region)
+  def self.get_artifact(slug, version, metadata)
     ensure_atlas_token_set
 
-    @cache[slug][version][region] ||= begin
+    @cache[slug][version][metadata] ||= begin
       # Create and execute HTTP request
-      request = "#{URL}/api/v1/artifacts/#{name}/search?version=#{version}&metadata.1.key=region.#{region}"
+      request = "#{URL}/api/v1/artifacts/#{slug}/search?version=#{version}&metadata.1.key=#{metadata}"
       headers = {:'X-Atlas-Token' => ENV['ATLAS_TOKEN']}
 
       begin
         response = RestClient.get request, headers
       rescue RestClient::ExceptionWithResponse => err
-        fail "Unable to retrieve ID for artifact '#{name}': " + err.message
+        fail "Unable to retrieve ID for artifact '#{slug}': " + err.message
       end
 
       # Parse JSON response
       parsed = JSON.parse(response)
-      latest = parsed["versions"].select {|version| version['metadata'].keys.include? "region.#{region}" }.first
+      latest = parsed["versions"].select {|version| version['metadata'].keys.include? "#{metadata}" }.first
 
       # Return ID for the region specified
       if latest != nil
-        latest["metadata"]["region.#{region}"]
+        latest["metadata"]["#{metadata}"]
       else
-        fail "Requested metadata 'region.#{region}' not found"
+        fail "Requested metadata '#{metadata}' not found"
       end
     end
   end
@@ -78,5 +78,51 @@ module Atlas
 
   def self.ensure_atlas_token_set
     raise AtlasTokenMissing.new("Missing ATLAS_TOKEN environment variable") unless ENV.key? 'ATLAS_TOKEN'
+  end
+
+  # Return module capabilities
+  def self.has_key_read?
+    return true
+  end
+
+  def self.has_key_write?
+    return false
+  end
+
+  def self.has_state_read?
+    return true
+  end
+
+  def self.has_state_store?
+    return true
+  end
+
+  # Key lookups
+  def self.lookup(type, params)
+    raise "Lookup parameters must be a Hash" unless params.is_a?(Hash)
+
+    case
+    when type == 'artifact'
+      required_params = [
+        'slug',
+        'version',
+        'metadata',
+      ]
+      required_params.each do |param|
+        raise "Missing '#{param}' lookup parameter" unless params.has_key?(param)
+      end
+      self.get_artifact(params['slug'],params['version'],params['metadata'])
+    when type == 'state'
+      required_params = [
+        'key',
+        'stack'
+      ]
+      required_params.each do |param|
+        raise "Missing '#{param}' lookup parameter" unless params.has_key?(param)
+      end
+      self.get_output(params['key'],params['stack'])
+    else
+      raise "Atlas module does not support the '#{type}' lookup type"
+    end
   end
 end

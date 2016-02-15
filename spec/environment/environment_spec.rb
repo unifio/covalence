@@ -10,7 +10,7 @@ RSpec.describe Environment do
     @store = @stack.state_stores.first
   end
 
-  context "test environment reader" do
+  context "Environment Reader" do
 
     it "can read configuration" do
       expect(@env_rdr).to be_instance_of EnvironmentReader
@@ -25,7 +25,7 @@ RSpec.describe Environment do
     end
   end
 
-  context "test environments" do
+  context "Environment" do
     it "does return environment name as a symbol" do
       expect(@env.to_sym.to_s).to eql('rspec')
     end
@@ -43,7 +43,7 @@ RSpec.describe Environment do
     end
   end
 
-  context "test stacks" do
+  context "Stack" do
     it "does return stack name as a symbol" do
       expect(@stack.to_sym.to_s).to eql('myapp')
     end
@@ -60,22 +60,38 @@ RSpec.describe Environment do
       expect(@stack.tf_module).to eql('myapp')
     end
 
+    it "does accept empty vars" do
+      stack = @env.stacks[1]
+      expect(stack.inputs).to eql([])
+    end
+
     it "does return the path to the stack module when explicitly specified" do
       stack = @env.stacks[1]
       expect(stack.tf_module).to eql('myapp2')
     end
 
-    it "does yield state stories" do
+    it "does yield state stores" do
       expect(@stack.state_stores).to be_instance_of Array
     end
 
     it "does yield state store objects" do
-      expect(@store).to be_instance_of Environment::StateStore
+      expect(@store).to be_instance_of Environment::Stack::StateStore
+    end
+
+    it "does yield inputs" do
+      stack = @env.stacks[2]
+      expect(stack.inputs).to be_instance_of Array
+    end
+
+    it "does yield input objects" do
+      stack = @env.stacks[2]
+      input = stack.inputs.first
+      expect(input).to be_instance_of Environment::Stack::Input
     end
   end
 
-  context "test state stores" do
-    it "does retrun state store name as a symbol" do
+  context "State Store" do
+    it "does return state store name as a symbol" do
       expect(@store.to_sym.to_s).to eql('example/myapp')
     end
 
@@ -83,9 +99,72 @@ RSpec.describe Environment do
       expect(@store.to_s).to eql('example/myapp')
     end
 
+    it "does return state store backend" do
+      expect(@store.backend).to eql('Atlas')
+    end
+
     it "does retrieve the state store configuration string" do
       expect(Atlas).to receive(:get_state_store).with('example/myapp')
-      @store.config
+      @store.get_config
+    end
+  end
+
+  context "Input" do
+    before(:each) do
+      stack = @env.stacks[2]
+      @input = stack.inputs.first
+      @lookup = stack.inputs[1]
+    end
+
+    it "does return input name as a symbol" do
+      expect(@input.to_sym.to_s).to eql('label')
+    end
+
+    it "does return input name as a string" do
+      expect(@input.to_s).to eql('label')
+    end
+
+    it "does return that a local key is local" do
+      expect(@input.is_local?).to eql(true)
+    end
+
+    it "does return the local backend for a local key" do
+      expect(@input.backend).to eql('local')
+    end
+
+    it "does return the key type for a local key" do
+      expect(@input.type).to eql('key')
+    end
+
+    it "does return the value for a local key" do
+      expect(@input.value).to eql('test')
+    end
+
+    it "does return that a remote key is not local" do
+      expect(@lookup.is_local?).to eql(false)
+    end
+
+    it "does return the backend for a remote key" do
+      expect(@lookup.backend).to eql('Atlas')
+    end
+
+    it "does return the key type for a remote key" do
+      expect(@lookup.type).to eql('artifact')
+    end
+
+    it "does return the value for a non-local key" do
+      expect(@lookup.value).to eql({'type'=>'atlas.artifact','slug'=>'unifio/centos-base/amazon.ami','version'=>1,'metadata'=>'region.us-west-2'})
+    end
+  end
+
+  context "Input Reader" do
+    it "does return combined configuration hash" do
+      stub_request(:any, /#{Atlas::URL}.*/).
+        to_return(:body => File.new('./spec/atlas/artifact_response.json'), :status => 200)
+      stack = @env.stacks[2]
+      inputs = InputReader.new(stack)
+
+      expect(inputs.to_h).to eql({'label'=>'test','ami'=>'ami-23456789'})
     end
   end
 end

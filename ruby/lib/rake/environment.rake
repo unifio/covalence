@@ -1,5 +1,4 @@
 require_relative '../environment'
-require_relative '../tools/atlas'
 require_relative '../tools/terraform'
 
 env_rdr = EnvironmentReader.new
@@ -16,25 +15,25 @@ env_rdr.environments.each do |environ|
     environ.stacks.each do |stack|
 
       tf = Terraform::Stack.new(stack.tf_module)
-
-      # Process input parameters
-      input_args = tf.parse_vars(stack.vars)
+      inputs = InputReader.new(stack)
 
       # Pull primary state store
-      store_args = stack.state_stores.first.config
+      store_args = stack.state_stores.first.get_config
 
       # Stack tasks
       namespace stack.to_sym do
 
         desc "Verify the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :verify do
+          input_args = tf.parse_vars(inputs.to_h)
           tf.clean()
           tf.get()
-          tf.plan(input_args)
+          tf.plan("#{input_args} -input=false -module-depth=-1")
         end
 
         desc "Create execution plan for the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :plan do
+          input_args = tf.parse_vars(inputs.to_h)
           tf.clean()
           tf.remote_config(store_args)
           tf.get()
@@ -43,6 +42,7 @@ env_rdr.environments.each do |environ|
 
         desc "Create destruction plan for the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :plan_destroy do
+          input_args = tf.parse_vars(inputs.to_h)
           tf.clean()
           tf.get()
           tf.plan("#{input_args} -destroy -input=false -module-depth=-1")
@@ -50,6 +50,7 @@ env_rdr.environments.each do |environ|
 
         desc "Apply changes to the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :apply do
+          input_args = tf.parse_vars(inputs.to_h)
           tf.clean()
           tf.remote_config(store_args)
           tf.get()
@@ -59,6 +60,7 @@ env_rdr.environments.each do |environ|
 
         desc "Apply changes to the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :destroy do
+          input_args = tf.parse_vars(inputs.to_h)
           tf.clean()
           tf.remote_config(store_args)
           tf.get()
@@ -68,6 +70,7 @@ env_rdr.environments.each do |environ|
 
         desc "Synchronize state stores for the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :sync do
+          input_args = tf.parse_vars(inputs.to_h)
           tf.clean()
           tf.remote_config(store_args)
 
