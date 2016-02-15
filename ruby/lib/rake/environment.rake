@@ -111,7 +111,7 @@ env_rdr.environments.each do |environ|
 
     desc "Destroy the #{environ} environment"
     task :destroy do
-      environ.stacks.each do |stack|
+      environ.stacks.reverse.each do |stack|
         Rake::Task["#{environ}:#{stack.name}:destroy"].execute
       end
     end
