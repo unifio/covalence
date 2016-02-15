@@ -1,7 +1,9 @@
 require 'yaml'
 require_relative 'prometheus'
-require_relative 'tools/atlas'
-require_relative 'tools/consul'
+
+Dir[File.expand_path('tools/*.rb', File.dirname(__FILE__))].each do |file|
+  require file
+end
 
 class EnvironmentReader
   def initialize(path = Prometheus::CONFIG)
@@ -41,7 +43,6 @@ class Environment
     attr_reader :name, :environment
     def initialize(name, env, params)
       required_params = [
-        'vars',
         'state'
       ]
       required_params.each do |param|
@@ -74,34 +75,109 @@ class Environment
       @params['state'].map{|s| StateStore.new(s.first.first, s.first[1]) }
     end
 
-    def vars
-      @params['vars']
-    end
-  end
-
-  class StateStore
-    attr_reader :name, :backend
-    def initialize(backend, params)
-      @backend = backend
-
-      raise "Missing 'name' parameter for the #{backend} state store" unless params.has_key? 'name'
-      @name = params['name']
+    def has_vars?
+      return true if @params['vars'].is_a?(Hash) && !@params['vars'].empty?
+      return false
     end
 
-    def to_sym
-      @name.to_sym
+    def inputs
+      artifacts = Array.new
+      if self.has_vars?
+        @params['vars'].each do |k,v|
+          artifacts.push(Input.new(k,v))
+        end
+      end
+      return artifacts
     end
 
-    def to_s
-      @name.to_s
-    end
+    class StateStore
+      attr_reader :name, :backend
+      def initialize(backend, params)
+        raise "Missing 'name' parameter for the #{backend} state store" unless params.has_key? 'name'
+        @backend = backend
+        @params = params
+      end
 
-    def config
-      if @backend.downcase == 'atlas'
-        Atlas::get_state_store(self.to_s)
-      elsif @backend.downcase == 'consul'
-        Consul::get_state_store(self.to_s)
+      def to_sym
+        @params['name'].to_sym
+      end
+
+      def to_s
+        @params['name'].to_s
+      end
+
+      def backend
+        @backend.capitalize
+      end
+
+      def get_config
+        backend = Object::const_get(self.backend)
+        raise "#{self.backend} module does not support state storage" unless backend.has_state_store?
+        backend::get_state_store(self.to_s)
       end
     end
+
+    class Input
+      attr_reader :name
+      def initialize(name, params)
+        @name = name
+        @params = params
+      end
+
+      def to_sym
+        @name.to_sym
+      end
+
+      def to_s
+        @name.to_s
+      end
+
+      def is_local?
+        return true unless @params.is_a?(Hash)
+        return false
+      end
+
+      def backend
+        if !self.is_local?
+          raise "Input 'type' not specified" unless @params.has_key? 'type'
+          return @params['type'].partition('.')[0].capitalize
+        end
+        return 'local'
+      end
+
+      def type
+        if !self.is_local?
+          raise "Input 'type' not specified" unless @params.has_key? 'type'
+          return @params['type'].partition('.')[2]
+        end
+        return 'key'
+      end
+
+      def value
+        @params
+      end
+    end
+  end
+end
+
+class InputReader
+  def initialize(stack)
+    @stack = stack
+  end
+
+  def to_h()
+    inputs = Hash.new
+    if !@stack.inputs.empty?
+      @stack.inputs.each do |inp|
+        if inp.is_local?
+          inputs = inputs.merge({inp.to_s => inp.value})
+        else
+          backend = Object::const_get(inp.backend)
+          raise "#{inp.backend} module does not support key lookup" unless backend.has_key_read?
+          inputs = inputs.merge({inp.to_s => backend::lookup(inp.type, inp.value)})
+        end
+      end
+    end
+    return inputs
   end
 end

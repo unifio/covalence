@@ -57,21 +57,11 @@ module Consul
   def self.get_output(name, stack)
 
     @cache[stack][name] || begin
-      # Create and execute HTTP request
-      request = "#{URL}/v1/kv/#{stack}"
+      # Retrieve stack state
+      value = self.get_key(stack)
 
-      # Configure request headers
-      headers = {}
-      headers['X-Consul-Token'] = ENV['CONSUL_HTTP_TOKEN'] if ENV.has_key? 'CONSUL_HTTP_TOKEN'
-
-      begin
-        response = RestClient.get request, headers
-      rescue RestClient::ExceptionWithResponse => err
-        fail "Unable to retrieve output '#{name}' from the '#{stack}' stack: " + err.message
-      end
-
-      # Parse JSON response
-      parsed = JSON.parse(response)
+      # Parse JSON
+      parsed = JSON.parse(value)
       outputs = parsed.fetch("modules")[0].fetch("outputs")
 
       # Populate the cache for subsequent calls
@@ -91,5 +81,44 @@ module Consul
   # Return configuration for remote state store.
   def self.get_state_store(name)
     "-backend-config=\"path=#{name}\" -backend=Consul"
+  end
+
+  # Return module capabilities
+  def self.has_key_read?
+    return true
+  end
+
+  def self.has_key_write?
+    return false
+  end
+
+  def self.has_state_read?
+    return true
+  end
+
+  def self.has_state_store?
+    return true
+  end
+
+  # Key lookups
+  def self.lookup(type, params)
+    raise "Lookup parameters must be a Hash" unless params.is_a?(Hash)
+
+    case
+    when type == 'key'
+      raise "Missing 'key' lookup parameter" unless params.has_key? 'key'
+      self.get_key(params['key'])
+    when type == 'state'
+      required_params = [
+        'key',
+        'stack'
+      ]
+      required_params.each do |param|
+        raise "Missing '#{param}' lookup parameter" unless params.has_key?(param)
+      end
+      self.get_output(params['key'],params['stack'])
+    else
+      raise "Consul module does not support the '#{type}' lookup type"
+    end
   end
 end
