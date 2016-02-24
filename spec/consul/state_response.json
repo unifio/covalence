@@ -1,0 +1,10 @@
+[
+    {
+        "CreateIndex": 67,
+        "ModifyIndex": 364621,
+        "LockIndex": 0,
+        "Key": "unifio/vpc",
+        "Flags": 0,
+        "Value": "ewogICAgIm1vZHVsZXMiOiBbCiAgICAgICAgewogICAgICAgICAgICAicGF0aCI6IFsKICAgICAgICAgICAgICAgICJyb290IgogICAgICAgICAgICBdLAogICAgICAgICAgICAib3V0cHV0cyI6IHsKICAgICAgICAgICAgICAgICJ2cGNfaWQiOiAidnBjLTEyMzQ1Njc4IgogICAgICAgICAgICB9LAogICAgICAgICAgICAicmVzb3VyY2VzIjoge30KICAgICAgICB9CiAgICBdCn0K"
+    }
+]
