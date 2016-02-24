@@ -1,0 +1,3 @@
+# Git LFS
+# pattern filter=lfs -text
+images/** filter=lfs -text
