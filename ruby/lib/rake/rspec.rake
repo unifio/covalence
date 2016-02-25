@@ -1,6 +1,7 @@
 require 'rspec/core/rake_task'
 
 ENV['TERRAFORM_MODE'] = "test"
+ENV['AWS_REGION'] = 'us-west-2'
 
 desc "Run all spec tests"
 task :spec => "spec:prometheus"
