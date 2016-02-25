@@ -72,8 +72,11 @@ module Atlas
     end
   end
 
-  def self.get_state_store(name)
-    "-backend-config=\"name=#{name}\" -backend=Atlas"
+  def self.get_state_store(params)
+    raise "State store parameters must be a Hash" unless params.is_a?(Hash)
+    raise "Missing 'name' store parameter" unless params.has_key? 'name'
+
+    "-backend-config=\"name=#{params['name']}\" -backend=Atlas"
   end
 
   def self.ensure_atlas_token_set

@@ -113,7 +113,7 @@ class Environment
       def get_config
         backend = Object::const_get(self.backend)
         raise "#{self.backend} module does not support state storage" unless backend.has_state_store?
-        backend::get_state_store(self.to_s)
+        backend::get_state_store(@params)
       end
     end
 
