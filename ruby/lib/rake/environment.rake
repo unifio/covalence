@@ -76,7 +76,7 @@ env_rdr.environments.each do |environ|
 
           stack.state_stores.drop(1).each do |store|
             tf.remote_config('-disable')
-            tf.remote_config("#{store.config} -pull=false")
+            tf.remote_config("#{store.get_config} -pull=false")
             tf.remote_push()
           end
         end

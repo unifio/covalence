@@ -41,6 +41,9 @@ The complete list of environment variables available are as follows:
 | Consul     | CONSUL_HTTP_SSL          |                                   | Specifies what protocol to use when talking to the given address, either http or https. |
 | Consul     | CONSUL_HTTP_AUTH         |                                   | HTTP Basic Authentication credentials to be used when communicating with Consul, in the format of either user or user:pass. |
 | Consul     | CONSUL_HTTP_TOKEN        |                                   | HTTP authentication token |
+| S3         | AWS_ACCESS_KEY_ID        |                                   | AWS access key. |
+| S3         | AWS_SECRET_ACCESS_KEY    |                                   | AWS secret key. Access and secret key variables override credentials stored in credential and config files. |
+| S3         | AWS_REGION               |                                   | AWS region. This variable overrides the default region of the in-use profile, if set. |
 
 ## Rake Tasks
 
@@ -58,7 +61,10 @@ environments:
           - atlas:                                        // State store type.
               name: 'unifio/openvpn'
           - consul:
-              name: 'infrastructure/ops/openvpn'
+              name: 'unifio/openvpn'
+          - s3:
+              name: 'unifio/openvpn'
+              bucket: 'unifio-terraform'
         vars:                                             // Input variables
           app_label: 'ops'
           instances: 2
@@ -121,6 +127,21 @@ The following operations are currently supported:
 
 * `get_key(name)` - Retrieves and decodes a value from the Consul K/V store.
 * `get_output(name, stack)` - Retrieves a Terraform root module output from a stack state document stored in the Consul K/V store.
+* `get_state_store(name)` - Constructs the expected input string required by Terraform for configuring remote stack state storage in Consul.
+
+### S3
+Module for interacting with the AWS Simple Storage Service (S3).
+
+The following operations are currently supported:
+
+| K/V Read | K/V Write | Remote State Read | State Storage Backend |
+|:--------:|:---------:|:-----------------:|:---------------------:|
+| <img src="./images/checkmark.png"> | | <img src="./images/checkmark.png"> | <img src="./images/checkmark.png"> |
+
+* `Client`
+  * `initialize(region)` - Instantiates a new S3 client. Requires AWS_REGION to be set.
+  * `get_doc(bucket, document)` - Retrieves a JSON document from an S3 bucket.
+  * `get_key(bucket, document, name)` - Retrieves a value from a JSON document.
 * `get_state_store(name)` - Constructs the expected input string required by Terraform for configuring remote stack state storage in Consul.
 
 ### Terraform
