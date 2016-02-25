@@ -82,9 +82,15 @@ RSpec.describe Consul do
   end
 
   context "State store configuration" do
-    it "is returned given a stack name" do
-      config = Consul::get_state_store('unifio/example-vpc')
+    it "is returned given valid store parameters" do
+      config = Consul::get_state_store({'name'=>'unifio/example-vpc'})
       expect(config).to eql('-backend-config="path=unifio/example-vpc" -backend=Consul')
+    end
+
+    it "is not returned given invalid store parameters" do
+      expect {
+        config = Consul::get_state_store({'path'=>'unifio/example-vpc'})
+      }.to raise_error(RuntimeError)
     end
   end
 

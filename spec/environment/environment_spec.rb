@@ -104,7 +104,7 @@ RSpec.describe Environment do
     end
 
     it "does retrieve the state store configuration string" do
-      expect(Atlas).to receive(:get_state_store).with('example/myapp')
+      expect(Atlas).to receive(:get_state_store).with({'name'=>'example/myapp'})
       @store.get_config
     end
   end
