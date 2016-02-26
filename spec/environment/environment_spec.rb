@@ -65,6 +65,11 @@ RSpec.describe Environment do
       expect(stack.inputs).to eql([])
     end
 
+    it "does accept empty args" do
+      stack = @env.stacks[1]
+      expect(stack.args).to eql('')
+    end
+
     it "does return the path to the stack module when explicitly specified" do
       stack = @env.stacks[1]
       expect(stack.tf_module).to eql('myapp2')
@@ -76,6 +81,11 @@ RSpec.describe Environment do
 
     it "does yield state store objects" do
       expect(@store).to be_instance_of Environment::Stack::StateStore
+    end
+
+    it "does yield args" do
+      stack = @env.stacks[0]
+      expect(stack.args).to eql('-target=test')
     end
 
     it "does yield inputs" do
