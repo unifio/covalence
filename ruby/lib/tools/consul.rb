@@ -79,8 +79,11 @@ module Consul
   end
 
   # Return configuration for remote state store.
-  def self.get_state_store(name)
-    "-backend-config=\"path=#{name}\" -backend=Consul"
+  def self.get_state_store(params)
+    raise "State store parameters must be a Hash" unless params.is_a?(Hash)
+    raise "Missing 'name' store parameter" unless params.has_key? 'name'
+
+    "-backend-config=\"path=#{params['name']}\" -backend=Consul"
   end
 
   # Return module capabilities
