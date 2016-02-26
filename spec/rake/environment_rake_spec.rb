@@ -16,12 +16,12 @@ describe "rspec:myapp:verify" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -target=test")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color")
     subject.invoke
   end
 end
 
-describe "rspec:myapp:plan" do
+describe "rspec:myapp:az0:plan" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -40,12 +40,12 @@ describe "rspec:myapp:plan" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -target=test")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color -target=module.az0")
     subject.invoke
   end
 end
 
-describe "rspec:myapp:plan_destroy" do
+describe "rspec:myapp:az0:plan_destroy" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -59,12 +59,12 @@ describe "rspec:myapp:plan_destroy" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -target=test")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -no-color -target=module.az0")
     subject.invoke
   end
 end
 
-describe "rspec:myapp:apply" do
+describe "rspec:myapp:az0:apply" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -83,17 +83,17 @@ describe "rspec:myapp:apply" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -target=test")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color -target=module.az0")
     subject.invoke
   end
 
   it "executes an apply" do
-    expect_any_instance_of(Terraform::Stack).to receive(:apply).with("-var label=test -target=test")
+    expect_any_instance_of(Terraform::Stack).to receive(:apply).with("-var label=test -no-color -target=module.az0")
     subject.invoke
   end
 end
 
-describe "rspec:myapp:destroy" do
+describe "rspec:myapp:az0:destroy" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -112,12 +112,58 @@ describe "rspec:myapp:destroy" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -target=test")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -no-color -target=module.az0")
     subject.invoke
   end
 
   it "executes a destroy" do
-    expect_any_instance_of(Terraform::Stack).to receive(:destroy).with("-var label=test -target=test")
+    expect_any_instance_of(Terraform::Stack).to receive(:destroy).with("-var label=test -no-color -target=module.az0")
+    subject.invoke
+  end
+end
+
+describe "rspec:myapp:az1:plan" do
+  include_context "rake"
+
+  it "executes a plan" do
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    subject.invoke
+  end
+end
+
+describe "rspec:myapp:az1:plan_destroy" do
+  include_context "rake"
+
+  it "executes a plan" do
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    subject.invoke
+  end
+end
+
+describe "rspec:myapp:az1:apply" do
+  include_context "rake"
+
+  it "executes a plan" do
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    subject.invoke
+  end
+
+  it "executes an apply" do
+    expect_any_instance_of(Terraform::Stack).to receive(:apply).with("-var label=test -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    subject.invoke
+  end
+end
+
+describe "rspec:myapp:az1:destroy" do
+  include_context "rake"
+
+  it "executes a plan" do
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    subject.invoke
+  end
+
+  it "executes a destroy" do
+    expect_any_instance_of(Terraform::Stack).to receive(:destroy).with("-var label=test -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
     subject.invoke
   end
 end
@@ -132,6 +178,52 @@ describe "rspec:myapp:sync" do
 
   it "configures remote state" do
     expect_any_instance_of(Terraform::Stack).to receive(:remote_config)
+    subject.invoke
+  end
+end
+
+describe "rspec:module_test:plan" do
+  include_context "rake"
+
+  it "executes a plan" do
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-input=false -module-depth=-1")
+    subject.invoke
+  end
+end
+
+describe "rspec:module_test:plan_destroy" do
+  include_context "rake"
+
+  it "executes a plan" do
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-destroy -input=false -module-depth=-1")
+    subject.invoke
+  end
+end
+
+describe "rspec:module_test:apply" do
+  include_context "rake"
+
+  it "executes a plan" do
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-input=false -module-depth=-1")
+    subject.invoke
+  end
+
+  it "executes an apply" do
+    expect_any_instance_of(Terraform::Stack).to receive(:apply).with("")
+    subject.invoke
+  end
+end
+
+describe "rspec:module_test:destroy" do
+  include_context "rake"
+
+  it "executes a plan" do
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-destroy -input=false -module-depth=-1")
+    subject.invoke
+  end
+
+  it "executes a destroy" do
+    expect_any_instance_of(Terraform::Stack).to receive(:destroy).with("")
     subject.invoke
   end
 end
