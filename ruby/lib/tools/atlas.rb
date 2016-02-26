@@ -43,7 +43,7 @@ module Atlas
   def self.get_output(name, stack)
     ensure_atlas_token_set
 
-    @cache[name][stack][0] || begin
+    @cache[stack][name][0] || begin
       # Create and execute HTTP request
       request = "#{URL}/api/v1/terraform/state/#{stack}"
       headers = {:'X-Atlas-Token' => ENV['ATLAS_TOKEN']}
@@ -60,12 +60,12 @@ module Atlas
 
       # Populate the cache for subsequent calls
       outputs.keys.each do |key|
-        @cache[key][stack] = outputs.fetch(key)
+        @cache[stack][key][0] = outputs.fetch(key)
       end
 
       # Check outputs for requested key and return
       if outputs.has_key?(name)
-        @cache[name][stack]
+        @cache[stack][name][0]
       else
         fail("Requested output '#{name}' not found")
       end
