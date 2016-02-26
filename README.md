@@ -74,6 +74,11 @@ environments:
             version: 1                                    // Defaults to 'latest'.
             metadata: 'region.us-west-2'
         args: '-target=test'                              // Additional arguments to be passed to Terraform
+        targets:                                          // Resource targeting contexts
+          az0:                                            // Context name
+            - 'module.az0'                                // Resource target (i.e. -target=module.az0)
+          az1:
+            - 'module.az1'
 ```
 
 This configuration yields the following Rake tasks as returned by `rake -T`:
