@@ -73,6 +73,7 @@ environments:
             slug: 'unifio/openvpn/amazon.ami'
             version: 1                                    // Defaults to 'latest'.
             metadata: 'region.us-west-2'
+        args: '-target=test'                              // Additional arguments to be passed to Terraform
 ```
 
 This configuration yields the following Rake tasks as returned by `rake -T`:

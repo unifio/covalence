@@ -80,6 +80,11 @@ class Environment
       return false
     end
 
+    def args
+      return @params['args'] if @params.has_key? 'args'
+      return ""
+    end
+
     def inputs
       artifacts = Array.new
       if self.has_vars?

@@ -79,4 +79,11 @@ describe Stack do
     inputs = @stack.parse_vars(vars)
     expect(inputs).to eql('-var environment=testing')
   end
+
+  it "processes empty inputs" do
+    vars = {}
+
+    inputs = @stack.parse_vars(vars)
+    expect(inputs).to eql('')
+  end
 end

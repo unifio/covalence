@@ -28,7 +28,7 @@ env_rdr.environments.each do |environ|
           input_args = tf.parse_vars(inputs.to_h)
           tf.clean()
           tf.get()
-          tf.plan("#{input_args} -input=false -module-depth=-1")
+          tf.plan("#{input_args} -input=false -module-depth=-1 #{stack.args}".strip)
         end
 
         desc "Create execution plan for the #{stack.to_s} stack of the #{environ.to_s} environment"
@@ -37,7 +37,7 @@ env_rdr.environments.each do |environ|
           tf.clean()
           tf.remote_config(store_args)
           tf.get()
-          tf.plan("#{input_args} -input=false -module-depth=-1")
+          tf.plan("#{input_args} -input=false -module-depth=-1 #{stack.args}".strip)
         end
 
         desc "Create destruction plan for the #{stack.to_s} stack of the #{environ.to_s} environment"
@@ -45,7 +45,7 @@ env_rdr.environments.each do |environ|
           input_args = tf.parse_vars(inputs.to_h)
           tf.clean()
           tf.get()
-          tf.plan("#{input_args} -destroy -input=false -module-depth=-1")
+          tf.plan("#{input_args} -destroy -input=false -module-depth=-1 #{stack.args}".strip)
         end
 
         desc "Apply changes to the #{stack.to_s} stack of the #{environ.to_s} environment"
@@ -54,8 +54,8 @@ env_rdr.environments.each do |environ|
           tf.clean()
           tf.remote_config(store_args)
           tf.get()
-          tf.plan("#{input_args} -input=false -module-depth=-1")
-          tf.apply(input_args)
+          tf.plan("#{input_args} -input=false -module-depth=-1 #{stack.args}".strip)
+          tf.apply("#{input_args} #{stack.args}".strip)
         end
 
         desc "Apply changes to the #{stack.to_s} stack of the #{environ.to_s} environment"
@@ -64,8 +64,8 @@ env_rdr.environments.each do |environ|
           tf.clean()
           tf.remote_config(store_args)
           tf.get()
-          tf.plan("#{input_args} -destroy -input=false -module-depth=-1")
-          tf.destroy(input_args)
+          tf.plan("#{input_args} -destroy -input=false -module-depth=-1 #{stack.args}".strip)
+          tf.destroy("#{input_args} #{stack.args}".strip)
         end
 
         desc "Synchronize state stores for the #{stack.to_s} stack of the #{environ.to_s} environment"
