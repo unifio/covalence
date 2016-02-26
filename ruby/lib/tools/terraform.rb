@@ -58,6 +58,10 @@ module Terraform
       vars.map { |var, value| "-var #{var}=#{value}" }.join(' ')
     end
 
+    def parse_targets(targets)
+      targets.map { |target| "-target=#{target}" }.join(' ')
+    end
+
     def run_cmd(cmd, args)
       Dir.chdir(@path) do
         run_rake_cmd cmd, args

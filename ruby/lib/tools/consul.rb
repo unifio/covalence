@@ -66,7 +66,7 @@ module Consul
 
       # Populate the cache for subsequent calls
       outputs.keys.each do |key|
-        @cache[stack][name] = outputs.fetch(key)
+        @cache[stack][key] = outputs.fetch(key)
       end
 
       # Check outputs for requested key and return

@@ -79,4 +79,27 @@ describe Stack do
     inputs = @stack.parse_vars(vars)
     expect(inputs).to eql('-var environment=testing')
   end
+
+  it "processes empty inputs" do
+    vars = {}
+
+    inputs = @stack.parse_vars(vars)
+    expect(inputs).to eql('')
+  end
+
+  it "processes Terraform targets" do
+    targets = [
+      'module.az0'
+    ]
+
+    inputs = @stack.parse_targets(targets)
+    expect(inputs).to eql('-target=module.az0')
+  end
+
+  it "processes empty targets" do
+    targets = []
+
+    inputs = @stack.parse_targets(targets)
+    expect(inputs).to eql('')
+  end
 end
