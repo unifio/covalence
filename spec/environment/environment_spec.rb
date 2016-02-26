@@ -11,7 +11,6 @@ RSpec.describe Environment do
   end
 
   context "Environment Reader" do
-
     it "can read configuration" do
       expect(@env_rdr).to be_instance_of EnvironmentReader
     end
@@ -60,9 +59,19 @@ RSpec.describe Environment do
       expect(@stack.tf_module).to eql('myapp')
     end
 
+    it "does accept empty args" do
+      stack = @env.stacks[1]
+      expect(stack.args).to eql('')
+    end
+
     it "does accept empty vars" do
       stack = @env.stacks[1]
       expect(stack.inputs).to eql([])
+    end
+
+    it "does accept empty targets" do
+      stack = @env.stacks[1]
+      expect(stack.contexts).to be_instance_of Array
     end
 
     it "does return the path to the stack module when explicitly specified" do
@@ -78,6 +87,10 @@ RSpec.describe Environment do
       expect(@store).to be_instance_of Environment::Stack::StateStore
     end
 
+    it "does yield args" do
+      expect(@stack.args).to eql('-no-color')
+    end
+
     it "does yield inputs" do
       stack = @env.stacks[2]
       expect(stack.inputs).to be_instance_of Array
@@ -87,6 +100,15 @@ RSpec.describe Environment do
       stack = @env.stacks[2]
       input = stack.inputs.first
       expect(input).to be_instance_of Environment::Stack::Input
+    end
+
+    it "does yield targets" do
+      expect(@stack.contexts).to be_instance_of Array
+    end
+
+    it "does yield context objects" do
+      input = @stack.contexts.first
+      expect(input).to be_instance_of Environment::Stack::Context
     end
   end
 
@@ -110,7 +132,7 @@ RSpec.describe Environment do
   end
 
   context "Input" do
-    before(:each) do
+    before(:all) do
       stack = @env.stacks[2]
       @input = stack.inputs.first
       @lookup = stack.inputs[1]
@@ -154,6 +176,36 @@ RSpec.describe Environment do
 
     it "does return the value for a non-local key" do
       expect(@lookup.value).to eql({'type'=>'atlas.artifact','slug'=>'unifio/centos-base/amazon.ami','version'=>1,'metadata'=>'region.us-west-2'})
+    end
+  end
+
+  context "Context" do
+    before(:all) do
+      stack = @env.stacks[0]
+      @context = stack.contexts.first
+    end
+
+    it "does return context name as a symbol" do
+      expect(@context.to_sym.to_s).to eql('az0')
+    end
+
+    it "does return context name as a string" do
+      expect(@context.to_s).to eql('az0')
+    end
+
+    it "does return context namespace as a string" do
+      expect(@context.namespace).to eql('az0:')
+    end
+
+    it "does return empty string for the context namespace when name is an empty string" do
+      stack = @env.stacks[1]
+      context = stack.contexts.first
+
+      expect(context.namespace).to eql('')
+    end
+
+    it "does return the value" do
+      expect(@context.value).to eql(['module.az0'])
     end
   end
 

@@ -75,19 +75,41 @@ class Environment
       @params['state'].map{|s| StateStore.new(s.first.first, s.first[1]) }
     end
 
+    def args
+      return @params['args'] if @params.has_key? 'args'
+      return ""
+    end
+
     def has_vars?
       return true if @params['vars'].is_a?(Hash) && !@params['vars'].empty?
       return false
     end
 
     def inputs
-      artifacts = Array.new
+      inputs = Array.new
       if self.has_vars?
         @params['vars'].each do |k,v|
-          artifacts.push(Input.new(k,v))
+          inputs.push(Input.new(k,v))
         end
       end
-      return artifacts
+      return inputs
+    end
+
+    def has_targets?
+      return true if @params['targets'].is_a?(Hash) && !@params['targets'].empty?
+      return false
+    end
+
+    def contexts
+      contexts = Array.new
+      if self.has_targets?
+        @params['targets'].each do |k,v|
+          contexts.push(Context.new(k,v))
+        end
+      else
+        contexts.push(Context.new('',[]))
+      end
+      return contexts
     end
 
     class StateStore
@@ -151,6 +173,31 @@ class Environment
           return @params['type'].partition('.')[2]
         end
         return 'key'
+      end
+
+      def value
+        @params
+      end
+    end
+
+    class Context
+      attr_reader :name
+      def initialize(name, params)
+        @name = name
+        @params = params
+      end
+
+      def to_sym
+        @name.to_sym
+      end
+
+      def to_s
+        @name.to_s
+      end
+
+      def namespace
+        return "#{self.to_s}:" unless @name == ''
+        return self.to_s
       end
 
       def value
