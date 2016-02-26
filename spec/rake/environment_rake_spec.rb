@@ -16,7 +16,7 @@ describe "rspec:myapp:verify" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -target=test")
     subject.invoke
   end
 end
@@ -40,7 +40,7 @@ describe "rspec:myapp:plan" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -target=test")
     subject.invoke
   end
 end
@@ -59,7 +59,7 @@ describe "rspec:myapp:plan_destroy" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -target=test")
     subject.invoke
   end
 end
@@ -83,12 +83,12 @@ describe "rspec:myapp:apply" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -target=test")
     subject.invoke
   end
 
   it "executes an apply" do
-    expect_any_instance_of(Terraform::Stack).to receive(:apply).with("-var label=test")
+    expect_any_instance_of(Terraform::Stack).to receive(:apply).with("-var label=test -target=test")
     subject.invoke
   end
 end
@@ -112,12 +112,12 @@ describe "rspec:myapp:destroy" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -target=test")
     subject.invoke
   end
 
   it "executes a destroy" do
-    expect_any_instance_of(Terraform::Stack).to receive(:destroy).with("-var label=test")
+    expect_any_instance_of(Terraform::Stack).to receive(:destroy).with("-var label=test -target=test")
     subject.invoke
   end
 end
