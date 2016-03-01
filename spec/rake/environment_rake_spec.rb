@@ -2,6 +2,15 @@ require_relative '../../ruby/lib/environment.rb'
 require_relative '../../ruby/lib/tools/terraform.rb'
 require_relative '../shared_contexts/rake.rb'
 
+describe "rspec:myapp:clean" do
+  include_context "rake"
+
+  it "cleans the workspace" do
+    expect_any_instance_of(Terraform::Stack).to receive(:clean)
+    subject.invoke
+  end
+end
+
 describe "rspec:myapp:verify" do
   include_context "rake"
 
