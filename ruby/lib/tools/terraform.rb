@@ -3,16 +3,16 @@ require_relative '../prometheus'
 
 module Terraform
   STACKS_DIR = Prometheus::TERRAFORM
-  TF_ENV = ENV['TERRAFORM_ENV'] || "TF_VAR_atlas_token=$ATLAS_TOKEN"
+  TF_STUB = ENV['TERRAFORM_STUB'] || ""
+  TF_ENV = ENV['TERRAFORM_ENV'] || ""
   TF_CMD = ENV['TERRAFORM_CMD'] || "terraform"
-  TF_MODE = ENV['TERRAFORM_MODE'] || ""
 
   class Stack
-    def initialize(name, dir: STACKS_DIR, env: TF_ENV, cmd: TF_CMD, mode: TF_MODE)
+    def initialize(name, dir: STACKS_DIR, env: TF_ENV, cmd: TF_CMD, stub: TF_STUB)
       self.path = File.join(dir, name)
       @env = env
       @cmd = cmd
-      @mode = mode
+      @stub = !!(stub =~ /^(true|t|yes|y|1)$/i)
     end
 
     def path=(path)
@@ -50,7 +50,7 @@ module Terraform
 
     def clean()
       Dir.chdir(@path) do
-        Rake.sh "rm -fr .terraform *.tfstate*" unless @mode == "test"
+        Rake.sh "rm -fr .terraform *.tfstate*" unless @stub
       end
     end
 
@@ -69,7 +69,7 @@ module Terraform
     end
 
     def run_rake_cmd(cmd, args='')
-      Rake.sh "#{@env} #{@cmd} #{cmd} #{args}" unless @mode == "test"
+      Rake.sh "#{@env} #{@cmd} #{cmd} #{args}".strip unless @stub
     end
   end
 end
