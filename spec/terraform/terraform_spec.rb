@@ -73,7 +73,14 @@ describe Stack do
 
   it "cleans up existing state data from the given stack directory" do
     @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, stub: "false")
-    cmd = "rm -fr .terraform *.tfstate*"
+    cmd = "/bin/sh -c \"rm -fr .terraform *.tfstate*\""
+    expect(Rake::AltSystem).to receive(:system).with(cmd).and_return(true)
+    @cmd_test.clean
+  end
+
+  it "cleans up existing state data from the given stack directory within a container" do
+    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, img: "unifio/terraform:latest", cmd: "docker run --rm", stub: "false")
+    cmd = "docker run --rm -v #{@parent_dir}:/data -w /data/#{@stack_dir} --entrypoint=\"/bin/sh\" unifio/terraform:latest -c \"rm -fr .terraform *.tfstate*\""
     expect(Rake::AltSystem).to receive(:system).with(cmd).and_return(true)
     @cmd_test.clean
   end
