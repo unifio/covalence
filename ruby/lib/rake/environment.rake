@@ -3,6 +3,13 @@ require_relative '../tools/terraform'
 
 env_rdr = EnvironmentReader.new
 
+desc "Clean all environments"
+task "all:clean" do
+  env_rdr.environments.each do |environ|
+    Rake::Task["#{environ}:clean"].execute
+  end
+end
+
 desc "Verify all environments"
 task "all:verify" do
   env_rdr.environments.each do |environ|
@@ -22,6 +29,11 @@ env_rdr.environments.each do |environ|
 
       # Stack tasks
       namespace stack.to_sym do
+
+        desc "Clean the #{stack.to_s} stack of the #{environ.to_s} environment"
+        task :clean do
+          tf.clean()
+        end
 
         desc "Verify the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :verify do
@@ -89,6 +101,13 @@ env_rdr.environments.each do |environ|
     end
 
     # Environment tasks
+    desc "Clean the #{environ} environment"
+    task :clean do
+      environ.stacks.each do |stack|
+        Rake::Task["#{environ}:#{stack.name}:clean"].execute
+      end
+    end
+
     desc "Verify the #{environ} environment"
     task :verify do
       environ.stacks.each do |stack|
