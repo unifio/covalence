@@ -3,16 +3,17 @@ require_relative '../prometheus'
 
 module Terraform
   STACKS_DIR = Prometheus::TERRAFORM
-  TF_ENV = ENV['TERRAFORM_ENV'] || "TF_VAR_atlas_token=$ATLAS_TOKEN"
+  TF_STUB = ENV['TERRAFORM_STUB'] || ""
+  TF_ENV = ENV['TERRAFORM_ENV'] || ""
+  TF_IMG = ENV['TERRAFORM_IMG'] || ""
   TF_CMD = ENV['TERRAFORM_CMD'] || "terraform"
-  TF_MODE = ENV['TERRAFORM_MODE'] || ""
 
   class Stack
-    def initialize(name, dir: STACKS_DIR, env: TF_ENV, cmd: TF_CMD, mode: TF_MODE)
+    def initialize(name, dir: STACKS_DIR, env: TF_ENV, img: TF_IMG, cmd: TF_CMD, stub: TF_STUB)
       self.path = File.join(dir, name)
       @env = env
-      @cmd = cmd
-      @mode = mode
+      @cmd = tf_cmd(dir, name, img, cmd)
+      @stub = !!(stub =~ /^(true|t|yes|y|1)$/i)
     end
 
     def path=(path)
@@ -20,8 +21,13 @@ module Terraform
       @path = path
     end
 
+    def tf_cmd(dir, name, img, cmd)
+      return cmd if img.empty?
+      return "#{cmd} -v #{dir}:/data -w /data/#{name} #{img}"
+    end
+
     def remote_config(args='')
-      run_cmd('remote', "config #{args}")
+      run_cmd('remote', "config #{args}".strip)
     end
 
     def remote_pull()
@@ -50,7 +56,7 @@ module Terraform
 
     def clean()
       Dir.chdir(@path) do
-        Rake.sh "rm -fr .terraform *.tfstate*" unless @mode == "test"
+        Rake.sh "rm -fr .terraform *.tfstate*" unless @stub
       end
     end
 
@@ -69,7 +75,7 @@ module Terraform
     end
 
     def run_rake_cmd(cmd, args='')
-      Rake.sh "#{@env} #{@cmd} #{cmd} #{args}" unless @mode == "test"
+      Rake.sh "#{@env} #{@cmd} #{cmd} #{args}".strip unless @stub
     end
   end
 end
