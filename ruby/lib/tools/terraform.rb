@@ -12,18 +12,20 @@ module Terraform
     def initialize(name, dir: STACKS_DIR, env: TF_ENV, img: TF_IMG, cmd: TF_CMD, stub: TF_STUB)
       self.path = File.join(dir, name)
       @env = env
-      @cmd = tf_cmd(dir, name, img, cmd)
       @stub = !!(stub =~ /^(true|t|yes|y|1)$/i)
+
+      if img.empty?
+        @tf_cmd = cmd
+        @cln_cmd = "/bin/sh -c"
+      else
+        @tf_cmd = "#{cmd} -v #{dir}:/data -w /data/#{name} #{img}"
+        @cln_cmd = "#{cmd} -v #{dir}:/data -w /data/#{name} --entrypoint=\"/bin/sh\" #{img} -c"
+      end
     end
 
     def path=(path)
       raise "#{path} doesn't exist" unless Dir.exists?(path)
       @path = path
-    end
-
-    def tf_cmd(dir, name, img, cmd)
-      return cmd if img.empty?
-      return "#{cmd} -v #{dir}:/data -w /data/#{name} #{img}"
     end
 
     def remote_config(args='')
@@ -56,7 +58,7 @@ module Terraform
 
     def clean()
       Dir.chdir(@path) do
-        Rake.sh "rm -fr .terraform *.tfstate*" unless @stub
+        Rake.sh "#{@cln_cmd} \"rm -fr .terraform *.tfstate*\"" unless @stub
       end
     end
 
@@ -75,7 +77,7 @@ module Terraform
     end
 
     def run_rake_cmd(cmd, args='')
-      Rake.sh "#{@env} #{@cmd} #{cmd} #{args}".strip unless @stub
+      Rake.sh "#{@env} #{@tf_cmd} #{cmd} #{args}".strip unless @stub
     end
   end
 end
