@@ -21,7 +21,7 @@ describe Stack do
   end
 
   it "executes terraform remote config" do
-    expect(@stack).to receive(:run_rake_cmd).with('remote', 'config ')
+    expect(@stack).to receive(:run_rake_cmd).with('remote', 'config')
     @stack.remote_config
   end
 
@@ -51,21 +51,28 @@ describe Stack do
   end
 
   it "executes terraform commands with defaults settings" do
-    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, mode: "standard")
-    cmd = "TF_VAR_atlas_token=$ATLAS_TOKEN terraform plan -input=false -module-depth=-1"
+    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, stub: "false")
+    cmd = "terraform plan -input=false -module-depth=-1"
     expect(Rake::AltSystem).to receive(:system).with(cmd).and_return(true)
     @cmd_test.plan("-input=false -module-depth=-1")
   end
 
   it "executes terraform commands with custom settings" do
-    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, env: "TEST=thisisatest", cmd: "docker run --rm unifio/terraform:latest", mode: "standard")
-    cmd = "TEST=thisisatest docker run --rm unifio/terraform:latest plan "
+    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, env: "TEST=thisisatest", cmd: "/usr/local/bin/terraform", stub: "false")
+    cmd = "TEST=thisisatest /usr/local/bin/terraform plan"
+    expect(Rake::AltSystem).to receive(:system).with(cmd).and_return(true)
+    @cmd_test.plan
+  end
+
+  it "executes terraform commands within a container" do
+    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, img: "unifio/terraform:latest", cmd: "docker run --rm", stub: "false")
+    cmd = "docker run --rm -v #{@parent_dir}:/data -w /data/#{@stack_dir} unifio/terraform:latest plan"
     expect(Rake::AltSystem).to receive(:system).with(cmd).and_return(true)
     @cmd_test.plan
   end
 
   it "cleans up existing state data from the given stack directory" do
-    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, mode: "standard")
+    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, stub: "false")
     cmd = "rm -fr .terraform *.tfstate*"
     expect(Rake::AltSystem).to receive(:system).with(cmd).and_return(true)
     @cmd_test.clean
