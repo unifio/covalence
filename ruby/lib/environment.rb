@@ -6,15 +6,15 @@ Dir[File.expand_path('tools/*.rb', File.dirname(__FILE__))].each do |file|
 end
 
 class EnvironmentReader
-  def initialize(path = Prometheus::CONFIG)
-    @path = path
+  def initialize(config = Prometheus::CONFIG)
+    @db = HieraDB::Client.new(config)
   end
 
   def environments
-    config = YAML.load_file(@path)
-    raise "Missing 'environments' configuration hash" unless config.has_key? 'environments'
+    config = @db.hash_lookup('environments')
+    raise "Missing 'environments' configuration hash" unless !config.empty?
 
-    config['environments'].map do |name,stacks|
+    config.map do |name,stacks|
       Environment.new(name, stacks)
     end
   end
@@ -36,22 +36,19 @@ class Environment
   end
 
   def stacks
-    @stacks.map{|s| Stack.new(s.first.first, self, s.first[1]) }
+    @stacks.map{ |s| Stack.new(s, self) }
   end
 
   class Stack
     attr_reader :name, :environment
-    def initialize(name, env, params)
-      required_params = [
-        'state'
-      ]
-      required_params.each do |param|
-        raise "Missing #{param} hash for the #{name} stack of the #{env} environment" unless params.has_key?(param)
-      end
+    def initialize(name, env, config = Prometheus::CONFIG)
+      data = HieraDB::Client.new(config)
+      data.set_scope(env, name)
+      raise "Missing 'state' hash for the #{name} stack of the #{env} environment" unless data.lookup("#{name}::state")
 
       @name = name
       @environment = env
-      @params = params
+      @data = data
     end
 
     def to_sym
@@ -67,28 +64,32 @@ class Environment
     end
 
     def tf_module
-      @params['module'] || @name
+      mod = @data.lookup("#{@name}::module")
+      mod || @name
     end
 
     def state_stores
-      raise "State store array cannot be empty" unless !@params['state'].empty?
-      @params['state'].map{|s| StateStore.new(s.first.first, s.first[1]) }
+      stores = @data.lookup("#{@name}::state")
+      raise "State store array cannot be empty" unless !stores.empty?
+      stores.map{|s| StateStore.new(s.first.first, s.first[1]) }
     end
 
     def args
-      return @params['args'] if @params.has_key? 'args'
+      args = @data.lookup("#{self.tf_module.gsub('/','::')}::args")
+      return args if args != nil
       return ""
     end
 
     def has_vars?
-      return true if @params['vars'].is_a?(Hash) && !@params['vars'].empty?
+      vars = @data.lookup("#{self.tf_module.gsub('/','::')}::vars")
+      return true if vars.is_a?(Hash) && !vars.empty?
       return false
     end
 
     def inputs
       inputs = Array.new
       if self.has_vars?
-        @params['vars'].each do |k,v|
+        @data.lookup("#{self.tf_module.gsub('/','::')}::vars").each do |k,v|
           inputs.push(Input.new(k,v))
         end
       end
@@ -96,14 +97,15 @@ class Environment
     end
 
     def has_targets?
-      return true if @params['targets'].is_a?(Hash) && !@params['targets'].empty?
+      targets = @data.lookup("#{self.tf_module.gsub('/','::')}::targets")
+      return true if targets.is_a?(Hash) && !targets.empty?
       return false
     end
 
     def contexts
       contexts = Array.new
       if self.has_targets?
-        @params['targets'].each do |k,v|
+        @data.lookup("#{self.tf_module.gsub('/','::')}::targets").each do |k,v|
           contexts.push(Context.new(k,v))
         end
       else

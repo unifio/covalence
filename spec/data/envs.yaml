@@ -1,0 +1,7 @@
+# Deployment environments
+
+environments:
+  rspec:
+    - 'myapp'
+    - 'module_test'
+    - 'artifact_test'

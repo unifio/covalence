@@ -1,0 +1,20 @@
+---
+# State store
+myapp::state:
+  - atlas:
+      name: 'example/myapp'
+
+# Arguments
+myapp::args: '-no-color'
+
+# Input variables
+myapp::vars:
+  label: 'test'
+
+# Execution targets
+myapp::targets:
+  az0:
+    - 'module.az0'
+  az1:
+    - 'module.az1'
+    - 'module.common.aws_eip.myapp'

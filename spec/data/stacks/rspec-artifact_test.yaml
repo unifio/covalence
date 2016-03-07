@@ -1,0 +1,36 @@
+---
+# Module path
+artifact_test::module: 'myapp2'
+
+# State store
+artifact_test::state:
+  - atlas:
+      name: 'example/myapp'
+
+# Input variables
+myapp2::vars:
+  label: 'test'
+  ami:
+    type: 'atlas.artifact'
+    slug: 'unifio/aws-linux/amazon.ami'
+    version: 1
+    metadata: 'region.us-west-2'
+
+# Test data
+myapp2::array_test:
+  - 'stack_data'
+myapp2::array_test_1:
+  - 'dedup'
+myapp2::array_test_2: 'stack_data'
+myapp2::array_test_3:
+  - 'stack_data'
+
+myapp2::hash_test:
+  key: 'stack'
+
+myapp2::hash_test_1:
+  key: 'stack'
+
+myapp2::hash_test_2:
+  ami:
+    version: 'latest'

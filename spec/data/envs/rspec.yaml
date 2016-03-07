@@ -1,0 +1,21 @@
+---
+# Rspec environment globals
+
+## Test data
+myapp2::array_test:
+  - 'environment_data'
+myapp2::array_test_1:
+  - 'dedup'
+myapp2::array_test_2: 'environment_data'
+myapp2::array_test_3: 'environment_data'
+
+myapp2::hash_test:
+  key: 'environment'
+
+myapp2::hash_test_1:
+  key: 'environment'
+  key1: 'environment'
+
+myapp2::hash_test_2:
+  ami:
+    metadata: 'region.us-west-2'
