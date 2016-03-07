@@ -16,14 +16,18 @@ GEM
       rspec (>= 2.14, < 4)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
+    deep_merge (1.0.1)
     diff-lcs (1.2.5)
     domain_name (0.5.20160128)
       unf (>= 0.0.5, < 1.0.0)
     hashdiff (0.3.0)
+    hiera (3.0.6)
+      json_pure
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     jmespath (1.1.3)
     json (1.8.3)
+    json_pure (1.8.3)
     mime-types (2.99)
     multi_json (1.11.2)
     net-scp (1.2.1)
@@ -78,6 +82,8 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk
   ci_reporter_rspec
+  deep_merge
+  hiera
   json
   rake
   rest-client
