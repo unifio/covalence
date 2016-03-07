@@ -1,0 +1,8 @@
+---
+# Module path
+module_test::module: 'myapp2'
+
+# State store
+module_test::state:
+  - atlas:
+      name: 'example/myapp'

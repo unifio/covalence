@@ -8,3 +8,5 @@ gem "webmock"
 gem "json"
 gem "aws-sdk"
 gem "ci_reporter_rspec"
+gem "hiera"
+gem 'deep_merge'
