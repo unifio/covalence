@@ -24,6 +24,11 @@ describe "rspec:myapp:verify" do
     subject.invoke
   end
 
+  it "executes template validation" do
+    expect_any_instance_of(Terraform::Stack).to receive(:validate)
+    subject.invoke
+  end
+
   it "executes a plan" do
     expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color")
     subject.invoke

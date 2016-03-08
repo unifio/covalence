@@ -32,14 +32,15 @@ env_rdr.environments.each do |environ|
 
         desc "Clean the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :clean do
-          tf.clean()
+          tf.clean
         end
 
         desc "Verify the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :verify do
           input_args = tf.parse_vars(inputs.to_h)
-          tf.clean()
-          tf.get()
+          tf.clean
+          tf.get
+          tf.validate
           tf.plan("#{input_args} -input=false -module-depth=-1 #{stack.args}".strip)
         end
 
@@ -50,26 +51,26 @@ env_rdr.environments.each do |environ|
           desc "Create execution plan for the #{stack.to_s} stack of the #{environ.to_s} environment"
           task "#{context.namespace}plan".strip do
             input_args = tf.parse_vars(inputs.to_h)
-            tf.clean()
+            tf.clean
             tf.remote_config(store_args)
-            tf.get()
+            tf.get
             tf.plan("#{input_args} -input=false -module-depth=-1 #{stack.args} #{target_args}".strip)
           end
 
           desc "Create destruction plan for the #{stack.to_s} stack of the #{environ.to_s} environment"
           task "#{context.namespace}plan_destroy" do
             input_args = tf.parse_vars(inputs.to_h)
-            tf.clean()
-            tf.get()
+            tf.clean
+            tf.get
             tf.plan("#{input_args} -destroy -input=false -module-depth=-1 #{stack.args} #{target_args}".strip)
           end
 
           desc "Apply changes to the #{stack.to_s} stack of the #{environ.to_s} environment"
           task "#{context.namespace}apply" do
             input_args = tf.parse_vars(inputs.to_h)
-            tf.clean()
+            tf.clean
             tf.remote_config(store_args)
-            tf.get()
+            tf.get
             tf.plan("#{input_args} -input=false -module-depth=-1 #{stack.args} #{target_args}".strip)
             tf.apply("#{input_args} #{stack.args} #{target_args}".strip)
           end
@@ -77,9 +78,9 @@ env_rdr.environments.each do |environ|
           desc "Apply changes to the #{stack.to_s} stack of the #{environ.to_s} environment"
           task "#{context.namespace}destroy" do
             input_args = tf.parse_vars(inputs.to_h)
-            tf.clean()
+            tf.clean
             tf.remote_config(store_args)
-            tf.get()
+            tf.get
             tf.plan("#{input_args} -destroy -input=false -module-depth=-1 #{stack.args} #{target_args}".strip)
             tf.destroy("#{input_args} #{stack.args} #{target_args}".strip)
           end
@@ -88,13 +89,13 @@ env_rdr.environments.each do |environ|
         desc "Synchronize state stores for the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :sync do
           input_args = tf.parse_vars(inputs.to_h)
-          tf.clean()
+          tf.clean
           tf.remote_config(store_args)
 
           stack.state_stores.drop(1).each do |store|
             tf.remote_config('-disable')
             tf.remote_config("#{store.get_config} -pull=false")
-            tf.remote_push()
+            tf.remote_push
           end
         end
       end
@@ -133,7 +134,7 @@ env_rdr.environments.each do |environ|
       end
     end
 
-    desc "Apply change to the #{environ} environment"
+    desc "Apply changes to the #{environ} environment"
     task :apply do
       environ.stacks.each do |stack|
         stack.contexts.each do |context|
