@@ -31,6 +31,6 @@ environments:
           label: 'test'
           ami:
             type: 'atlas.artifact'
-            slug: 'unifio/centos-base/amazon.ami'
+            slug: 'unifio/aws-linux/amazon.ami'
             version: 1
             metadata: 'region.us-west-2'
