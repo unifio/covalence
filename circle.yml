@@ -1,6 +1,7 @@
 machine:
   environment:
     ATLAS_TOKEN: GryCCpG3GRBqQw.atlasv1.1ASD0jMKyVmLmUVlqP7ca6xdxqzY1nNroAVtTSKRBYR7fnLxciPCboidfwKR6bXBaWQ
+    GENERATE_REPORTS: true
 test:
   override:
     - bundle exec rake
