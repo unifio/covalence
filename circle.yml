@@ -1,6 +1,14 @@
 machine:
+  services:
+    - docker
   environment:
     ATLAS_TOKEN: GryCCpG3GRBqQw.atlasv1.1ASD0jMKyVmLmUVlqP7ca6xdxqzY1nNroAVtTSKRBYR7fnLxciPCboidfwKR6bXBaWQ
+    GENERATE_REPORTS: true
+    TERRAFORM_IMG: unifio/terraform:latest
+    TERRAFORM_CMD: "docker run -e ATLAS_TOKEN=$ATLAS_TOKEN --rm"
+
 test:
+  pre:
+    - docker pull unifio/terraform:latest
   override:
     - bundle exec rake
