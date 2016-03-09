@@ -175,7 +175,7 @@ RSpec.describe Environment do
     end
 
     it "does return the value for a non-local key" do
-      expect(@lookup.value).to eql({'type'=>'atlas.artifact','slug'=>'unifio/centos-base/amazon.ami','version'=>1,'metadata'=>'region.us-west-2'})
+      expect(@lookup.value).to eql({'type'=>'atlas.artifact','slug'=>'unifio/aws-linux/amazon.ami','version'=>1,'metadata'=>'region.us-west-2'})
     end
   end
 
