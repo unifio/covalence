@@ -1,10 +1,16 @@
 require 'rspec/core/rake_task'
 
-ENV['TERRAFORM_STUB'] = "true"
+if ENV['GENERATE_REPORTS'] == 'true'
+  require 'ci/reporter/rake/rspec'
+  task :spec => ['ci:setup:rspec', 'spec:prometheus']
+else
+  task :spec => 'spec:prometheus'
+end
+
+ENV['TERRAFORM_STUB'] = 'true'
 ENV['AWS_REGION'] = 'us-west-2'
 
-desc "Run all spec tests"
-task :spec => "spec:prometheus"
+desc 'Run all spec tests'
 
 namespace :spec do
 

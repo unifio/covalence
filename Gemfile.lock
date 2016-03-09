@@ -8,6 +8,12 @@ GEM
       jmespath (~> 1.0)
     aws-sdk-resources (2.2.19)
       aws-sdk-core (= 2.2.19)
+    builder (3.2.2)
+    ci_reporter (2.0.0)
+      builder (>= 2.1.2)
+    ci_reporter_rspec (1.0.0)
+      ci_reporter (~> 2.0)
+      rspec (>= 2.14, < 4)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     diff-lcs (1.2.5)
@@ -71,6 +77,7 @@ PLATFORMS
 
 DEPENDENCIES
   aws-sdk
+  ci_reporter_rspec
   json
   rake
   rest-client
