@@ -35,6 +35,11 @@ describe Stack do
     @stack.remote_push
   end
 
+  it "executes terraform validate" do
+    expect(@stack).to receive(:run_rake_cmd).with('validate', '')
+    @stack.validate
+  end
+
   it "executes terraform plan" do
     expect(@stack).to receive(:run_rake_cmd).with('plan', '')
     @stack.plan
