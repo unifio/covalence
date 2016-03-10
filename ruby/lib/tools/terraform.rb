@@ -44,6 +44,10 @@ module Terraform
       run_cmd('get', args)
     end
 
+    def validate(args='')
+      run_cmd('validate', args)
+    end
+
     def plan(args='')
       run_cmd('plan', args)
     end
@@ -80,4 +84,22 @@ module Terraform
       Rake.sh "#{@env} #{@tf_cmd} #{cmd} #{args}".strip unless @stub
     end
   end
+
+  # Return module capabilities
+  def self.has_key_read?
+    return false
+  end
+
+  def self.has_key_write?
+    return false
+  end
+
+  def self.has_state_read?
+    return false
+  end
+
+  def self.has_state_store?
+    return false
+  end
+  
 end
