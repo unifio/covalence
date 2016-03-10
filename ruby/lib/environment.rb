@@ -89,7 +89,7 @@ class Environment
     def inputs
       inputs = Array.new
       if self.has_vars?
-        @data.lookup("#{self.tf_module.gsub('/','::')}::vars").each do |k,v|
+        @data.hash_lookup("#{self.tf_module.gsub('/','::')}::vars").each do |k,v|
           inputs.push(Input.new(k,v))
         end
       end
@@ -105,7 +105,7 @@ class Environment
     def contexts
       contexts = Array.new
       if self.has_targets?
-        @data.lookup("#{self.tf_module.gsub('/','::')}::targets").each do |k,v|
+        @data.hash_lookup("#{self.tf_module.gsub('/','::')}::targets").each do |k,v|
           contexts.push(Context.new(k,v))
         end
       else
