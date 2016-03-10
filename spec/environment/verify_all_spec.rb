@@ -16,6 +16,12 @@ envs.each do |env|
         @tf.get
       end
 
+      it 'passes validation' do
+        expect {
+          @tf.validate
+        }.to_not raise_error
+      end
+
       it 'passes execution' do
         input_args = @tf.parse_vars(@inputs.to_h)
         expect {
