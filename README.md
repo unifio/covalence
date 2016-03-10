@@ -18,7 +18,7 @@ You will then need to add a Rakefile to your workspace, which will be used to co
 For example:
 
 ```
-ENV['PROMETHEUS_WORKSPACE'] = "/Users/unifio/git/infrastructure"
+ENV['PROMETHEUS_WORKSPACE'] = "#{Dir.pwd}"
 ENV['PROMETHEUS_TERRAFORM_DIR'] = "stacks"
 ENV['PROMETHEUS_PACKER_DIR'] = "amis"
 
@@ -30,7 +30,8 @@ The complete list of environment variables available are as follows:
 | Tool       | ENV Variable             | Default                           | Description                          |
 | ---------- | ------------------------ | --------------------------------- | ------------------------------------ |
 | Prometheus | PROMETHEUS_WORKSPACE     | "../../../"                       | Root directory of the Rakefile and other assets |
-| Prometheus | PROMETHEUS_CONFIG        | "prometheus.yml"                  | Name of the configuration file located in the workspace |
+| Prometheus | PROMETHEUS_CONFIG        | "prometheus.yaml"                 | Name of the configuration file located in the workspace |
+| Prometheus | PROMETHEUS_RSPEC_DIR     | "spec"                            | Root directory name where rspec tests are located in the workspace |
 | Prometheus | PROMETHEUS_PACKER_DIR    | "packer"                          | Root directory name where Packer modules are located in the workspace |
 | Prometheus | PROMETHEUS_TERRAFORM_DIR | "terraform"                       | Root directory name where Terraform modules are located in the workspace |
 | Terraform  | TF_ENV                   | "TF_VAR_atlas_token=$ATLAS_TOKEN" | Environment variables to be set for calls to Terraform |
@@ -48,57 +49,124 @@ The complete list of environment variables available are as follows:
 ## Rake Tasks
 
 ### Environments
-The main entry point for managing Terraform stacks. Terraform modules are organized into environments and stacks in the Prometheus configuration file. The configuration is read in by the `Environment` class, which dynamically generates the Rake tasks available.
+The main entry point for managing Terraform stacks. Terraform modules are organized into environments and stacks in the Prometheus data store. The location and hierarchy of the data store is driven by the configuration file (prometheus.yaml by default). The configuration is read in by the `Environment` class, which dynamically generates the Rake tasks available.
 
-An example **prometheus.yml** is as follows:
+A complete example is as follows:
+
+**Directory structure**
+```
+- prometheus.yaml
+- data
+  - envs
+    - ops.yaml
+  - stacks
+    - ops-openvpn.yaml
+```
+
+The hierarchy is driven by the **prometheus.yaml** configuration. It is important to note that it is not a requirement that all directories and files exist, the hierarchy simply dictates an order of priority for looking up values. This is the mechanism that makes managing development data locally in the **dev** directory possible.
+
+**prometheus.yaml**
+```yaml
+---
+:backends:
+  - yaml                                          # Data store type. Also supports JSON out-of-the-box. Can support multiple concurrently.
+
+:logger: noop                                     # Suppress Hiera logging. Can be re-enabled by commenting this line out.
+
+:merge_behavior: 'deeper'                         # Merge strategy for Hash lookups.
+
+:hierarchy:                                       # Data store hierarchy. Lookups will traverse the hierarchy in order from top to bottom.
+  - "dev/%{environment}-%{stack}"
+  - "dev/envs"
+  - "stacks/%{environment}-%{stack}"
+  - "envs/%{environment}"
+  - "global"
+  - "envs"
+
+:yaml:                                            # Configuration specific to the YAML backend
+   :datadir: data                                 # Root directory of the YAML data store
 
 ```
-environments:
-  ops:                                                    // Environment name. Contains an ordered Array of Terraform stacks.
-    - openvpn:                                            // Stack name. Independent Terraform stack.
-        module: 'vpn'                                     // Terraform module directory if different than the stack name.
-        state:                                            // Terraform state stores. The first is used as the primary with others as targets for synchronization
-          - atlas:                                        // State store type.
-              name: 'unifio/openvpn'
-          - consul:
-              name: 'unifio/openvpn'
-          - s3:
-              name: 'unifio/openvpn'
-              bucket: 'unifio-terraform'
-        vars:                                             // Input variables
-          app_label: 'ops'
-          instances: 2
-          ami:                                            // Variables that are hashes are passed to the plug-in framework for processing
-            type: 'atlas.artifact'                        // <backend>.<lookup_type>. Supported types vary per backend.
-            slug: 'unifio/openvpn/amazon.ami'
-            version: 1                                    // Defaults to 'latest'.
-            metadata: 'region.us-west-2'
-        args: '-target=test'                              // Additional arguments to be passed to Terraform
-        targets:                                          // Resource targeting contexts
-          az0:                                            // Context name
-            - 'module.az0'                                // Resource target (i.e. -target=module.az0)
-          az1:
-            - 'module.az1'
+
+The hierarchy can be changed, but the only two context variables currently supported are the `environment` and `stack` names.
+
+**ops-openvpn.yaml**
+```yaml
+---
+# Operations OpenVPN stack                        # File maps to the 'openvpn' stack of the 'ops' environment, which will be managed as an independent Terraform stack as determined by a single state file.
+
+# Terraform module
+openvpn::module: 'vpn'                            # Terraform module directory if different than the stack name. Key is prepended with the stack name, as module assignment is stack specific.
+
+# State storage
+openvpn::state:                                   # Terraform remote state storage configuration. Key is prepended with the stack name, as state store configuration is stack specific.
+  - atlas:                                        # State store type.
+      name: 'unifio/openvpn'
+  - consul:
+      name: 'unifio/openvpn'
+  - s3:
+      name: 'unifio/openvpn'
+      bucket: 'unifio-terraform'
+
+# Execution targets
+vpn::targets:                                     # Resource targeting contexts. Key is prepended with the module name, as target assignment can be shared across contexts.
+  az0:                                            # Context name
+    - 'module.az0'                                # Resource target (i.e. terraform plan -target=module.az0)
+  az1:
+    - 'module.az1'
+
+# Additional arguments
+vpn::args: -no-color'                             # Additional arguments to be passed to Terraform.
+
+# Input variables
+vpn::vars:                                        # Input variables. Key is prepended with the module name, as variable assignment can be shared across contexts.
+  instances: 2
+  ami:                                            # Variables that are hashes are passed to the plug-in framework for processing
+    slug: 'unifio/openvpn/amazon.ami'
+    version: 1                                    # Defaults to 'latest'.
+```
+
+As indicated in the comments above, keys that are stack specific are prepended with the stack name as opposed to the module name. Currently, this include the `module` and `state` parameters only. All other keys will be prepended with the module name, allowing for data sharing between stacks that are based on the same module, as demonstrated in the **ops.yaml** file.
+
+**ops.yaml**
+```yaml
+---
+# Operations environment
+
+# OpenVPN default input variables
+vpn::vars:                                        # Default input variables. This hash will be merged with the hash found in the stack definition.
+  app_label: 'ops'
+  ami:                                            
+    type: 'atlas.artifact'                        # <backend>.<lookup_type>. Supported types vary per backend.
+    metadata: 'region.us-west-2'
 ```
 
 This configuration yields the following Rake tasks as returned by `rake -T`:
 
 ```
-rake all:verify                # Verify all environments
-rake ops:apply                 # Apply change to the ops environment
-rake ops:destroy               # Destroy the ops environment
-rake ops:openvpn:apply         # Apply changes to the openvpn stack of the ...
-rake ops:openvpn:destroy       # Apply changes to the openvpn stack of the ...
-rake ops:openvpn:plan          # Create execution plan for the openvpn stac...
-rake ops:openvpn:plan_destroy  # Create destruction plan for the openvpn st...
-rake ops:openvpn:sync          # Synchronize state stores for the openvpn s...
-rake ops:openvpn:verify        # Verify the openvpn stack of the ops enviro...
-rake ops:plan                  # Create execution plan for the ops environment
-rake ops:plan_destroy          # Create destruction plan for the ops enviro...
-rake ops:verify                # Verify the ops environment
+rake all:clean                     # Clean all environments
+rake all:verify                    # Verify all environments
+rake ops:apply                     # Apply changes to the ops environment
+rake ops:clean                     # Clean the the ops environment
+rake ops:destroy                   # Destroy the ops environment
+rake ops:openvpn:az0:apply         # Apply changes to the openvpn stack of the ...
+rake ops:openvpn:az0:destroy       # Apply changes to the openvpn stack of the ...
+rake ops:openvpn:az0:plan          # Create execution plan for the openvpn stac...
+rake ops:openvpn:az0:plan_destroy  # Create destruction plan for the openvpn st...
+rake ops:openvpn:az1:apply         # Apply changes to the openvpn stack of the ...
+rake ops:openvpn:az1:destroy       # Apply changes to the openvpn stack of the ...
+rake ops:openvpn:az1:plan          # Create execution plan for the openvpn stac...
+rake ops:openvpn:az1:plan_destroy  # Create destruction plan for the openvpn st...
+rake ops:openvpn:clean             # Clean the openvpn stack of the ops environ...
+rake ops:openvpn:sync              # Synchronize state stores for the openvpn s...
+rake ops:openvpn:verify            # Verify the openvpn stack of the ops enviro...
+rake ops:plan                      # Create execution plan for the ops environm...
+rake ops:plan_destroy              # Create destruction plan for the ops enviro...
+rake ops:sync                      # Synchronize state stores for the ops envir...
+rake ops:verify                    # Verify the ops environment
 ```
 
-Notice that tasks are created for each individual stack as well as each environment. In the case of environments, stack order is guaranteed.
+Notice that tasks are created for each individual stack context, stack and environment. In the case of environments, stack order is guaranteed.
 
 ### RSpec
 Unit tests for all tasks and tools.
@@ -106,6 +174,13 @@ Unit tests for all tasks and tools.
 The suite can be executed with the following task:
 
 `rake spec`
+
+### UAT
+User acceptance tests targeting execution in a continuous integration (CI) environment.
+
+The suite can be executed with the following task:
+
+`rake ci`
 
 ## Tools
 
@@ -148,6 +223,18 @@ The following operations are currently supported:
   * `initialize(region)` - Instantiates a new S3 client. Requires AWS_REGION to be set.
   * `get_doc(bucket, document)` - Retrieves a JSON document from an S3 bucket.
   * `get_key(bucket, document, name)` - Retrieves a value from a JSON document.
+* `get_state_store(name)` - Constructs the expected input string required by Terraform for configuring remote stack state storage in Consul.
+
+### Hiera
+Module for interacting with the Hiera database.
+
+The following capabilities are exposed:
+
+* `Client`
+  * `set_scope(env, stack)` - Sets the environment and stack search context for lookups.
+  * `lookup(key)` - Performs the default Hiera priority lookup across the data store. See [Lookup Types](https://docs.puppetlabs.com/hiera/3.0/lookup_types.html) for a comprehensive description of the different types of lookups supported.
+  * `hash_lookup(key)` - Performs a Hiera Hash lookup accross the data store. See [Lookup Types](https://docs.puppetlabs.com/hiera/3.0/lookup_types.html) for a comprehensive description of the different types of lookups supported.
+  * `array_lookup(key)` - Performs a Hiera array lookup across the data store. See [Lookup Types](https://docs.puppetlabs.com/hiera/3.0/lookup_types.html) for a comprehensive description of the different types of lookups supported.
 * `get_state_store(name)` - Constructs the expected input string required by Terraform for configuring remote stack state storage in Consul.
 
 ### Terraform
