@@ -3,6 +3,36 @@ require 'webmock/rspec'
 
 RSpec.describe Atlas do
 
+  context "Search" do
+    before(:all) do
+      WebMock.allow_net_connect!
+    end
+
+    after(:all) do
+      WebMock.disable_net_connect!
+    end
+
+    it "is returned given a slug, version and key w/o metadata filtering" do
+      key = Atlas::get_artifact('yungsang/boot2docker/vagrant.box', 29, 'provider')
+      expect(key).to eql('virtualbox')
+    end
+
+    it "is returned given a slug, version and key w/ metadata filtering" do
+      key = Atlas::get_artifact('yungsang/boot2docker/vagrant.box', 29, 'version', metadata: {'provider'=>'virtualbox'})
+      expect(key).to eql('1.4.1')
+    end
+
+    it "is returned given a slug, version and key w/ metadata filtering where the record to be returned is not latest" do
+      key = Atlas::get_artifact('yungsang/boot2docker/vagrant.box', 'latest', 'url', metadata: {'version'=>'1.3.7'})
+      expect(key).to eql('https://github.com/YungSang/boot2docker-vagrant-box/releases/download/yungsang%2Fv1.3.7/boot2docker-virtualbox.box')
+    end
+
+    it "is returned given a slug and key w/ version set to latest" do
+      key = Atlas::get_artifact('yungsang/boot2docker/vagrant.box', 'latest', 'provider')
+      expect(key).to eql('virtualbox')
+    end
+  end
+
   context "Artifact" do
     before(:each) do
       @stub = stub_request(:any, /#{Atlas::URL}.*/).
@@ -10,7 +40,7 @@ RSpec.describe Atlas do
       Atlas::reset_cache
     end
 
-    it "is returned given a slug, version and metadata" do
+    it "is returned given a slug, version and key" do
       ami_id = Atlas::get_artifact('unifio/centos-base/amazon.ami', 1, 'region.us-east-1')
       expect(ami_id).to eql('ami-12345678')
     end
@@ -25,13 +55,13 @@ RSpec.describe Atlas do
       }.to raise_error(RuntimeError)
     end
 
-    it "is not returned if it does not contain the requested metadata" do
+    it "is not returned if it does not contain the requested key" do
       @stub = stub_request(:any, /#{Atlas::URL}.*/).
         to_return(:body => File.new('./spec/atlas/artifact_response.json'), :status => 200)
       Atlas::reset_cache
 
       expect {
-        Atlas::get_artifact('unifio/centos-base/amazon.ami', 20, 'region.us-west-1')
+        Atlas::get_artifact('unifio/centos-base/amazon.ami', 1, 'region.us-west-1')
       }.to raise_error(RuntimeError)
     end
 
@@ -105,7 +135,7 @@ RSpec.describe Atlas do
           'type' => 'atlas.artifact',
           'slug' => 'unifio/centos-base/amazon.ami',
           'version' => 1,
-          'metadata' => 'region.us-west-2'
+          'key' => 'region.us-west-2'
         }
       end
 
