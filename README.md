@@ -34,7 +34,7 @@ The complete list of environment variables available are as follows:
 | Prometheus | PROMETHEUS_RSPEC_DIR     | "spec"                            | Root directory name where rspec tests are located in the workspace |
 | Prometheus | PROMETHEUS_PACKER_DIR    | "packer"                          | Root directory name where Packer modules are located in the workspace |
 | Prometheus | PROMETHEUS_TERRAFORM_DIR | "terraform"                       | Root directory name where Terraform modules are located in the workspace |
-| Terraform  | TF_ENV                   | "TF_VAR_atlas_token=$ATLAS_TOKEN" | Environment variables to be set for calls to Terraform |
+| Terraform  | TF_ENV                   |                                   | Environment variables to be set for calls to Terraform |
 | Terraform  | TF_CMD                   | "terraform"                       | Terraform command to be used. Can be substituted for use of Docker containers, etc. |
 | Terraform  | TF_MODE                  | ""                                | Terraform module mode. A value of "test" will put the module into a stub mode |
 | Atlas      | ATLAS_TOKEN              |                                   | HTTP authentication token. |
@@ -138,7 +138,7 @@ vpn::vars:                                        # Default input variables. Thi
   app_label: 'ops'
   ami:                                            
     type: 'atlas.artifact'                        # <backend>.<lookup_type>. Supported types vary per backend.
-    metadata: 'region.us-west-2'
+    key: 'region.us-west-2'
 ```
 
 This configuration yields the following Rake tasks as returned by `rake -T`:

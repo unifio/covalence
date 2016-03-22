@@ -14,7 +14,7 @@ myapp2::vars:
     type: 'atlas.artifact'
     slug: 'unifio/aws-linux/amazon.ami'
     version: 1
-    metadata: 'region.us-west-2'
+    key: 'region.us-west-2'
 
 # Test data
 myapp2::array_test:
