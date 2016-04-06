@@ -1,3 +1,6 @@
+# When we're ready to release to rubygems
+# require "bundler/gem_tasks"
+
 # all rake tasks are found in ./ruby/lib/rake
 Dir.glob('ruby/lib/rake/*.rake').each { |r| import r }
 
