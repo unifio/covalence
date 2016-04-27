@@ -1,41 +1,65 @@
+PATH
+  remote: .
+  specs:
+    prometheus-unifio (0.1.0)
+      aws-sdk (~> 2.2.19)
+      deep_merge (~> 1.0.1)
+      dotenv (~> 2.1.0)
+      hiera (~> 3.0.6)
+      json (~> 1.8.3)
+      rake (>= 10.0)
+      rest-client (~> 1.8.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.4.0)
-    aws-sdk (2.2.19)
-      aws-sdk-resources (= 2.2.19)
-    aws-sdk-core (2.2.19)
+    aws-sdk (2.2.32)
+      aws-sdk-resources (= 2.2.32)
+    aws-sdk-core (2.2.32)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.2.19)
-      aws-sdk-core (= 2.2.19)
+    aws-sdk-resources (2.2.32)
+      aws-sdk-core (= 2.2.32)
     builder (3.2.2)
+    byebug (8.2.2)
     ci_reporter (2.0.0)
       builder (>= 2.1.2)
     ci_reporter_rspec (1.0.0)
       ci_reporter (~> 2.0)
       rspec (>= 2.14, < 4)
+    coderay (1.1.1)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     deep_merge (1.0.1)
     diff-lcs (1.2.5)
-    domain_name (0.5.20160128)
+    domain_name (0.5.20160310)
       unf (>= 0.0.5, < 1.0.0)
+    dotenv (2.1.1)
     hashdiff (0.3.0)
     hiera (3.0.6)
       json_pure
     http-cookie (1.0.2)
       domain_name (~> 0.5)
-    jmespath (1.1.3)
+    jmespath (1.2.3)
+      json_pure (>= 1.8.1)
     json (1.8.3)
     json_pure (1.8.3)
-    mime-types (2.99)
+    method_source (0.8.2)
+    mime-types (2.99.1)
     multi_json (1.11.2)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (3.0.2)
     net-telnet (0.1.1)
     netrc (0.11.0)
-    rake (10.5.0)
+    pry (0.10.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    pry-byebug (3.3.0)
+      byebug (~> 8.0)
+      pry (~> 0.10)
+    rake (11.1.2)
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
@@ -63,6 +87,7 @@ GEM
       rspec-its
       specinfra (~> 2.48)
     sfl (2.2)
+    slop (3.6.0)
     specinfra (2.51.1)
       net-scp
       net-ssh (>= 2.7, < 3.1)
@@ -80,16 +105,13 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  aws-sdk
-  ci_reporter_rspec
-  deep_merge
-  hiera
-  json
-  rake
-  rest-client
-  rspec
-  serverspec
-  webmock
+  bundler (>= 1.9.5)
+  ci_reporter_rspec (~> 1.0.0)
+  prometheus-unifio!
+  pry-byebug (~> 3.3.0)
+  rspec (~> 3.4.0)
+  serverspec (~> 2.29.2)
+  webmock (~> 1.22.6)
 
 BUNDLED WITH
    1.11.2

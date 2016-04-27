@@ -1,3 +1,5 @@
+require "prometheus-unifio/version"
+
 module Prometheus
   WORKSPACE = File.expand_path(ENV['PROMETHEUS_WORKSPACE'] || '../../../', __FILE__)
   CONFIG = File.join(WORKSPACE, ENV['PROMETHEUS_CONFIG'] || 'prometheus.yaml')
