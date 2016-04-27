@@ -1,5 +1,5 @@
 ---
-# Rspec environment globals
+# Example environment globals
 
 ## Test data
 myapp2::array_test:
