@@ -2,7 +2,7 @@ require_relative '../../ruby/lib/environment.rb'
 require_relative '../../ruby/lib/tools/terraform.rb'
 require_relative '../shared_contexts/rake.rb'
 
-describe "rspec:myapp:clean" do
+describe "example:myapp:clean" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -11,7 +11,7 @@ describe "rspec:myapp:clean" do
   end
 end
 
-describe "rspec:myapp:verify" do
+describe "example:myapp:verify" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -35,7 +35,7 @@ describe "rspec:myapp:verify" do
   end
 end
 
-describe "rspec:myapp:az0:plan" do
+describe "example:myapp:az0:plan" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -59,7 +59,7 @@ describe "rspec:myapp:az0:plan" do
   end
 end
 
-describe "rspec:myapp:az0:plan_destroy" do
+describe "example:myapp:az0:plan_destroy" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -78,7 +78,7 @@ describe "rspec:myapp:az0:plan_destroy" do
   end
 end
 
-describe "rspec:myapp:az0:apply" do
+describe "example:myapp:az0:apply" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -107,7 +107,7 @@ describe "rspec:myapp:az0:apply" do
   end
 end
 
-describe "rspec:myapp:az0:destroy" do
+describe "example:myapp:az0:destroy" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -136,7 +136,7 @@ describe "rspec:myapp:az0:destroy" do
   end
 end
 
-describe "rspec:myapp:az1:plan" do
+describe "example:myapp:az1:plan" do
   include_context "rake"
 
   it "executes a plan" do
@@ -145,7 +145,7 @@ describe "rspec:myapp:az1:plan" do
   end
 end
 
-describe "rspec:myapp:az1:plan_destroy" do
+describe "example:myapp:az1:plan_destroy" do
   include_context "rake"
 
   it "executes a plan" do
@@ -154,7 +154,7 @@ describe "rspec:myapp:az1:plan_destroy" do
   end
 end
 
-describe "rspec:myapp:az1:apply" do
+describe "example:myapp:az1:apply" do
   include_context "rake"
 
   it "executes a plan" do
@@ -168,7 +168,7 @@ describe "rspec:myapp:az1:apply" do
   end
 end
 
-describe "rspec:myapp:az1:destroy" do
+describe "example:myapp:az1:destroy" do
   include_context "rake"
 
   it "executes a plan" do
@@ -182,7 +182,7 @@ describe "rspec:myapp:az1:destroy" do
   end
 end
 
-describe "rspec:myapp:sync" do
+describe "example:myapp:sync" do
   include_context "rake"
 
   it "cleans the workspace" do
@@ -196,7 +196,7 @@ describe "rspec:myapp:sync" do
   end
 end
 
-describe "rspec:module_test:plan" do
+describe "example:module_test:plan" do
   include_context "rake"
 
   it "executes a plan" do
@@ -205,7 +205,7 @@ describe "rspec:module_test:plan" do
   end
 end
 
-describe "rspec:module_test:plan_destroy" do
+describe "example:module_test:plan_destroy" do
   include_context "rake"
 
   it "executes a plan" do
@@ -214,7 +214,7 @@ describe "rspec:module_test:plan_destroy" do
   end
 end
 
-describe "rspec:module_test:apply" do
+describe "example:module_test:apply" do
   include_context "rake"
 
   it "executes a plan" do
@@ -228,7 +228,7 @@ describe "rspec:module_test:apply" do
   end
 end
 
-describe "rspec:module_test:destroy" do
+describe "example:module_test:destroy" do
   include_context "rake"
 
   it "executes a plan" do
