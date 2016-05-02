@@ -101,5 +101,5 @@ module Terraform
   def self.has_state_store?
     return false
   end
-  
+
 end

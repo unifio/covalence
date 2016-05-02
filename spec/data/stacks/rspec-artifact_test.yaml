@@ -8,7 +8,7 @@ artifact_test::state:
       name: 'example/myapp'
 
 # Input variables
-myapp2::vars:
+artifact_test::vars:
   label: 'test'
   ami:
     type: 'atlas.artifact'
@@ -17,6 +17,7 @@ myapp2::vars:
     key: 'region.us-west-2'
 
 # Test data
+# XXX: maybe split this out to a different test file
 myapp2::array_test:
   - 'stack_data'
 myapp2::array_test_1:
