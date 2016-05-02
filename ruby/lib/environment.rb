@@ -75,13 +75,13 @@ class Environment
     end
 
     def args
-      args = @data.lookup("#{self.tf_module.gsub('/','::')}::args")
+      args = @data.lookup("#{@name}::args")
       return args if args != nil
       return ""
     end
 
     def has_vars?
-      vars = @data.lookup("#{self.tf_module.gsub('/','::')}::vars")
+      vars = @data.lookup("#{@name}::vars")
       return true if vars.is_a?(Hash) && !vars.empty?
       return false
     end
@@ -89,7 +89,7 @@ class Environment
     def inputs
       inputs = Array.new
       if self.has_vars?
-        @data.hash_lookup("#{self.tf_module.gsub('/','::')}::vars").each do |k,v|
+        @data.hash_lookup("#{@name}::vars").each do |k,v|
           inputs.push(Input.new(k,v))
         end
       end
@@ -97,7 +97,7 @@ class Environment
     end
 
     def has_targets?
-      targets = @data.lookup("#{self.tf_module.gsub('/','::')}::targets")
+      targets = @data.lookup("#{@name}::targets")
       return true if targets.is_a?(Hash) && !targets.empty?
       return false
     end
@@ -105,7 +105,7 @@ class Environment
     def contexts
       contexts = Array.new
       if self.has_targets?
-        @data.hash_lookup("#{self.tf_module.gsub('/','::')}::targets").each do |k,v|
+        @data.hash_lookup("#{@name}::targets").each do |k,v|
           contexts.push(Context.new(k,v))
         end
       else
