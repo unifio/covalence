@@ -30,7 +30,7 @@ describe "example:myapp:verify" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=\"test\" -input=false -module-depth=-1 -no-color")
     subject.invoke
   end
 end
@@ -54,7 +54,7 @@ describe "example:myapp:az0:plan" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color -target=module.az0")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=\"test\" -input=false -module-depth=-1 -no-color -target=module.az0")
     subject.invoke
   end
 end
@@ -73,7 +73,7 @@ describe "example:myapp:az0:plan_destroy" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -no-color -target=module.az0")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=\"test\" -destroy -input=false -module-depth=-1 -no-color -target=module.az0")
     subject.invoke
   end
 end
@@ -97,12 +97,12 @@ describe "example:myapp:az0:apply" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color -target=module.az0")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=\"test\" -input=false -module-depth=-1 -no-color -target=module.az0")
     subject.invoke
   end
 
   it "executes an apply" do
-    expect_any_instance_of(Terraform::Stack).to receive(:apply).with("-var label=test -no-color -target=module.az0")
+    expect_any_instance_of(Terraform::Stack).to receive(:apply).with("-var label=\"test\" -no-color -target=module.az0")
     subject.invoke
   end
 end
@@ -126,12 +126,12 @@ describe "example:myapp:az0:destroy" do
   end
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -no-color -target=module.az0")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=\"test\" -destroy -input=false -module-depth=-1 -no-color -target=module.az0")
     subject.invoke
   end
 
   it "executes a destroy" do
-    expect_any_instance_of(Terraform::Stack).to receive(:destroy).with("-var label=test -no-color -target=module.az0")
+    expect_any_instance_of(Terraform::Stack).to receive(:destroy).with("-var label=\"test\" -no-color -target=module.az0")
     subject.invoke
   end
 end
@@ -140,7 +140,7 @@ describe "example:myapp:az1:plan" do
   include_context "rake"
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=\"test\" -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
     subject.invoke
   end
 end
@@ -149,7 +149,7 @@ describe "example:myapp:az1:plan_destroy" do
   include_context "rake"
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=\"test\" -destroy -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
     subject.invoke
   end
 end
@@ -158,12 +158,12 @@ describe "example:myapp:az1:apply" do
   include_context "rake"
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=\"test\" -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
     subject.invoke
   end
 
   it "executes an apply" do
-    expect_any_instance_of(Terraform::Stack).to receive(:apply).with("-var label=test -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    expect_any_instance_of(Terraform::Stack).to receive(:apply).with("-var label=\"test\" -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
     subject.invoke
   end
 end
@@ -172,12 +172,12 @@ describe "example:myapp:az1:destroy" do
   include_context "rake"
 
   it "executes a plan" do
-    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=test -destroy -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    expect_any_instance_of(Terraform::Stack).to receive(:plan).with("-var label=\"test\" -destroy -input=false -module-depth=-1 -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
     subject.invoke
   end
 
   it "executes a destroy" do
-    expect_any_instance_of(Terraform::Stack).to receive(:destroy).with("-var label=test -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
+    expect_any_instance_of(Terraform::Stack).to receive(:destroy).with("-var label=\"test\" -no-color -target=module.az1 -target=module.common.aws_eip.myapp")
     subject.invoke
   end
 end
