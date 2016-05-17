@@ -60,6 +60,10 @@ module Terraform
       run_cmd('destroy', args)
     end
 
+    def fmt(args='')
+      run_cmd('fmt', args)
+    end
+
     def clean()
       Dir.chdir(@path) do
         Rake.sh "#{@cln_cmd} \"rm -fr .terraform *.tfstate*\"" unless @stub
