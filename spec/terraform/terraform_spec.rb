@@ -55,6 +55,11 @@ describe Stack do
     @stack.destroy
   end
 
+  it "executes terraform fmt" do
+    expect(@stack).to receive(:run_rake_cmd).with('fmt', '')
+    @stack.fmt
+  end
+
   it "executes terraform commands with custom settings" do
     @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, env: "TEST=thisisatest", img: "", cmd: "/usr/local/bin/terraform", stub: "false")
     cmd = "TEST=thisisatest /usr/local/bin/terraform plan"
