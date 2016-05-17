@@ -70,6 +70,12 @@ module Terraform
       end
     end
 
+    def check_style()
+      Dir.chdir(@path) do
+        Rake.sh "test $(#{@tf_cmd} fmt -write=false | wc -l) -eq 0" unless @stub
+      end
+    end
+
     def parse_vars(vars)
       vars.map { |var, value| "-var #{var}=\"#{value}\"" }.join(' ')
     end
