@@ -67,7 +67,7 @@ module Terraform
     end
 
     def parse_vars(vars)
-      vars.map { |var, value| "-var #{var}=#{value}" }.join(' ')
+      vars.map { |var, value| "-var #{var}=\"#{value}\"" }.join(' ')
     end
 
     def parse_targets(targets)
@@ -101,5 +101,5 @@ module Terraform
   def self.has_state_store?
     return false
   end
-  
+
 end
