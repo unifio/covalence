@@ -26,11 +26,11 @@ RSpec.describe Environment do
 
   context "Environment" do
     it "does return environment name as a symbol" do
-      expect(@env.to_sym.to_s).to eql('rspec')
+      expect(@env.to_sym.to_s).to eql('example')
     end
 
     it "does return environment name as a string" do
-      expect(@env.to_s).to eql('rspec')
+      expect(@env.to_s).to eql('example')
     end
 
     it "does yield stacks" do
@@ -52,7 +52,7 @@ RSpec.describe Environment do
     end
 
     it "does return stack full name as a string" do
-      expect(@stack.full_name).to eql('rspec-myapp')
+      expect(@stack.full_name).to eql('example-myapp')
     end
 
     it "does return the path to the stack module" do
