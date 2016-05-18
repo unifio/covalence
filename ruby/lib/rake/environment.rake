@@ -35,6 +35,11 @@ env_rdr.environments.each do |environ|
           tf.clean
         end
 
+        desc "Format the #{stack.to_s} stack of the #{environ.to_s} environment"
+        task :format do
+          tf.fmt
+        end
+
         desc "Verify the #{stack.to_s} stack of the #{environ.to_s} environment"
         task :verify do
           input_args = tf.parse_vars(inputs.to_h)
