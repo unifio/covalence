@@ -11,6 +11,15 @@ describe "example:myapp:clean" do
   end
 end
 
+describe "example:myapp:format" do
+  include_context "rake"
+
+  it "formats the workspace" do
+    expect_any_instance_of(Terraform::Stack).to receive(:fmt)
+    subject.invoke
+  end
+end
+
 describe "example:myapp:verify" do
   include_context "rake"
 

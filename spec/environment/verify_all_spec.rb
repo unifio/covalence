@@ -16,6 +16,12 @@ envs.each do |env|
         @tf.get
       end
 
+      it 'passes style check' do
+        expect {
+          @tf.check_style
+        }.to_not raise_error
+      end
+
       it 'passes validation' do
         expect {
           @tf.validate
