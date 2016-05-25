@@ -1,15 +1,16 @@
 require_relative '../../ruby/lib/environment.rb'
 require_relative '../../ruby/lib/tools/terraform.rb'
 
+test_env = 'example'
 env_rdr = EnvironmentReader.new
 envs = env_rdr.environments
 
-envs.each do |env|
-  env.stacks.each do |stack|
+env = envs.select { |environ| environ.to_s == test_env }
+  env[0].stacks.each do |stack|
 
     describe "Verify #{env}:#{stack}" do
 
-      before(:each) do
+      before(:all) do
         @tf = Terraform::Stack.new(stack.tf_module, stub: false)
         @inputs = InputReader.new(stack)
         @tf.clean
@@ -36,4 +37,3 @@ envs.each do |env|
       end
     end
   end
-end

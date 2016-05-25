@@ -7,11 +7,13 @@ describe "Verify YAML" do
   before(:all) do
     @files = FileList["#{Prometheus::WORKSPACE}/**/*.yaml"]
     @files.reject! { |f| File.directory?(f) }
-    @c = HieraDB::Syntax.new
+    # Exclude Prometheus test data
+    @files.reject! { |f| File.basename(f) == 'invalid.yaml' }
+    @syntax = HieraDB::Syntax.new
   end
 
   it 'passes syntax check' do
-    errors = @c.check(@files)
+    errors = @syntax.check_yaml(@files)
     expect(errors).to be_empty
   end
 end
