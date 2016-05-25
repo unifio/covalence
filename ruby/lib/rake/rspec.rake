@@ -28,7 +28,7 @@ namespace :spec do
   end
 
   desc 'Check syntax of all .yaml files'
-  RSpec::Core::RakeTask.new(:yaml) do |t|
+  RSpec::Core::RakeTask.new(:check_yaml) do |t|
     t.pattern = 'ci/spec/yaml_spec.rb'
     t.rspec_opts = '--color --format documentation'
     t.verbose = true
@@ -47,11 +47,14 @@ end
 
 namespace :ci do
 
-  desc 'Check syntax of all .yaml files'
-  task :check_yaml => ['ci:setup:rspec', 'spec:yaml']
+  desc 'Run Prometheus tests'
+  task :prometheus => ['ci:setup:rspec', 'spec:prometheus']
 
   desc 'Verify all environments'
   task :all => ['ci:setup:rspec', 'spec:all']
+
+  desc 'Check syntax of all .yaml files'
+  task :check_yaml => ['ci:setup:rspec', 'spec:yaml']
 
   env_rdr.environments.each do |environ|
 
