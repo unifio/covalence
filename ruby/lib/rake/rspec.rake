@@ -6,7 +6,7 @@ require_relative '../environment'
 
 env_rdr = EnvironmentReader.new
 
-task :ci => ['ci:setup:rspec', 'spec:prometheus']
+task :ci => ['ci:setup:rspec', 'spec:all']
 task :spec => 'spec:prometheus'
 
 desc 'Run all spec tests'
@@ -20,16 +20,16 @@ namespace :spec do
     t.verbose = true
   end
 
-  desc 'Check syntax of all .yaml files'
-  RSpec::Core::RakeTask.new(:yaml) do |t|
-    t.pattern = "#{Prometheus::RSPEC}/environment/yaml_spec.rb"
+  desc "Verify all environments"
+  RSpec::Core::RakeTask.new(:all) do |t|
+    t.pattern = 'ci/spec/*_spec.rb'
     t.rspec_opts = '--color --format documentation'
     t.verbose = true
   end
 
-  desc "Verify all environments"
-  RSpec::Core::RakeTask.new(:all) do |t|
-    t.pattern = "#{Prometheus::RSPEC}/environment/verify_all_spec.rb"
+  desc 'Check syntax of all .yaml files'
+  RSpec::Core::RakeTask.new(:yaml) do |t|
+    t.pattern = 'ci/spec/yaml_spec.rb'
     t.rspec_opts = '--color --format documentation'
     t.verbose = true
   end
@@ -38,7 +38,7 @@ namespace :spec do
 
     desc "Run verification tests for the #{environ.to_s} environment"
     RSpec::Core::RakeTask.new(environ.to_sym) do |t|
-      t.pattern = "#{Prometheus::RSPEC}/environment/#{environ.to_s}_spec.rb"
+      t.pattern = "ci/spec/#{environ.to_s}_spec.rb"
       t.rspec_opts = '--color --format documentation'
       t.verbose = true
     end
@@ -48,14 +48,14 @@ end
 namespace :ci do
 
   desc 'Check syntax of all .yaml files'
-  task :check_yaml => ['ci:setup:rspec', "spec:yaml"]
+  task :check_yaml => ['ci:setup:rspec', 'spec:yaml']
 
   desc 'Verify all environments'
-  task :all => ['ci:setup:rspec', "spec:all"]
+  task :all => ['ci:setup:rspec', 'spec:all']
 
   env_rdr.environments.each do |environ|
 
     desc "Run CI tests for the #{environ.to_s} environment"
-    task "#{environ.to_s}" => ['ci:setup:rspec', "spec:#{environ.to_s}"]
+    task environ.to_sym => ['ci:setup:rspec', "spec:#{environ.to_s}"]
   end
 end
