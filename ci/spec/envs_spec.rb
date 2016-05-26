@@ -5,8 +5,13 @@ test_env = 'example'
 env_rdr = EnvironmentReader.new
 envs = env_rdr.environments
 
-env = envs.select { |environ| environ.to_s == test_env }
-  env[0].stacks.each do |stack|
+if ENV['PROMETHEUS_TEST_ENVS']
+  test_envs = ENV['PROMETHEUS_TEST_ENVS'].split(',')
+  envs = envs.select { |environ| test_envs.include?(environ.to_s) }
+end
+
+envs.each do |env|
+  env.stacks.each do |stack|
 
     describe "Verify #{env}:#{stack}" do
 
@@ -37,3 +42,4 @@ env = envs.select { |environ| environ.to_s == test_env }
       end
     end
   end
+end
