@@ -29,16 +29,16 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "deep_merge", "~> 1.0.1"
   spec.add_dependency "dotenv", "~> 2.1.0"
-  spec.add_dependency "hiera", "~> 3.0.6"
+  spec.add_dependency "hiera", "~> 3.2.0"
   spec.add_dependency "json", "~> 1.8.3"
   spec.add_dependency "rest-client", "~> 1.8.0"
-  spec.add_dependency "rake", ">= 10.0"
-  spec.add_dependency "aws-sdk", "~> 2.2.19"
+  spec.add_dependency "rake", ">= 11.1.2"
+  spec.add_dependency "aws-sdk", "~> 2.3.8"
 
-  spec.add_development_dependency "bundler", ">= 1.9.5"
+  spec.add_development_dependency "bundler", ">= 1.9.0"
   spec.add_development_dependency "ci_reporter_rspec", "~> 1.0.0"
-  spec.add_development_dependency "pry-byebug", "~> 3.3.0"
+  spec.add_development_dependency "pry-byebug", "~> 3.4.0"
   spec.add_development_dependency "rspec", "~> 3.4.0"
-  spec.add_development_dependency "serverspec", "~> 2.29.2"
-  spec.add_development_dependency "webmock", "~> 1.22.6"
+  spec.add_development_dependency "serverspec", "~> 2.36.0"
+  spec.add_development_dependency "webmock", "~> 2.0.3"
 end
