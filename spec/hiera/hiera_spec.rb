@@ -71,3 +71,22 @@ describe Client do
     expect(response).to eql({'ami' => { 'metadata' => 'region.us-west-2', 'version' => 'latest' }})
   end
 end
+
+describe Syntax do
+
+  before(:each) do
+    @client = HieraDB::Syntax.new
+  end
+
+  it "checks YAML" do
+    files = FileList["#{Prometheus::WORKSPACE}/spec/hiera/data/valid.yaml"]
+    errors = @client.check_yaml(files)
+    expect(errors).to be_empty
+  end
+
+  it "detects invalid YAML" do
+    files = FileList["#{Prometheus::WORKSPACE}/spec/hiera/data/invalid.yaml"]
+    errors = @client.check_yaml(files)
+    expect(errors).to_not be_empty
+  end
+end

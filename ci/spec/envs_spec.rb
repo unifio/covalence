@@ -1,15 +1,21 @@
 require_relative '../../ruby/lib/environment.rb'
 require_relative '../../ruby/lib/tools/terraform.rb'
 
+test_env = 'example'
 env_rdr = EnvironmentReader.new
 envs = env_rdr.environments
+
+if ENV['PROMETHEUS_TEST_ENVS']
+  test_envs = ENV['PROMETHEUS_TEST_ENVS'].split(',')
+  envs = envs.select { |environ| test_envs.include?(environ.to_s) }
+end
 
 envs.each do |env|
   env.stacks.each do |stack|
 
     describe "Verify #{env}:#{stack}" do
 
-      before(:each) do
+      before(:all) do
         @tf = Terraform::Stack.new(stack.tf_module, stub: false)
         @inputs = InputReader.new(stack)
         @tf.clean

@@ -9,10 +9,6 @@ RSpec.describe Prometheus do
     expect(File).to exist(Prometheus::CONFIG)
   end
 
-  it "RSPEC exists" do
-    expect(File).to exist(Prometheus::RSPEC)
-  end
-
   it "PACKER exists" do
     expect(File).to exist(Prometheus::PACKER)
   end
