@@ -42,6 +42,6 @@ namespace :ci do
   task :envs => ['ci:setup:rspec', 'spec:envs']
 
   desc 'Check syntax of all .yaml files'
-  task :check_yaml => ['ci:setup:rspec', 'spec:yaml']
+  task :check_yaml => ['ci:setup:rspec', 'spec:check_yaml']
 
 end
