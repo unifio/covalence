@@ -4,7 +4,7 @@ require 'pathname'
 shared_context "rake" do
   let(:rake)      { Rake::Application.new }
   let(:task_name) { self.class.top_level_description }
-  let(:task_path) { "lib/rake/environment" }
+  let(:task_path) { "lib/prometheus-unifio/rake/environment" }
   let(:task_root) { Pathname.new("#{Dir.pwd}/ruby") }
   subject         { rake[task_name] }
 

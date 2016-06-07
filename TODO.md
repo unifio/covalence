@@ -10,3 +10,5 @@ rake rspec:apply                       # Apply changes to the rspec environment
 all, ci, and rspec will likely all conflict. Might be able to ignore the rspec rake if it's only internal to prometheus
 
 - `ruby/lib` might need to get shuffled to `?/lib/prometheus-unifio`
+- ~~Top level namespacing: Prometheus -> PrometheusUnifio~~
+  - Allows for rubygems publishing (easier to deal with distribution, versioning)
