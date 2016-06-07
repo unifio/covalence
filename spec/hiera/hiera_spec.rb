@@ -1,4 +1,4 @@
-require_relative '../../ruby/lib/prometheus.rb'
+require_relative '../../ruby/lib/prometheus-unifio.rb'
 require_relative '../../ruby/lib/tools/hiera.rb'
 
 include HieraDB
@@ -6,7 +6,7 @@ include HieraDB
 describe Client do
 
   before(:all) do
-    @client = HieraDB::Client.new(Prometheus::CONFIG)
+    @client = HieraDB::Client.new(PrometheusUnifio::CONFIG)
   end
 
   it "can lookup without a scope defined" do
@@ -79,13 +79,13 @@ describe Syntax do
   end
 
   it "checks YAML" do
-    files = FileList["#{Prometheus::WORKSPACE}/spec/hiera/data/valid.yaml"]
+    files = FileList["#{PrometheusUnifio::WORKSPACE}/spec/hiera/data/valid.yaml"]
     errors = @client.check_yaml(files)
     expect(errors).to be_empty
   end
 
   it "detects invalid YAML" do
-    files = FileList["#{Prometheus::WORKSPACE}/spec/hiera/data/invalid.yaml"]
+    files = FileList["#{PrometheusUnifio::WORKSPACE}/spec/hiera/data/invalid.yaml"]
     errors = @client.check_yaml(files)
     expect(errors).to_not be_empty
   end

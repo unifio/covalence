@@ -1,4 +1,4 @@
-# Prometheus
+# PrometheusUnifio
 [![Circle CI](https://circleci.com/gh/unifio/prometheus.svg?style=svg&circle-token=42737f88bb5153c24dce3ecc2550a6aee7eb8283)](https://circleci.com/gh/unifio/prometheus)
 
 Ruby orchestration framework for HashiCorp based deployment pipelines.
@@ -136,7 +136,7 @@ As indicated in the comments above, keys that are stack specific are prepended w
 # OpenVPN default input variables
 vpn::vars:                                        # Default input variables. This hash will be merged with the hash found in the stack definition.
   app_label: 'ops'
-  ami:                                            
+  ami:
     type: 'atlas.artifact'                        # <backend>.<lookup_type>. Supported types vary per backend.
     key: 'region.us-west-2'
 ```

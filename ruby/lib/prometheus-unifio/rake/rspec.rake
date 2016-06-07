@@ -1,7 +1,8 @@
 require 'rspec/core/rake_task'
 require 'ci/reporter/rake/rspec'
-require_relative '../tools/hiera.rb'
-require_relative '../prometheus'
+
+require_relative '../../prometheus-unifio'
+require_relative '../../tools/hiera.rb'
 
 task :ci => ['ci:setup:rspec', 'spec:envs']
 task :spec => 'spec:prometheus'
@@ -10,23 +11,24 @@ desc 'Run all spec tests'
 
 namespace :spec do
 
+  # extract into spec helper.
   desc 'Run Prometheus tests'
   RSpec::Core::RakeTask.new(:prometheus) do |t|
-    t.pattern = "#{File.expand_path(File.dirname(__FILE__))}/../../../spec/**/*_spec.rb"
+    t.pattern = "#{File.join(PrometheusUnifio::PROJECT_ROOT, 'spec/**/*_spec.rb')}"
     t.rspec_opts = "--color --format documentation"
     t.verbose = true
   end
 
   desc "Verify environments"
   RSpec::Core::RakeTask.new(:envs) do |t|
-    t.pattern = "#{File.expand_path(File.dirname(__FILE__))}/../../../ci/spec/envs_spec.rb"
+    t.pattern = "#{File.join(PrometheusUnifio::GEM_ROOT, 'rake/rspec/envs_spec.rb')}"
     t.rspec_opts = '--color --format documentation'
     t.verbose = true
   end
 
   desc 'Check syntax of all .yaml files'
   RSpec::Core::RakeTask.new(:check_yaml) do |t|
-    t.pattern = "#{File.expand_path(File.dirname(__FILE__))}/../../../ci/spec/yaml_spec.rb"
+    t.pattern = "#{File.join(PrometheusUnifio::GEM_ROOT, 'rake/rspec/yaml_spec.rb')}"
     t.rspec_opts = '--color --format documentation'
     t.verbose = true
   end
@@ -35,6 +37,7 @@ end
 
 namespace :ci do
 
+  # extract into spec helper.
   desc 'Run Prometheus tests'
   task :prometheus => ['ci:setup:rspec', 'spec:prometheus']
 

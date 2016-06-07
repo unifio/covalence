@@ -1,8 +1,8 @@
 require 'rake'
-require_relative '../prometheus'
+require_relative '../prometheus-unifio'
 
 module Terraform
-  STACKS_DIR = Prometheus::TERRAFORM
+  STACKS_DIR = PrometheusUnifio::TERRAFORM
   TF_STUB = ENV['TERRAFORM_STUB'] || ""
   TF_ENV = ENV['TERRAFORM_ENV'] || ""
   TF_IMG = ENV['TERRAFORM_IMG'] || ""
