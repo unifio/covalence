@@ -1,5 +1,4 @@
-require_relative '../environment'
-require_relative '../tools/terraform'
+require_relative '../core/bootstrap'
 
 env_rdr = EnvironmentReader.new
 

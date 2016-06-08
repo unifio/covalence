@@ -1,10 +1,10 @@
-require_relative '../../ruby/lib/environment.rb'
-require_relative '../../ruby/lib/tools/terraform.rb'
+require_relative '../../core/bootstrap'
 
 test_env = 'example'
 env_rdr = EnvironmentReader.new
 envs = env_rdr.environments
 
+# spec_helper
 if ENV['PROMETHEUS_TEST_ENVS']
   test_envs = ENV['PROMETHEUS_TEST_ENVS'].split(',')
   envs = envs.select { |environ| test_envs.include?(environ.to_s) }

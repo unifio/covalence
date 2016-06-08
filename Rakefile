@@ -5,7 +5,7 @@ require 'dotenv'
 # Load environment variables
 Dotenv.load
 
-# all rake tasks are found in ./ruby/lib/rake
-Dir.glob('ruby/lib/rake/*.rake').each { |r| import r }
+require_relative 'ruby/lib/prometheus-unifio/environment_tasks'
+require_relative 'ruby/lib/prometheus-unifio/spec_tasks'
 
 task :default => :spec
