@@ -10,6 +10,7 @@ machine:
 test:
   pre:
     - docker pull unifio/terraform:latest
+    - cp ~/prometheus/.env.sample ~/prometheus/.env
   override:
     - bundle exec rake ci:prometheus
     - gem build prometheus.gemspec

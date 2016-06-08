@@ -1,19 +1,19 @@
-require_relative '../../ruby/lib/prometheus.rb'
+require_relative '../../ruby/lib/prometheus-unifio.rb'
 
-RSpec.describe Prometheus do
+RSpec.describe PrometheusUnifio do
   it "WORKSPACE exists" do
-    expect(File).to exist(Prometheus::WORKSPACE)
+    expect(File).to exist(PrometheusUnifio::WORKSPACE)
   end
 
   it "CONFIG exists" do
-    expect(File).to exist(Prometheus::CONFIG)
+    expect(File).to exist(PrometheusUnifio::CONFIG)
   end
 
   it "PACKER exists" do
-    expect(File).to exist(Prometheus::PACKER)
+    expect(File).to exist(PrometheusUnifio::PACKER)
   end
 
   it "TERRAFORM exists" do
-    expect(File).to exist(Prometheus::TERRAFORM)
+    expect(File).to exist(PrometheusUnifio::TERRAFORM)
   end
 end
