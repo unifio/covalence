@@ -1,12 +1,12 @@
 require 'yaml'
-require_relative 'prometheus'
+require_relative 'prometheus-unifio'
 
 Dir[File.expand_path('tools/*.rb', File.dirname(__FILE__))].each do |file|
   require file
 end
 
 class EnvironmentReader
-  def initialize(config = Prometheus::CONFIG)
+  def initialize(config = PrometheusUnifio::CONFIG)
     @db = HieraDB::Client.new(config)
   end
 
@@ -41,7 +41,7 @@ class Environment
 
   class Stack
     attr_reader :name, :environment
-    def initialize(name, env, config = Prometheus::CONFIG)
+    def initialize(name, env, config = PrometheusUnifio::CONFIG)
       data = HieraDB::Client.new(config)
       data.set_scope(env, name)
       raise "Missing 'state' hash for the #{name} stack of the #{env} environment" unless data.lookup("#{name}::state")

@@ -1,11 +1,11 @@
 require 'rake'
-require_relative '../../ruby/lib/tools/hiera.rb'
-require_relative '../../ruby/lib/prometheus'
+require_relative '../../../prometheus-unifio'
+require_relative '../../../tools/hiera.rb'
 
 describe "Verify YAML" do
 
   before(:all) do
-    @files = FileList["#{Prometheus::WORKSPACE}/**/*.yaml"]
+    @files = FileList["#{PrometheusUnifio::WORKSPACE}/**/*.yaml"]
     @files.reject! { |f| File.directory?(f) }
     # Exclude Prometheus test data
     @files.reject! { |f| File.basename(f) == 'invalid.yaml' }
