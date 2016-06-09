@@ -1,13 +1,11 @@
 #!/usr/bin/env ruby
 
 require "bundler/setup"
+require "pry"
+require "dotenv"
+require 'active_support/core_ext/string/inflections'
 
-# You can add fixtures and/or initialization code here to make experimenting
-# with your gem easier. You can also use a different console, if you like.
+Dotenv.load
+require_relative '../ruby/lib/prometheus-unifio/core/bootstrap'
 
-# (If you use this, don't forget to add pry to your Gemfile!)
-#require "pry"
-#Pry.start
-
-require "irb"
-IRB.start
+Pry.start
