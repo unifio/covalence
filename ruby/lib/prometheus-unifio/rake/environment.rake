@@ -1,47 +1,44 @@
 require_relative '../core/bootstrap'
 
-env_rdr = EnvironmentReader.new
-
 desc "Clean all environments"
 task "all:clean" do
-  env_rdr.environments.each do |environ|
-    Rake::Task["#{environ}:clean"].execute
+  EnvironmentRepository.all.each do |environ|
+    Rake::Task["#{environ.name}:clean"].execute
   end
 end
 
 desc "Verify all environments"
 task "all:verify" do
-  env_rdr.environments.each do |environ|
-    Rake::Task["#{environ}:verify"].execute
+  EnvironmentRepository.all.each do |environ|
+    Rake::Task["#{environ.name}:verify"].execute
   end
 end
 
-env_rdr.environments.each do |environ|
-  namespace environ.to_sym do
+EnvironmentRepository.all.each do |environ|
+  namespace environ.name do
     environ.stacks.each do |stack|
 
       tf = Terraform::Stack.new(stack.tf_module)
-      inputs = InputReader.new(stack)
 
       # Pull primary state store
       store_args = stack.state_stores.first.get_config
 
       # Stack tasks
-      namespace stack.to_sym do
+      namespace stack.name do
 
-        desc "Clean the #{stack.to_s} stack of the #{environ.to_s} environment"
+        desc "Clean the #{stack.name} stack of the #{environ.name} environment"
         task :clean do
           tf.clean
         end
 
-        desc "Format the #{stack.to_s} stack of the #{environ.to_s} environment"
+        desc "Format the #{stack.name} stack of the #{environ.name} environment"
         task :format do
           tf.fmt
         end
 
-        desc "Verify the #{stack.to_s} stack of the #{environ.to_s} environment"
+        desc "Verify the #{stack.name} stack of the #{environ.name} environment"
         task :verify do
-          input_args = tf.parse_vars(inputs.to_h)
+          input_args = tf.parse_vars(stack.materialize_inputs)
           tf.clean
           tf.get
           tf.validate
@@ -52,26 +49,26 @@ env_rdr.environments.each do |environ|
 
           target_args = tf.parse_targets(context.value)
 
-          desc "Create execution plan for the #{stack.to_s} stack of the #{environ.to_s} environment"
+          desc "Create execution plan for the #{stack.name} stack of the #{environ.name} environment"
           task "#{context.namespace}plan".strip do
-            input_args = tf.parse_vars(inputs.to_h)
+            input_args = tf.parse_vars(stack.materialize_inputs)
             tf.clean
             tf.remote_config(store_args)
             tf.get
             tf.plan("#{input_args} -input=false -module-depth=-1 #{stack.args} #{target_args}".strip)
           end
 
-          desc "Create destruction plan for the #{stack.to_s} stack of the #{environ.to_s} environment"
+          desc "Create destruction plan for the #{stack.name} stack of the #{environ.name} environment"
           task "#{context.namespace}plan_destroy" do
-            input_args = tf.parse_vars(inputs.to_h)
+            input_args = tf.parse_vars(stack.materialize_inputs)
             tf.clean
             tf.get
             tf.plan("#{input_args} -destroy -input=false -module-depth=-1 #{stack.args} #{target_args}".strip)
           end
 
-          desc "Apply changes to the #{stack.to_s} stack of the #{environ.to_s} environment"
+          desc "Apply changes to the #{stack.name} stack of the #{environ.name} environment"
           task "#{context.namespace}apply" do
-            input_args = tf.parse_vars(inputs.to_h)
+            input_args = tf.parse_vars(stack.materialize_inputs)
             tf.clean
             tf.remote_config(store_args)
             tf.get
@@ -79,9 +76,9 @@ env_rdr.environments.each do |environ|
             tf.apply("#{input_args} #{stack.args} #{target_args}".strip)
           end
 
-          desc "Apply changes to the #{stack.to_s} stack of the #{environ.to_s} environment"
+          desc "Apply changes to the #{stack.name} stack of the #{environ.name} environment"
           task "#{context.namespace}destroy" do
-            input_args = tf.parse_vars(inputs.to_h)
+            input_args = tf.parse_vars(stack.materialize_inputs)
             tf.clean
             tf.remote_config(store_args)
             tf.get
@@ -90,9 +87,9 @@ env_rdr.environments.each do |environ|
           end
         end
 
-        desc "Synchronize state stores for the #{stack.to_s} stack of the #{environ.to_s} environment"
+        desc "Synchronize state stores for the #{stack.name} stack of the #{environ.name} environment"
         task :sync do
-          input_args = tf.parse_vars(inputs.to_h)
+          input_args = tf.parse_vars(stack.materialize_inputs)
           tf.clean
           tf.remote_config(store_args)
 
@@ -106,60 +103,60 @@ env_rdr.environments.each do |environ|
     end
 
     # Environment tasks
-    desc "Clean the #{environ} environment"
+    desc "Clean the #{environ.name} environment"
     task :clean do
       environ.stacks.each do |stack|
-        Rake::Task["#{environ}:#{stack.name}:clean"].execute
+        Rake::Task["#{environ.name}:#{stack.name}:clean"].execute
       end
     end
 
-    desc "Verify the #{environ} environment"
+    desc "Verify the #{environ.name} environment"
     task :verify do
       environ.stacks.each do |stack|
-        Rake::Task["#{environ}:#{stack.name}:verify"].execute
+        Rake::Task["#{environ.name}:#{stack.name}:verify"].execute
       end
     end
 
-    desc "Create execution plan for the #{environ} environment"
+    desc "Create execution plan for the #{environ.name} environment"
     task :plan do
       environ.stacks.each do |stack|
         stack.contexts.each do |context|
-          Rake::Task["#{environ}:#{stack.name}:#{context.namespace}plan"].execute
+          Rake::Task["#{environ.name}:#{stack.name}:#{context.namespace}plan"].execute
         end
       end
     end
 
-    desc "Create destruction plan for the #{environ} environment"
+    desc "Create destruction plan for the #{environ.name} environment"
     task :plan_destroy do
       environ.stacks.each do |stack|
         stack.contexts.each do |context|
-          Rake::Task["#{environ}:#{stack.name}:#{context.namespace}plan_destroy"].execute
+          Rake::Task["#{environ.name}:#{stack.name}:#{context.namespace}plan_destroy"].execute
         end
       end
     end
 
-    desc "Apply changes to the #{environ} environment"
+    desc "Apply changes to the #{environ.name} environment"
     task :apply do
       environ.stacks.each do |stack|
         stack.contexts.each do |context|
-          Rake::Task["#{environ}:#{stack.name}:#{context.namespace}apply"].execute
+          Rake::Task["#{environ.name}:#{stack.name}:#{context.namespace}apply"].execute
         end
       end
     end
 
-    desc "Destroy the #{environ} environment"
+    desc "Destroy the #{environ.name} environment"
     task :destroy do
       environ.stacks.reverse.each do |stack|
         stack.contexts.each do |context|
-          Rake::Task["#{environ}:#{stack.name}:#{context.namespace}destroy"].execute
+          Rake::Task["#{environ.name}:#{stack.name}:#{context.namespace}destroy"].execute
         end
       end
     end
 
-    desc "Synchronize state stores for the #{environ} environment"
+    desc "Synchronize state stores for the #{environ.name} environment"
     task :sync do
       environ.stacks.each do |stack|
-        Rake::Task["#{environ}:#{stack.name}:sync"].execute
+        Rake::Task["#{environ.name}:#{stack.name}:sync"].execute
       end
     end
   end

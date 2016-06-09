@@ -32,10 +32,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency "deep_merge", "~> 1.0.1"
   spec.add_dependency "hiera", "~> 3.2.0"
   spec.add_dependency "json", "~> 1.8.3"
-  spec.add_dependency "rest-client", "~> 1.8.0"
+  spec.add_dependency "rest-client", "~> 2.0.0.rc3"
   spec.add_dependency "rake", ">= 11.1.2"
   spec.add_dependency "aws-sdk", "~> 2.3.8"
-
+  spec.add_dependency "virtus", "~> 1.0.5"
+  spec.add_dependency "activesupport", "~> 4.2.6"
+  spec.add_dependency "activemodel", "~> 4.2.6"
 
   PrometheusUnifio::Helpers::SpecDependencies.dependencies.each do |name, requirement|
     spec.add_development_dependency name, requirement
@@ -45,4 +47,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-byebug", "~> 3.4.0"
   spec.add_development_dependency "serverspec", "~> 2.36.0"
   spec.add_development_dependency "webmock", "~> 2.0.3"
+  spec.add_development_dependency "gemfury", "~> 0.6.0"
+  spec.add_development_dependency "fabrication", "~> 2.15.2"
 end
