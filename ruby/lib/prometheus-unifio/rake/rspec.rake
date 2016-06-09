@@ -2,7 +2,6 @@ require 'rspec/core/rake_task'
 require 'ci/reporter/rake/rspec'
 
 require_relative '../../prometheus-unifio'
-require_relative '../../tools/hiera.rb'
 
 task :ci => ['ci:setup:rspec', 'spec:envs']
 task :spec => 'spec:prometheus'
@@ -36,6 +35,8 @@ namespace :spec do
 end
 
 namespace :ci do
+  desc 'Clean spec/reports'
+  task :clean => ['ci:setup:rspec']
 
   # extract into spec helper.
   desc 'Run Prometheus tests'
