@@ -1,5 +1,4 @@
-require_relative '../../ruby/lib/environment.rb'
-require_relative '../../ruby/lib/tools/terraform.rb'
+require 'spec_helper'
 require_relative '../shared_contexts/rake.rb'
 
 describe "example:myapp:clean" do

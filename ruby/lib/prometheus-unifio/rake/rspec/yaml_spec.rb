@@ -1,19 +1,12 @@
-require 'rake'
 require_relative '../../../prometheus-unifio'
-require_relative '../../../tools/hiera.rb'
+require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/services/hiera_syntax_service')
 
-describe "Verify YAML" do
-
-  before(:all) do
-    @files = FileList["#{PrometheusUnifio::WORKSPACE}/**/*.yaml"]
-    @files.reject! { |f| File.directory?(f) }
-    # Exclude Prometheus test data
-    @files.reject! { |f| File.basename(f) == 'invalid.yaml' }
-    @syntax = HieraDB::Syntax.new
-  end
-
-  it 'passes syntax check' do
-    errors = @syntax.check_yaml(@files)
-    expect(errors).to be_empty
+RSpec.describe HieraSyntaxService do
+  describe ".check_yaml" do
+    let(:files) { Dir.glob("#{PrometheusUnifio::WORKSPACE}/**/*.yaml") }
+    it 'passes syntax check' do
+      errors = described_class.check_yaml(files)
+      expect(errors).to be_empty
+    end
   end
 end
