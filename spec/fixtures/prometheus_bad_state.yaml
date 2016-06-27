@@ -1,0 +1,13 @@
+---
+:backends:
+  - yaml
+
+:logger: noop
+
+:merge_behavior: 'deeper'
+
+:hierarchy:
+  - "envs-bad-state"
+
+:yaml:
+   :datadir: spec/fixtures/data
