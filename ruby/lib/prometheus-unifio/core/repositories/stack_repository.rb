@@ -28,27 +28,33 @@ class StackRepository
     )
   end
 
-  private
-  # stack.tf_module
-  def self.lookup_shared_namespace(data_store)
-    stack_name = data_store.scope['stack']
-    mod = data_store.lookup("#{stack_name}::module", nil)
-    mod || stack_name
-  end
-
-  def self.find_args_by_namespace(data_store, namespace)
-    args = data_store.lookup("#{namespace}::args", nil)
-    return (args != nil) ? args : ""
-  end
-
-  def self.validate_stack_scope(data_store, arguments)
-    required_args = %w(environment stack)
-    if required_args & arguments.stringify_keys.keys != required_args
-      raise "Missing required args: #{required_args} in arguments: #{arguments}"
+  class << self
+    private
+    # stack.tf_module
+    def lookup_shared_namespace(data_store)
+      stack_name = data_store.scope['stack']
+      mod = data_store.lookup("#{stack_name}::module", nil)
+      mod || stack_name
     end
 
-    if data_store.lookup("#{arguments['stack']}::state", nil, arguments).nil?
-      raise "#{arguments['stack']} stack missing 'state' hash of the #{arguments['environment']} environment"
+    # maybe arg_string instead of args
+    def find_args_by_namespace(data_store, namespace)
+      args = data_store.lookup("#{namespace}::args", nil)
+      return (args != nil) ? args : ""
+    end
+
+    # :reek:FeatureEnvy
+    # :reek:NilCheck
+    def validate_stack_scope(data_store, arguments)
+      #TODO: might not need this arg check
+      required_args = %w(environment stack)
+      if required_args & arguments.stringify_keys.keys != required_args
+        raise "Missing required args: #{required_args} in arguments: #{arguments}"
+      end
+
+      if data_store.lookup("#{arguments['stack']}::state", nil, arguments).nil?
+        raise "#{arguments['stack']} stack missing 'state' hash of the #{arguments['environment']} environment"
+      end
     end
   end
 end

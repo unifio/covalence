@@ -49,6 +49,7 @@ module Consul
       if encoded != nil
         Base64.decode64(encoded)
       else
+        # TODO: not sure if this is the right failure to raise
         fail "Requested key '#{name}' not found"
       end
     end
@@ -87,17 +88,18 @@ module Consul
   end
 
   # Return module capabilities
-  def self.has_key_read?
-    return true
-  end
+  # TODO: maybe a state_store mixin later
+  #def self.has_key_read?
+    #return true
+  #end
 
-  def self.has_key_write?
-    return false
-  end
+  #def self.has_key_write?
+    #return false
+  #end
 
-  def self.has_state_read?
-    return true
-  end
+  #def self.has_state_read?
+    #return true
+  #end
 
   def self.has_state_store?
     return true

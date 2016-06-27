@@ -12,13 +12,13 @@ RSpec.describe Input do
     end
   end
 
-  context "local input" do
+  context "with local input" do
     let(:raw_value) { "test" }
 
     it { expect(input.value).to eq(raw_value) }
   end
 
-  context "remote input" do
+  context "with remote input" do
     let(:test_backend_class) { TestBackend = Class.new(Object) }
     let(:raw_value) { { type: "test_backend.#{subcategory}", more: 'data' }.stringify_keys }
 
@@ -32,6 +32,31 @@ RSpec.describe Input do
     it "returns the value for a non-local key by calling the backend lookup" do
       expect(input.value).to eq(remote_value)
       expect(input.raw_value).to_not eq(remote_value)
+    end
+
+    pending "#to_command_option"
+  end
+
+  describe "#to_command_option" do
+    let(:raw_value) { "test" }
+    before(:each) do
+      ENV['TERRAFORM_VERSION'] = tf_version
+      # force constants to re-init
+      Kernel.silence_warnings {
+        load File.join(PrometheusUnifio::GEM_ROOT, '../prometheus-unifio.rb')
+      }
+    end
+
+    context "with Terraform Version < 0.7.0" do
+      let(:tf_version) { "0.6.5" }
+
+      it { expect(input.to_command_option).to eq("-var input=\"test\"") }
+    end
+
+    context "with Terraform Version >= 0.7.0" do
+      let(:tf_version) { "0.7.0" }
+
+      it { expect(input.to_command_option).to eq("-var 'input=\"test\"'") }
     end
   end
 end

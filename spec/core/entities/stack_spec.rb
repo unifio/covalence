@@ -17,8 +17,9 @@ RSpec.describe Stack do
     end
   end
 
-  describe "#materialize_inputs" do
-  end
+  pending "#materialize_inputs"
+
+  pending "#materialize_cmd_inputs"
 
   it "should accept empty args" do
     expect(Fabricate(:stack, args: '').args).to eql('')

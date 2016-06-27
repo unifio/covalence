@@ -12,6 +12,6 @@ class HieraSyntaxService
       end
     end
 
-    errors.map { |e| e.to_s }
+    errors.map { |error| error.to_s }
   end
 end

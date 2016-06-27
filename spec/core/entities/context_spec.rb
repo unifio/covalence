@@ -18,4 +18,6 @@ RSpec.describe Context do
       expect(Fabricate(:context, name: '').namespace).to eq('')
     end
   end
+
+  pending "#to_command_option"
 end
