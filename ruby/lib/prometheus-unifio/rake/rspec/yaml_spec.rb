@@ -3,7 +3,7 @@ require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/services/hiera_synt
 
 RSpec.describe HieraSyntaxService do
   describe ".check_yaml" do
-    let(:files) { Dir.glob("#{PrometheusUnifio::WORKSPACE}/**/*.yaml") }
+    let(:files) { Dir.glob("#{PrometheusUnifio::WORKSPACE}/**/*.y*ml") }
     it 'passes syntax check' do
       errors = described_class.check_yaml(files)
       expect(errors).to be_empty

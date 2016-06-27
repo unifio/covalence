@@ -97,17 +97,18 @@ module Atlas
   end
 
   # Return module capabilities
-  def self.has_key_read?
-    return true
-  end
+  # TODO: maybe a state_store mixin later
+  #def self.has_key_read?
+    #return true
+  #end
 
-  def self.has_key_write?
-    return false
-  end
+  #def self.has_key_write?
+    #return false
+  #end
 
-  def self.has_state_read?
-    return true
-  end
+  #def self.has_state_read?
+    #return true
+  #end
 
   def self.has_state_store?
     return true

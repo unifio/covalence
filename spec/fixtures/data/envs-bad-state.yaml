@@ -1,0 +1,5 @@
+# Deployment environments
+
+environments:
+  example:
+    - 'bad_state'

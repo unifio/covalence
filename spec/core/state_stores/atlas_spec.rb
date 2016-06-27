@@ -1,5 +1,5 @@
-require_relative '../../ruby/lib/tools/atlas.rb'
-require 'webmock/rspec'
+require 'spec_helper'
+require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/state_stores/atlas')
 
 RSpec.describe Atlas do
 
@@ -36,7 +36,7 @@ RSpec.describe Atlas do
   context "Artifact" do
     before(:each) do
       @stub = stub_request(:any, /#{Atlas::URL}.*/).
-        to_return(:body => File.new('./spec/atlas/artifact_response.json'), :status => 200)
+        to_return(:body => File.new('./spec/fixtures/mock_responses/atlas/artifact_response.json'), :status => 200)
       Atlas::reset_cache
     end
 
@@ -57,7 +57,7 @@ RSpec.describe Atlas do
 
     it "is not returned if it does not contain the requested key" do
       @stub = stub_request(:any, /#{Atlas::URL}.*/).
-        to_return(:body => File.new('./spec/atlas/artifact_response.json'), :status => 200)
+        to_return(:body => File.new('./spec/fixtures/mock_responses/atlas/artifact_response.json'), :status => 200)
       Atlas::reset_cache
 
       expect {
@@ -75,7 +75,7 @@ RSpec.describe Atlas do
   context "Stack" do
     before(:each) do
       @stub = stub_request(:any, /#{Atlas::URL}.*/).
-        to_return(:body => File.new('./spec/atlas/state_response.json'), :status => 200)
+        to_return(:body => File.new('./spec/fixtures/mock_responses/atlas/state_response.json'), :status => 200)
       Atlas::reset_cache
     end
 
@@ -96,7 +96,7 @@ RSpec.describe Atlas do
 
     it "is not returned if it does not contain the requested output" do
       @stub = stub_request(:any, /#{Atlas::URL}.*/).
-        to_return(:body => File.new('./spec/atlas/state_response.json'), :status => 200)
+        to_return(:body => File.new('./spec/fixtures/mock_responses/atlas/state_response.json'), :status => 200)
       Atlas::reset_cache
 
       expect {
@@ -128,7 +128,7 @@ RSpec.describe Atlas do
     context "Artifact" do
       before(:each) do
         @stub = stub_request(:any, /#{Atlas::URL}.*/).
-          to_return(:body => File.new('./spec/atlas/artifact_response.json'), :status => 200)
+          to_return(:body => File.new('./spec/fixtures/mock_responses/atlas/artifact_response.json'), :status => 200)
         Atlas::reset_cache
         @type = 'artifact'
         @params = {
@@ -155,7 +155,7 @@ RSpec.describe Atlas do
     context "State" do
       before(:each) do
         @stub = stub_request(:any, /#{Atlas::URL}.*/).
-          to_return(:body => File.new('./spec/atlas/state_response.json'), :status => 200)
+          to_return(:body => File.new('./spec/fixtures/mock_responses/atlas/state_response.json'), :status => 200)
         Atlas::reset_cache
         @type = 'state'
         @params = {
@@ -176,6 +176,10 @@ RSpec.describe Atlas do
         result = Atlas::lookup(@type,@params)
         expect(result).to eql('vpc-12345678')
       end
+    end
+
+    it "invalid type" do
+      expect{ Atlas.lookup('invalid', {}) }.to raise_error(RuntimeError, /does not support the 'invalid' lookup type/)
     end
   end
 end

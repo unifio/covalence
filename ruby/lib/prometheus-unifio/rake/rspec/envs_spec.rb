@@ -1,42 +1,42 @@
 require_relative '../../core/bootstrap'
 
-test_env = 'example'
 envs = EnvironmentRepository.all
 
 # spec_helper
 if ENV['PROMETHEUS_TEST_ENVS']
   test_envs = ENV['PROMETHEUS_TEST_ENVS'].split(',')
-  envs = envs.select { |environ| test_envs.include?(environ.to_s) }
+  envs = envs.select { |environ| test_envs.include?(environ.name.to_s) }
 end
 
 envs.each do |env|
   env.stacks.each do |stack|
+    path = File.expand_path(File.join(PrometheusUnifio::TERRAFORM, stack.tf_module))
 
     describe "Verify #{env.name}:#{stack.name}" do
 
       before(:all) do
-        @tf = Terraform::Stack.new(stack.tf_module, stub: false)
-        @tf.clean
-        @tf.get
+        TerraformCli.terraform_clean(path)
+        TerraformCli.terraform_get(path)
       end
 
       it 'passes style check' do
-        expect {
-          @tf.check_style
-        }.to_not raise_error
+        expect(TerraformCli.terraform_check_style(path)).to be true
       end
 
       it 'passes validation' do
         expect {
-          @tf.validate
+          TerraformCli.terraform_validate(path)
         }.to_not raise_error
       end
 
       it 'passes execution' do
-        input_args = @tf.parse_vars(stack.materialize_inputs)
-        expect {
-          @tf.plan("#{input_args} -input=false -module-depth=-1 #{stack.args}".strip)
-        }.to_not raise_error
+        TerraformCli.terraform_remote_config(args: "-disable")
+        args = stack.materialize_cmd_inputs + [
+          "-input=false",
+          "-module-depth=-1",
+          stack.args.strip,
+        ]
+        expect(TerraformCli.terraform_plan(path, args: args)).to be true
       end
     end
   end
