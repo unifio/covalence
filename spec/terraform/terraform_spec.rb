@@ -3,21 +3,21 @@ require_relative '../../ruby/lib/tools/terraform.rb'
 
 include Terraform
 
-describe Stack do
+describe Terraform::Stack do
 
   before(:each) do
     dir = Dir.mktmpdir
     @parent_dir = File.dirname(dir)
     @stack_dir = File.basename(dir)
-    @stack = Stack.new(@stack_dir, dir: @parent_dir)
+    @stack = Terraform::Stack.new(@stack_dir, dir: @parent_dir)
   end
 
   it "returns a stack given a directory that exists" do
-    expect(@stack).to be_a(Stack)
+    expect(@stack).to be_a(Terraform::Stack)
   end
 
   it "raises an exception if the given directory does not exist" do
-    expect { Stack.new('doesnotexist') }.to raise_error(RuntimeError)
+    expect { Terraform::Stack.new('doesnotexist') }.to raise_error(RuntimeError)
   end
 
   it "executes terraform remote config" do
@@ -61,28 +61,28 @@ describe Stack do
   end
 
   it "executes terraform commands with custom settings" do
-    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, env: "TEST=thisisatest", img: "", cmd: "/usr/local/bin/terraform", stub: "false")
+    @cmd_test = Terraform::Stack.new(@stack_dir, dir: @parent_dir, env: "TEST=thisisatest", img: "", cmd: "/usr/local/bin/terraform", stub: "false")
     cmd = "TEST=thisisatest /usr/local/bin/terraform plan"
     expect(Rake).to receive(:sh).with(cmd).and_return(true)
     @cmd_test.plan
   end
 
   it "executes terraform commands within a container" do
-    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, env: "", img: "unifio/terraform:latest", cmd: "docker run --rm", stub: "false")
+    @cmd_test = Terraform::Stack.new(@stack_dir, dir: @parent_dir, env: "", img: "unifio/terraform:latest", cmd: "docker run --rm", stub: "false")
     cmd = "docker run --rm -v #{@parent_dir}:/data -w /data/#{@stack_dir} unifio/terraform:latest plan"
     expect(Rake).to receive(:sh).with(cmd).and_return(true)
     @cmd_test.plan
   end
 
   it "cleans up existing state data from the given stack directory" do
-    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, env: "", img: "", cmd: "", stub: "false")
+    @cmd_test = Terraform::Stack.new(@stack_dir, dir: @parent_dir, env: "", img: "", cmd: "", stub: "false")
     cmd = "/bin/sh -c \"rm -fr .terraform *.tfstate*\""
     expect(Rake).to receive(:sh).with(cmd).and_return(true)
     @cmd_test.clean
   end
 
   it "cleans up existing state data from the given stack directory within a container" do
-    @cmd_test = Stack.new(@stack_dir, dir: @parent_dir, env: "", img: "unifio/terraform:latest", cmd: "docker run --rm", stub: "false")
+    @cmd_test = Terraform::Stack.new(@stack_dir, dir: @parent_dir, env: "", img: "unifio/terraform:latest", cmd: "docker run --rm", stub: "false")
     cmd = "docker run --rm -v #{@parent_dir}:/data -w /data/#{@stack_dir} --entrypoint=\"/bin/sh\" unifio/terraform:latest -c \"rm -fr .terraform *.tfstate*\""
     expect(Rake).to receive(:sh).with(cmd).and_return(true)
     @cmd_test.clean
