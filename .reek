@@ -1,0 +1,14 @@
+---
+TooManyStatements:
+  enabled: true
+  exclude:
+  - initialize
+  max_statements: 7
+IrresponsibleModule:
+  enabled: false
+DuplicateMethodCall:
+  max_calls: 3
+NestedIterators:
+  max_allowed_nesting: 2
+UtilityFunction:
+  public_methods_only: true

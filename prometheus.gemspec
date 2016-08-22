@@ -1,5 +1,7 @@
 # coding: utf-8
-lib = File.expand_path('../ruby/lib', __FILE__)
+gem_root = "ruby/lib"
+lib = File.expand_path(File.join("..", gem_root), __FILE__)
+
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'prometheus-unifio/version'
 require 'prometheus-unifio/helpers/spec_dependencies'
@@ -23,11 +25,9 @@ Gem::Specification.new do |spec|
     raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
   end
 
-  dirs_to_ignore = %w(bin test spec features images).join("|")
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^("#{dirs_to_ignore}")/}) }
-  spec.bindir        = "bin"
+  spec.files         = Dir["*.md", "#{gem_root}/**/*"]
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.require_paths = ["ruby/lib"]
+  spec.require_paths = [ gem_root ]
 
   spec.add_dependency "deep_merge", "~> 1.0.1"
   spec.add_dependency "hiera", "~> 3.2.0"
@@ -38,10 +38,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency "virtus", "~> 1.0.5"
   spec.add_dependency "activesupport", "~> 4.2.6"
   spec.add_dependency "activemodel", "~> 4.2.6"
+  spec.add_dependency "semantic", "~> 1.4.1"
 
   PrometheusUnifio::Helpers::SpecDependencies.dependencies.each do |name, requirement|
     spec.add_development_dependency name, requirement
   end
+  spec.add_development_dependency "awesome_print", "~> 1.7.0"
   spec.add_development_dependency "bundler", ">= 1.9.0"
   spec.add_development_dependency "dotenv", "~> 2.1.0"
   spec.add_development_dependency "pry-byebug", "~> 3.4.0"
@@ -49,4 +51,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "webmock", "~> 2.0.3"
   spec.add_development_dependency "gemfury", "~> 0.6.0"
   spec.add_development_dependency "fabrication", "~> 2.15.2"
+  spec.add_development_dependency "simplecov", "~> 0.12.0"
 end

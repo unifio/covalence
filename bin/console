@@ -1,11 +1,15 @@
 #!/usr/bin/env ruby
 
+ENV['RAKE_ENV'] ||= 'development'
+
 require "bundler/setup"
 require "pry"
 require "dotenv"
 require 'active_support/core_ext/string/inflections'
+require 'awesome_print'
 
-Dotenv.load
-require_relative '../ruby/lib/prometheus-unifio/core/bootstrap'
+Dotenv.load(*%w(.env .env.sample))
+require_relative '../ruby/lib/prometheus-unifio'
+require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/bootstrap')
 
 Pry.start

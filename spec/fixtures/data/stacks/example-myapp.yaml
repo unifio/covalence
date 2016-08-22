@@ -3,6 +3,10 @@
 myapp::state:
   - atlas:
       name: 'example/myapp'
+  - s3:
+      bucket: 'some_bucket'
+      name: 'some_name'
+      region: 'some_region'
 
 # Arguments
 myapp::args: '-no-color'

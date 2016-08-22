@@ -15,4 +15,4 @@
   - "envs"
 
 :yaml:
-   :datadir: spec/data
+   :datadir: spec/fixtures/data

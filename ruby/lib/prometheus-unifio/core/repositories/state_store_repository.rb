@@ -4,10 +4,10 @@ class StateStoreRepository
   def self.query_by_stack_name(data_store, stack_name)
     stores = data_store.lookup("#{stack_name}::state", nil)
     raise "State store array cannot be empty" if stores.empty?
-    stores.map do |s|
+    stores.map do |store|
       StateStore.new(
-        backend: s.keys.first,
-        params: s.values.first
+        backend: store.keys.first,
+        params: store.values.first
       )
     end
   end

@@ -4,7 +4,7 @@ require 'active_support/core_ext/hash'
 require 'active_model'
 
 # check to see how this works with plugins
-Dir[File.expand_path('../../../tools/*.rb', File.dirname(__FILE__))].each do |file|
+Dir[File.expand_path('../state_stores/*.rb', File.dirname(__FILE__))].each do |file|
   require file
 end
 
@@ -27,11 +27,13 @@ class StateStore
     params.fetch('name')
   end
 
+  # :reek:FeatureEnvy
   def params=(params)
     super(params.stringify_keys)
   end
 
   #TODO: prep different backend for plugins
+  # :reek:FeatureEnvy
   def backend=(backend_name)
     super(backend_name.camelize.constantize)
   end
