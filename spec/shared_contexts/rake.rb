@@ -1,19 +1,23 @@
 require "rake"
-require 'pathname'
+require_relative '../../ruby/lib/prometheus-unifio'
 
 shared_context "rake" do
   let(:rake)      { Rake::Application.new }
-  let(:task_name) { self.class.top_level_description }
-  let(:task_path) { "lib/prometheus-unifio/rake/environment" }
-  let(:task_root) { Pathname.new("#{Dir.pwd}/ruby") }
+  let(:task_name) { self.class.description }
+  let(:task_root) { PrometheusUnifio::GEM_ROOT }
+
   subject         { rake[task_name] }
 
-  def loaded_files_excluding_current_rake_file
-    $".reject {|file| file == task_root.join("#{task_path}.rake").to_s }
+  def file_globs_to_paths(globs)
+    [*globs].map { |glob| Dir.glob(File.absolute_path(glob, task_root)) }.flatten
   end
 
   before do
     Rake.application = rake
-    Rake.application.rake_require(task_path, [task_root.to_s], loaded_files_excluding_current_rake_file)
+    @task_files = task_files || "rake/*.{rb,rake}"
+    task_paths = file_globs_to_paths(@task_files)
+
+    task_paths.each { |path| Rake.application.add_import(path) }
+    Rake.application.load_imports
   end
 end

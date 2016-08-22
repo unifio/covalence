@@ -1,4 +1,3 @@
-require_relative '../../ruby/lib/prometheus-unifio'
 require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/entities/environment')
 
 Fabricator(:environment) do

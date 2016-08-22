@@ -1,0 +1,28 @@
+---
+engines:
+  bundler-audit:
+    enabled: true
+  csslint:
+    enabled: false
+  duplication:
+    enabled: true
+    config:
+      languages:
+        ruby:
+          mass_threshold: 30
+  eslint:
+    enabled: false
+  fixme:
+    enabled: true
+  reek:
+    enabled: true
+  rubocop:
+    enabled: true
+ratings:
+  paths:
+  - Gemfile.lock
+  - "**.inc"
+  - "**.module"
+  - "**.rb"
+exclude_paths:
+- spec/

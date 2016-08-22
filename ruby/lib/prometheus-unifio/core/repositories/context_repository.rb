@@ -5,7 +5,7 @@ class ContextRepository
     targets = data_store.hash_lookup("#{namespace}::targets", {})
 
     if targets.present?
-      return targets.map { |k,v| Context.new(name: k, value: v) }
+      return targets.map { |name, values| Context.new(name: name, values: values) }
     else
       return Context.new()
     end
