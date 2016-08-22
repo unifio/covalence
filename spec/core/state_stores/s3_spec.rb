@@ -1,5 +1,5 @@
-require_relative '../../ruby/lib/tools/s3.rb'
-require 'aws-sdk'
+require 'spec_helper'
+require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/state_stores/s3')
 
 RSpec.describe S3 do
 
@@ -7,7 +7,7 @@ RSpec.describe S3 do
     before(:all) do
       Aws.config[:s3] = {
         stub_responses: {
-          get_object: { body: File.new('./spec/s3/key_response.json') }
+          get_object: { body: File.new('./spec/fixtures/mock_responses/s3/key_response.json') }
         }
       }
       @client = S3::Client.new(region: 'us-east-1')
@@ -46,7 +46,7 @@ RSpec.describe S3 do
     before(:all) do
       Aws.config[:s3] = {
         stub_responses: {
-          get_object: { body: File.new('./spec/s3/state_response.json') }
+          get_object: { body: File.new('./spec/fixtures/mock_responses/s3/state_response.json') }
         }
       }
       @client = S3::Client.new(region: 'us-east-1')
@@ -80,7 +80,7 @@ RSpec.describe S3 do
       before(:all) do
         Aws.config[:s3] = {
           stub_responses: {
-            get_object: { body: File.new('./spec/s3/key_response.json') }
+            get_object: { body: File.new('./spec/fixtures/mock_responses/s3/key_response.json') }
           }
         }
         @client = S3::Client.new(region: 'us-east-1')
@@ -113,7 +113,7 @@ RSpec.describe S3 do
       before(:all) do
         Aws.config[:s3] = {
           stub_responses: {
-            get_object: { body: File.new('./spec/s3/state_response.json') }
+            get_object: { body: File.new('./spec/fixtures/mock_responses/s3/state_response.json') }
           }
         }
         @client = S3::Client.new(region: 'us-east-1')

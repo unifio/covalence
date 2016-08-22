@@ -1,12 +1,15 @@
-require_relative '../../ruby/lib/tools/consul.rb'
-require 'webmock/rspec'
+require 'spec_helper'
+require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/state_stores/consul')
 
 RSpec.describe Consul do
+  it ".has_state_store?" do
+    expect(described_class.has_state_store?).to be true
+  end
 
   context "Key" do
     before(:each) do
       @stub = stub_request(:any, /#{Consul::URL}.*/).
-        to_return(:body => File.new('./spec/consul/key_response.json'), :status => 200)
+        to_return(:body => File.new('./spec/fixtures/mock_responses/consul/key_response.json'), :status => 200)
       Consul::reset_cache
     end
 
@@ -22,22 +25,21 @@ RSpec.describe Consul do
 
       expect {
         Consul::get_key('conf/example_ip')
-      }.to raise_error(RuntimeError)
+      }.to raise_error(RuntimeError, /Unable to retrieve key/)
     end
 
     it "is not returned if it does not contain the requested value" do
       @stub = stub_request(:any, /#{Consul::URL}.*/).
-        to_return(:body => File.new('./spec/consul/empty_response.json'), :status => 200)
+        to_return(:body => File.new('./spec/fixtures/mock_responses/consul/empty_response.json'), :status => 200)
       Consul::reset_cache
 
       expect {
         Consul::get_key('conf/example_cidr')
-      }.to raise_error(RuntimeError)
+      }.to raise_error(RuntimeError, /No results or unable to parse response/)
     end
 
     it "caches multiple requests" do
-      Consul::get_key('conf/example_ip')
-      Consul::get_key('conf/example_ip')
+      2.times { Consul::get_key('conf/example_ip') }
       expect(@stub).to have_been_requested.once
     end
   end
@@ -45,7 +47,7 @@ RSpec.describe Consul do
   context "Stack" do
     before(:each) do
       @stub = stub_request(:any, /#{Consul::URL}.*/).
-        to_return(:body => File.new('./spec/consul/state_response.json'), :status => 200)
+        to_return(:body => File.new('./spec/fixtures/mock_responses/consul/state_response.json'), :status => 200)
       Consul::reset_cache
     end
 
@@ -66,7 +68,7 @@ RSpec.describe Consul do
 
     it "is not returned if it does not contain the requested output" do
       @stub = stub_request(:any, /#{Consul::URL}.*/).
-        to_return(:body => File.new('./spec/consul/state_response.json'), :status => 200)
+        to_return(:body => File.new('./spec/fixtures/mock_responses/consul/state_response.json'), :status => 200)
       Consul::reset_cache
 
       expect {
@@ -98,7 +100,7 @@ RSpec.describe Consul do
     context "Key" do
       before(:each) do
         @stub = stub_request(:any, /#{Consul::URL}.*/).
-          to_return(:body => File.new('./spec/consul/key_response.json'), :status => 200)
+          to_return(:body => File.new('./spec/fixtures/mock_responses/consul/key_response.json'), :status => 200)
         Consul::reset_cache
         @type = 'key'
         @params = {
@@ -123,7 +125,7 @@ RSpec.describe Consul do
     context "State" do
       before(:each) do
         @stub = stub_request(:any, /#{Consul::URL}.*/).
-          to_return(:body => File.new('./spec/consul/state_response.json'), :status => 200)
+          to_return(:body => File.new('./spec/fixtures/mock_responses/consul/state_response.json'), :status => 200)
         Consul::reset_cache
         @type = 'state'
         @params = {
@@ -144,6 +146,10 @@ RSpec.describe Consul do
         result = Consul::lookup(@type,@params)
         expect(result).to eql('vpc-12345678')
       end
+    end
+
+    it "invalid type" do
+      expect{ Consul.lookup('invalid', {}) }.to raise_error(RuntimeError, /does not support the 'invalid' lookup type/)
     end
   end
 end

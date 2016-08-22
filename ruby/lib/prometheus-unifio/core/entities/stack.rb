@@ -1,5 +1,6 @@
 require 'virtus'
 require 'active_model'
+require 'semantic'
 
 require_relative '../../../prometheus-unifio'
 require_relative 'state_store'
@@ -23,7 +24,7 @@ class Stack
     message: "Stack %{attribute}: \"%{value}\" cannot contain spaces"
   }
 
-  def initialize(attributes = {}, *args)
+  def initialize(attributes = {}, *arguments)
     super
     self.valid?
   end
@@ -32,11 +33,7 @@ class Stack
     "#{environment_name}-#{name}"
   end
 
-  def materialize_inputs
-    return_hash = {}
-    inputs.each do |input|
-      return_hash[input.name] = input.value
-    end
-    return return_hash
+  def materialize_cmd_inputs
+    inputs.map(&:to_command_option)
   end
 end

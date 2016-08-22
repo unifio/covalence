@@ -7,7 +7,7 @@ class Context
   include ActiveModel::Validations
 
   attribute :name, String, default: ''
-  attribute :value, Array, default: []
+  attribute :values, Array, default: []
 
   validates! :name, format: {
     without: /\s+/,
@@ -21,5 +21,9 @@ class Context
 
   def namespace
     name.empty? ? '' : "#{name}:"
+  end
+
+  def to_command_options
+    values.map { |value| "-target=\"#{value}\"" }
   end
 end

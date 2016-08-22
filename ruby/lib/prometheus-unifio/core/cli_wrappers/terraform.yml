@@ -1,0 +1,22 @@
+---
+version: Terraform v0.6.16
+commands:
+  apply:
+  destroy:
+  fmt:
+  get:
+  graph:
+  #init: #too messy
+  #output: #handle manually (required arg)
+  plan:
+  push:
+  refresh:
+  remote:
+    config:
+    pull:
+    push:
+  show:
+  #taint: #handle manually (required arg)
+  #untaint: #handle manually (required arg)
+  validate:
+  version:
