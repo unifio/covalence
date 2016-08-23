@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    prometheus-unifio (0.3.0.beta1)
+    prometheus-unifio (0.3.0.beta2)
       activemodel (~> 4.2.6)
       activesupport (~> 4.2.6)
       aws-sdk (~> 2.3.8)

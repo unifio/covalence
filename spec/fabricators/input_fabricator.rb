@@ -1,12 +1,12 @@
 require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/entities/input')
 
-Fabricator(:input) do
+Fabricator(:input, from: 'PrometheusUnifio::Input') do
   name "input"
 
   after_build(&:valid?)
 end
 
-Fabricator(:local_input, class_name: Input) do
+Fabricator(:local_input, class_name: PrometheusUnifio::Input) do
   name "local_input"
   raw_value "foo"
 
@@ -14,7 +14,7 @@ Fabricator(:local_input, class_name: Input) do
 end
 
 
-Fabricator(:remote_input, class_name: Input) do
+Fabricator(:remote_input, class_name: PrometheusUnifio::Input) do
   name "remote_input"
   raw_value do
     {
