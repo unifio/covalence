@@ -1,6 +1,6 @@
 require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/entities/stack')
 
-Fabricator(:stack) do
+Fabricator(:stack, from: 'PrometheusUnifio::Stack') do
   on_init { init_with(name: "example_stack") }
   environment_name "example_environment"
   state_stores { Fabricate.times(3, :state_store) }
