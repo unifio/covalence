@@ -1,9 +1,11 @@
 require 'spec_helper'
 require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/repositories/environment_repository')
 
-RSpec.describe EnvironmentRepository do
-  describe ".all" do
-    pending
+module PrometheusUnifio
+  RSpec.describe EnvironmentRepository do
+    describe ".all" do
+      pending
+    end
   end
 end
 
