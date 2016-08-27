@@ -10,11 +10,13 @@ end
 # :reek:TooManyConstants
 module PrometheusUnifio
   # Configurable constants
+  #TODO: look into how WORKSPACE is being used, maybe this can just be an internal ROOT and make CONFIG not depend on WORKSPACE
   WORKSPACE = File.expand_path(ENV['PROMETHEUS_WORKSPACE'] || '../../../', __FILE__)
   CONFIG = File.join(WORKSPACE, ENV['PROMETHEUS_CONFIG'] || 'prometheus.yaml')
   # TODO: could use better naming
   PACKER = File.join(WORKSPACE, ENV['PROMETHEUS_PACKER_DIR'] || 'packer')
   TERRAFORM =  File.join(WORKSPACE, ENV['PROMETHEUS_TERRAFORM_DIR'] || 'terraform')
+  PACKER_CMD = ENV['PACKER_CMD'] || "packer"
 
   # should be able to deprecate this with prometheus bundled inside the container
   TF_IMG = ENV['TERRAFORM_IMG'] || ""

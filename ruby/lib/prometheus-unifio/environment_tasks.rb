@@ -1,5 +1,6 @@
 require 'rake'
 require_relative '../prometheus-unifio'
+require_relative 'core/repositories/environment_repository'
 require_relative 'core/services/terraform_stack_tasks'
 
 module PrometheusUnifio
