@@ -3,6 +3,7 @@ require 'fileutils'
 require 'tmpdir'
 require 'active_support/core_ext/object/blank'
 require 'open3'
+require 'semantic'
 
 require_relative '../../../prometheus-unifio'
 require_relative 'popen_wrapper'

@@ -17,6 +17,7 @@ module PrometheusUnifio
       allow(PopenWrapper).to receive(:run).and_return(true)
       # suppress FileUtils verbose
       allow($stderr).to receive(:write)
+      allow(Atlas).to receive(:get_artifact).and_return('artifact')
     end
 
     describe "example:myapp:clean" do
@@ -360,6 +361,33 @@ module PrometheusUnifio
 
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(anything, hash_including(args: []))
+        subject.invoke
+      end
+    end
+
+    describe "example:plan_destroy" do
+      include_context "rake"
+
+      it "executes rake tasks in the correct order" do
+        expect(Rake::Task).to receive(:[]).with("example:artifact_test:plan_destroy").and_call_original.ordered
+        expect(Rake::Task).to receive(:[]).with("example:module_test:plan_destroy").and_call_original.ordered
+        expect(Rake::Task).to receive(:[]).with("example:myapp:az0:plan_destroy").and_call_original.ordered
+        expect(Rake::Task).to receive(:[]).with("example:myapp:az1:plan_destroy").and_call_original.ordered
+        expect(Rake::Task).to receive(:[]).with("example:myapp:plan_destroy").and_call_original.ordered
+        subject.invoke
+      end
+
+    end
+
+    describe "example:destroy" do
+      include_context "rake"
+
+      it "executes rake tasks in the correct order" do
+        expect(Rake::Task).to receive(:[]).with("example:artifact_test:destroy").and_call_original.ordered
+        expect(Rake::Task).to receive(:[]).with("example:module_test:destroy").and_call_original.ordered
+        expect(Rake::Task).to receive(:[]).with("example:myapp:az0:destroy").and_call_original.ordered
+        expect(Rake::Task).to receive(:[]).with("example:myapp:az1:destroy").and_call_original.ordered
+        expect(Rake::Task).to receive(:[]).with("example:myapp:destroy").and_call_original.ordered
         subject.invoke
       end
     end

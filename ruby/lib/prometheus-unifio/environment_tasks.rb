@@ -114,7 +114,7 @@ module PrometheusUnifio
 
       desc "Create destruction plan for the #{environ.name} environment"
       task "#{environ.name}:plan_destroy" do
-        environ.stacks.each do |stack|
+        environ.stacks.reverse.each do |stack|
           stack.contexts.each do |context|
             execute_rake_task(environ.name, stack.name, context.name, "plan_destroy")
           end
@@ -132,7 +132,7 @@ module PrometheusUnifio
 
       desc "Destroy the #{environ.name} environment"
       task "#{environ.name}:destroy" do
-        environ.stacks.each do |stack|
+        environ.stacks.reverse.each do |stack|
           stack.contexts.each do |context|
             execute_rake_task(environ.name, stack.name, context.name, "destroy")
           end
