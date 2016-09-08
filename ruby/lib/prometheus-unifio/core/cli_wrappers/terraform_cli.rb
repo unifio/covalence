@@ -3,6 +3,7 @@ require 'fileutils'
 require 'tmpdir'
 require 'active_support/core_ext/object/blank'
 require 'open3'
+require 'semantic'
 
 require_relative '../../../prometheus-unifio'
 require_relative 'popen_wrapper'
@@ -10,7 +11,11 @@ require_relative 'popen_wrapper'
 module PrometheusUnifio
   class TerraformCli
     def self.require_init()
-      cmds_yml = File.expand_path("terraform.yml", __dir__)
+      if Semantic::Version.new(PrometheusUnifio::TERRAFORM_VERSION) >= Semantic::Version.new("0.7.0")
+        cmds_yml = File.expand_path("terraform.yml", __dir__)
+      else
+        cmds_yml = File.expand_path("terraform-0.6.16.yml", __dir__)
+      end
       init_terraform_cmds(cmds_yml)
     end
 

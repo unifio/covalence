@@ -1,0 +1,9 @@
+---
+version: Packer v0.10.1
+commands:
+  build:
+  #fix: need to implement once we support CLI run-time args
+  inspect:
+  push:
+  validate:
+  version:

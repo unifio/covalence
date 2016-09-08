@@ -12,14 +12,19 @@ module PrometheusUnifio
     include Virtus.model
     include ActiveModel::Validations
 
+    attribute :type, String
     attribute :name, String
     attribute :environment_name, String
     attribute :tf_module, String
+    attribute :packer_template, String
     attribute :state_stores, Array[StateStore]
     attribute :contexts, Array[Context]
-    attribute :inputs, Array[Input]
+    attribute :inputs, Hash[String => Input]
     attribute :args, String
 
+    validates! :type, inclusion: {
+      in: %w(terraform packer)
+    }
     validates! :name, format: {
       without: /\s+/,
       message: "Stack %{attribute}: \"%{value}\" cannot contain spaces"
@@ -35,7 +40,7 @@ module PrometheusUnifio
     end
 
     def materialize_cmd_inputs
-      inputs.map(&:to_command_option)
+      inputs.values.map(&:to_command_option)
     end
   end
 end
