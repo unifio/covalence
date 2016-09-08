@@ -1,5 +1,4 @@
 require_relative '../../../prometheus-unifio'
-require_relative '../repositories/environment_repository'
 require_relative '../cli_wrappers/terraform_cli'
 
 module PrometheusUnifio

@@ -5,7 +5,7 @@ require_relative '../../../prometheus-unifio'
 
 module PrometheusUnifio
   class PopenWrapper
-    def self.run(cmds, path, args)
+    def self.run(cmds, path, args, dry_run: false)
       # TODO: terraform cmd env switch
       #cmd = "terraform #{[*cmds].join(' ')}"
 
@@ -32,7 +32,7 @@ module PrometheusUnifio
       PrometheusUnifio::LOGGER.warn "---"
       PrometheusUnifio::LOGGER.warn run_cmd
 
-      Kernel.system(ENV.to_h, run_cmd)
+      Kernel.system(ENV.to_h, run_cmd) unless dry_run
     end
   end
 end

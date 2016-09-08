@@ -10,6 +10,7 @@ module PrometheusUnifio
 
     attribute :name, String
     attribute :stacks, Array[Stack]
+    attribute :packer_stacks, Array[Stack]
 
     validates! :name, format: {
       without: /\s+/,
