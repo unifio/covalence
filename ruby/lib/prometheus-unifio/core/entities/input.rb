@@ -9,6 +9,7 @@ module PrometheusUnifio
     include ActiveModel::Validations
 
     attribute :name, String
+    attribute :type, String, default: 'terraform'
     # unprocessed value, could be remote
     attribute :raw_value, Object
 
@@ -26,8 +27,14 @@ module PrometheusUnifio
       backend::lookup(subcategory, raw_value)
     end
 
+    #TODO: ugh, this is horrid and error prone. Address with var-file generation
     def to_command_option
-      if Semantic::Version.new(PrometheusUnifio::TERRAFORM_VERSION) >= Semantic::Version.new("0.7.0")
+      if value.nil?
+        "-var '#{name}='"
+      elsif (type == 'packer')
+        "-var '#{name}=#{value}'"
+      elsif (Semantic::Version.new(PrometheusUnifio::TERRAFORM_VERSION) >= Semantic::Version.new("0.7.0") &&
+             type == 'terraform')
         "-var '#{name}=\"#{value}\"'"
       else
         "-var #{name}=\"#{value}\""

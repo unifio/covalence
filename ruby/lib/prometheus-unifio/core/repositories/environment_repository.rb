@@ -11,8 +11,17 @@ module PrometheusUnifio
       raise "Missing 'environments' configuration hash" if environments_hash.empty?
 
       environments_hash.map do |environment_name, stack_names|
-        stacks = stack_names.map { |stack_name| StackRepository.find(data_store, environment_name, stack_name) }
-        Environment.new(name: environment_name, stacks: stacks)
+        stacks = stack_names.map do |stack_name|
+          StackRepository.find(data_store, environment_name, stack_name)
+        end
+
+        packer_stacks = stack_names.map do |stack_name|
+          StackRepository.packer_find(data_store, environment_name, stack_name)
+        end.compact
+
+        Environment.new(name: environment_name,
+                        stacks: stacks,
+                        packer_stacks: packer_stacks)
       end
     end
   end

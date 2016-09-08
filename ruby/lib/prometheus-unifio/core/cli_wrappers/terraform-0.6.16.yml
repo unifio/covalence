@@ -1,5 +1,5 @@
 ---
-version: Terraform v0.7.2
+version: Terraform v0.6.16
 commands:
   apply:
   destroy:
@@ -20,8 +20,3 @@ commands:
   #untaint: #handle manually (required arg)
   validate:
   version:
-  #state: todo
-    #list:
-    #mv:
-    #rm:
-    #show:

@@ -17,9 +17,23 @@ module PrometheusUnifio
 
       it "does not create a new namespace for an empty name" do
         expect(Fabricate(:context, name: '').namespace).to eq('')
+        expect(Fabricate(:context, name: nil).namespace).to eq('')
+      end
+
+      it "fails name validation" do
+        expect{ Fabricate(:context, name: 'name with spaces') }.to raise_error(ActiveModel::StrictValidationFailed, /cannot contain spaces or commas/)
+        expect{ Fabricate(:context, name: 'name,with,commas') }.to raise_error(ActiveModel::StrictValidationFailed, /cannot contain spaces or commas/)
       end
     end
 
-    pending "#to_command_option"
+    it "#to_command_options" do
+      expect(Fabricate(:context, values: %w()).to_command_options).to eq([])
+      expect(Fabricate(:context, values: %w(foo baz)).to_command_options).to eq(["-target=\"foo\"","-target=\"baz\""])
+    end
+
+    it "#to_packer_command_options" do
+      expect(Fabricate(:context, values: %w()).to_packer_command_options).to eq("")
+      expect(Fabricate(:context, values: %w(foo baz)).to_packer_command_options).to eq("-only=foo,baz")
+    end
   end
 end
