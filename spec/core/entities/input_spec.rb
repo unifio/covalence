@@ -1,8 +1,8 @@
 require 'spec_helper'
 require 'active_support/core_ext/hash'
-require_relative File.expand_path(PrometheusUnifio::GEM_ROOT, 'core/entities/input')
+require_relative File.expand_path(Covalence::GEM_ROOT, 'core/entities/input')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe Input do
     let(:type) { 'terraform' }
     let(:input) { Fabricate(:input, type: type, raw_value: raw_value) }
@@ -25,7 +25,7 @@ module PrometheusUnifio
     end
 
     context "with remote input" do
-      let(:test_backend_class) { PrometheusUnifio::TestBackend = Class.new(Object) }
+      let(:test_backend_class) { Covalence::TestBackend = Class.new(Object) }
       let(:raw_value) { { type: "test_backend.#{subcategory}", more: 'data' }.stringify_keys }
 
       let(:subcategory) { 'subcategory' }
@@ -49,7 +49,7 @@ module PrometheusUnifio
         ENV['TERRAFORM_VERSION'] = tf_version
         # force constants to re-init
         Kernel.silence_warnings {
-          load File.join(PrometheusUnifio::GEM_ROOT, '../prometheus-unifio.rb')
+          load File.join(Covalence::GEM_ROOT, '../covalence.rb')
         }
       end
 

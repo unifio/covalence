@@ -2,9 +2,9 @@ require 'tempfile'
 require 'active_support/core_ext/string/strip'
 
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/services/hiera_syntax_service')
+require_relative File.join(Covalence::GEM_ROOT, 'core/services/hiera_syntax_service')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe HieraSyntaxService do
     describe ".check_yaml" do
       let(:invalid_yaml_contents) do

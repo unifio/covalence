@@ -1,11 +1,11 @@
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/data_stores/hiera')
+require_relative File.join(Covalence::GEM_ROOT, 'core/data_stores/hiera')
 
 # TODO maybe move the data/ directory into spec/fixtures
 # TODO: revisit, cleanup
-module PrometheusUnifio
+module Covalence
   RSpec.describe HieraDB::Client do
-    let(:client) { HieraDB::Client.new(PrometheusUnifio::CONFIG) }
+    let(:client) { HieraDB::Client.new(Covalence::CONFIG) }
 
     it "can lookup without a scope defined" do
       response = client.lookup('environments')

@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'packer_tasks')
+require_relative File.join(Covalence::GEM_ROOT, 'packer_tasks')
 
-module PrometheusUnifio
+module Covalence
   describe PackerTasks do
     pending
   end
