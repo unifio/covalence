@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/state_stores/atlas')
+require_relative File.join(Covalence::GEM_ROOT, 'core/state_stores/atlas')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe Atlas do
 
     context "Search" do
