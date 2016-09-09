@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/repositories/state_store_repository')
+require_relative File.join(Covalence::GEM_ROOT, 'core/repositories/state_store_repository')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe StateStoreRepository do
     describe ".query_terraform_by_stack_name" do
       pending

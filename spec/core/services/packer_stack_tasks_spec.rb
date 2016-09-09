@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/services/packer_stack_tasks')
+require_relative File.join(Covalence::GEM_ROOT, 'core/services/packer_stack_tasks')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe PackerStackTasks do
     describe "#stack_name" do
       pending

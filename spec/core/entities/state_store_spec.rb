@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative File.expand_path(PrometheusUnifio::GEM_ROOT, 'core/entities/state_store')
+require_relative File.expand_path(Covalence::GEM_ROOT, 'core/entities/state_store')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe StateStore do
     let(:state_store) do
       Fabricate(:state_store,

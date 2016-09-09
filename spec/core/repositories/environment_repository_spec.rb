@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/repositories/environment_repository')
+require_relative File.join(Covalence::GEM_ROOT, 'core/repositories/environment_repository')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe EnvironmentRepository do
     it ".all" do
       data_store = Object.new

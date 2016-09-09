@@ -1,8 +1,8 @@
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/data_stores/hiera')
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/repositories/stack_repository')
+require_relative File.join(Covalence::GEM_ROOT, 'core/data_stores/hiera')
+require_relative File.join(Covalence::GEM_ROOT, 'core/repositories/stack_repository')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe StackRepository do
     describe ".find" do
       context "with a valid stack" do
@@ -10,7 +10,7 @@ module PrometheusUnifio
       end
 
       context "with an invalid stack" do
-        let(:data_store) { HieraDB::Client.new("spec/fixtures/prometheus_bad_state.yaml") }
+        let(:data_store) { HieraDB::Client.new("spec/fixtures/covalence_bad_state.yaml") }
 
         it "raises an error" do
           expect {
