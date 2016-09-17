@@ -1,4 +1,4 @@
-# PrometheusUnifio
+# Covalence
 [![Circle CI](https://circleci.com/gh/unifio/prometheus.svg?style=svg&circle-token=42737f88bb5153c24dce3ecc2550a6aee7eb8283)](https://circleci.com/gh/unifio/prometheus)
 
 Ruby orchestration framework for HashiCorp based deployment pipelines.

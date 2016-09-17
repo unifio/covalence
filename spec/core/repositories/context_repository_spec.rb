@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/repositories/context_repository')
+require_relative File.join(Covalence::GEM_ROOT, 'core/repositories/context_repository')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe ContextRepository do
     let(:datastore) { Object.new }
 

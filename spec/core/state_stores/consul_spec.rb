@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/state_stores/consul')
+require_relative File.join(Covalence::GEM_ROOT, 'core/state_stores/consul')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe Consul do
     it ".has_state_store?" do
       expect(described_class.has_state_store?).to be true

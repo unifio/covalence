@@ -1,10 +1,10 @@
 require "rake"
-require_relative '../../ruby/lib/prometheus-unifio'
+require_relative '../../lib/covalence'
 
 shared_context "rake" do
   let(:rake)      { Rake::Application.new }
   let(:task_name) { self.class.description }
-  let(:task_root) { PrometheusUnifio::GEM_ROOT }
+  let(:task_root) { Covalence::GEM_ROOT }
 
   subject         { rake[task_name] }
 
