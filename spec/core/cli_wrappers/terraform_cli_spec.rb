@@ -3,9 +3,9 @@ require 'tmpdir'
 require 'active_support/core_ext/kernel/reporting'
 
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/cli_wrappers/terraform_cli')
+require_relative File.join(Covalence::GEM_ROOT, 'core/cli_wrappers/terraform_cli')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe TerraformCli do
     before(:all) do
       @tmp_dir = Dir.mktmpdir
@@ -21,7 +21,7 @@ module PrometheusUnifio
         ENV['TERRAFORM_CMD'] = "terraform"
         # force constants to re-init
         Kernel.silence_warnings {
-          load File.join(PrometheusUnifio::GEM_ROOT, '../prometheus-unifio.rb')
+          load File.join(Covalence::GEM_ROOT, '../covalence.rb')
         }
       end
 
@@ -124,7 +124,7 @@ module PrometheusUnifio
         # force constants to re-init
         Kernel.silence_warnings {
           # swallow all rescue from non-existant terraform binary above.
-          load File.join(PrometheusUnifio::GEM_ROOT, '../prometheus-unifio.rb') rescue nil
+          load File.join(Covalence::GEM_ROOT, '../covalence.rb') rescue nil
         }
 
         expected_args = [ENV.to_h, "/usr/local/bin/terraform plan #{@tmp_dir}"]
@@ -139,7 +139,7 @@ module PrometheusUnifio
         ENV['TERRAFORM_CMD'] = "docker run -e ATLAS_TOKEN=$ATLAS_TOKEN --rm"
         # force constants to re-init
         Kernel.silence_warnings {
-          load File.join(PrometheusUnifio::GEM_ROOT, '../prometheus-unifio.rb')
+          load File.join(Covalence::GEM_ROOT, '../covalence.rb')
         }
       end
 

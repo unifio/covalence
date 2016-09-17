@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative File.expand_path(PrometheusUnifio::GEM_ROOT, 'core/entities/stack')
+require_relative File.expand_path(Covalence::GEM_ROOT, 'core/entities/stack')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe Stack do
     let(:stack) { Fabricate(:terraform_stack) }
 
