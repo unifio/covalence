@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/state_stores/s3')
+require_relative File.join(Covalence::GEM_ROOT, 'core/state_stores/s3')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe S3 do
 
     context "Key" do

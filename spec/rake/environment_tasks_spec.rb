@@ -1,18 +1,18 @@
 require 'spec_helper'
 require 'active_support/core_ext/kernel/reporting'
 
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/cli_wrappers/terraform_cli')
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/cli_wrappers/popen_wrapper')
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'environment_tasks')
+require_relative File.join(Covalence::GEM_ROOT, 'core/cli_wrappers/terraform_cli')
+require_relative File.join(Covalence::GEM_ROOT, 'core/cli_wrappers/popen_wrapper')
+require_relative File.join(Covalence::GEM_ROOT, 'environment_tasks')
 require_relative '../shared_contexts/rake.rb'
 
-module PrometheusUnifio
+module Covalence
   describe EnvironmentTasks do
     let(:task_files) { "environment_tasks.rb" }
 
     before(:each) do
       Kernel.silence_warnings {
-        PrometheusUnifio::TERRAFORM_VERSION = "0.7.0"
+        Covalence::TERRAFORM_VERSION = "0.7.0"
       }
       allow(PopenWrapper).to receive(:run).and_return(true)
       # suppress FileUtils verbose

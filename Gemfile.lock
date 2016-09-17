@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    prometheus-unifio (0.3.0.beta3)
+    covalence (0.4.0)
       activemodel (~> 4.2.6)
       activesupport (~> 4.2.6)
       aws-sdk (~> 2.3.8)
@@ -159,10 +159,10 @@ DEPENDENCIES
   awesome_print (~> 1.7.0)
   bundler (>= 1.9.0)
   ci_reporter_rspec (~> 1.0.0)
+  covalence!
   dotenv (~> 2.1.0)
   fabrication (~> 2.15.2)
   gemfury (~> 0.6.0)
-  prometheus-unifio!
   pry-byebug (~> 3.4.0)
   rspec (~> 3.4.0)
   serverspec (~> 2.36.0)

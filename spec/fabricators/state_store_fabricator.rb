@@ -1,6 +1,6 @@
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/entities/state_store')
+require_relative File.join(Covalence::GEM_ROOT, 'core/entities/state_store')
 
-Fabricator(:state_store, from: 'PrometheusUnifio::StateStore') do
+Fabricator(:state_store, from: 'Covalence::StateStore') do
   on_init do
     init_with(
       params: { name: "example/state_store" },

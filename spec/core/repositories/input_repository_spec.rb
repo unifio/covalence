@@ -1,9 +1,9 @@
 require 'yaml'
 require 'tempfile'
 require 'spec_helper'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/repositories/input_repository')
+require_relative File.join(Covalence::GEM_ROOT, 'core/repositories/input_repository')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe InputRepository do
     let(:datastore) { Object.new }
 

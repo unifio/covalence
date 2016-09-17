@@ -9,7 +9,7 @@ require 'active_support/core_ext/string/inflections'
 require 'awesome_print'
 
 Dotenv.load(*%w(.env .env.sample))
-require_relative '../ruby/lib/prometheus-unifio'
-require_relative File.join(PrometheusUnifio::GEM_ROOT, 'core/bootstrap')
+require_relative '../lib/covalence'
+require_relative File.join(Covalence::GEM_ROOT, 'core/bootstrap')
 
 Pry.start

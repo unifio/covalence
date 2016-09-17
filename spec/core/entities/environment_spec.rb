@@ -1,8 +1,8 @@
 require 'spec_helper'
-require_relative File.expand_path(PrometheusUnifio::GEM_ROOT, 'core/entities/environment')
-require_relative File.expand_path(PrometheusUnifio::GEM_ROOT, 'core/entities/stack')
+require_relative File.expand_path(Covalence::GEM_ROOT, 'core/entities/environment')
+require_relative File.expand_path(Covalence::GEM_ROOT, 'core/entities/stack')
 
-module PrometheusUnifio
+module Covalence
   RSpec.describe Environment do
     describe "validators" do
       it "does not allow .name with spaces" do
