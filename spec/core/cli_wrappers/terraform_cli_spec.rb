@@ -109,7 +109,19 @@ module Covalence
         expect(described_class.terraform_version(path = @tmp_dir)).to be true
       end
 
-      pending "#terraform_clean"
+      it "#terraform_clean" do
+        Dir.mktmpdir do |dir|
+          FileUtils.touch(File.join(dir, 'foo.tfstate'))
+          FileUtils.touch(File.join(dir, 'should_ignore.me'))
+          Dir.mkdir(File.join(dir, '.terraform'))
+          FileUtils.touch(File.join(dir, '.terraform', 'foo.tf'))
+          expect((Dir.entries(dir) - %w(. ..)).size).to eq(3)
+
+          described_class.terraform_clean(dir, verbose: false)
+          expect((Dir.entries(dir) - %w(. ..)).size).to eq(1)
+          expect(File.exist?(File.join(dir, 'should_ignore.me'))).to be true
+        end
+      end
 
       it "#terraform_check_style" do
         expected_args = [ENV, "terraform", "fmt", "-write=false", @tmp_dir]
@@ -137,41 +149,41 @@ module Covalence
       before(:each) do
         ENV['TERRAFORM_IMG'] = "unifio/terraform:latest"
         ENV['TERRAFORM_CMD'] = "docker run -e ATLAS_TOKEN=$ATLAS_TOKEN --rm"
+        # should probably figure out a way to ensure tmp dir created is deep enough
+        @tmp_dir_array = Pathname.new(@tmp_dir).each_filename.to_a
+        ENV['COVALENCE_WORKSPACE'] = File::SEPARATOR + @tmp_dir_array[0,3].join(File::SEPARATOR)
+        ENV['COVALENCE_TERRAFORM_DIR'] = @tmp_dir_array[3]
+        puts
         # force constants to re-init
         Kernel.silence_warnings {
           load File.join(Covalence::GEM_ROOT, '../covalence.rb')
         }
       end
 
+      after(:each) do
+        %w(TERRAFORM_IMG TERRAFORM_CMD COVALENCE_WORKSPACE COVALENCE_TERRAFORM_DIR).each do |env_var|
+          ENV.delete(env_var)
+        end
+        Dotenv.load(*%w(.env .env.test))
+        Kernel.silence_warnings {
+          load File.join(Covalence::GEM_ROOT, '../covalence.rb')
+        }
+      end
+
+
       it "#terraform_plan" do
-        parent, base = Pathname.new(@tmp_dir).split
-        expected_args = [ENV.to_h, "#{ENV['TERRAFORM_CMD']} -v #{parent}:/data -w /data/#{base} #{ENV['TERRAFORM_IMG']} plan"]
+        expected_args = [ENV.to_h, "#{ENV['TERRAFORM_CMD']} -v #{TERRAFORM}:/tf_base -w #{File.join('/tf_base/', @tmp_dir_array[4..-1].join(File::SEPARATOR))} #{ENV['TERRAFORM_IMG']} plan"]
         expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
         expect(described_class.terraform_plan(path = @tmp_dir)).to be true
       end
 
       it "#terraform_check_style" do
-        parent, base = Pathname.new(@tmp_dir).split
-        expected_args = [ENV, "#{ENV['TERRAFORM_CMD']} -v #{parent}:/data -w /data/#{base} #{ENV['TERRAFORM_IMG']} fmt -write=false"]
+        expected_args = [ENV, "#{ENV['TERRAFORM_CMD']} -v #{@tmp_dir}:/path -w /path #{ENV['TERRAFORM_IMG']} fmt -write=false"]
         process_double = double("process_status")
         allow(process_double).to receive(:success?).and_return(true)
         expect(Open3).to receive(:capture2e).with(*expected_args).and_return(["", process_double])
         expect(described_class.terraform_check_style(path = @tmp_dir)).to be true
       end
     end
-
-    pending "cleans up existing state data from the given stack directory"
-    #@cmd_test = Terraform::Stack.new(@stack_dir, dir: @parent_dir, env: "", img: "", cmd: "", stub: "false")
-    #cmd = "/bin/sh -c \"rm -fr .terraform *.tfstate*\""
-    #expect(Rake).to receive(:sh).with(cmd).and_return(true)
-    #@cmd_test.clean
-
-    #it "cleans up existing state data from the given stack directory within a container" do
-    # unnecesary, this was roundabout way to clean the files.
-    #@cmd_test = Terraform::Stack.new(@stack_dir, dir: @parent_dir, env: "", img: "unifio/terraform:latest", cmd: "docker run --rm", stub: "false")
-    #cmd = "docker run --rm -v #{@parent_dir}:/data -w /data/#{@stack_dir} --entrypoint=\"/bin/sh\" unifio/terraform:latest -c \"rm -fr .terraform *.tfstate*\""
-    #expect(Rake).to receive(:sh).with(cmd).and_return(true)
-    #@cmd_test.clean
-    #end
   end
 end

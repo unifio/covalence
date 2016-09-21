@@ -6,3 +6,8 @@
 - missing spec around reports?
 - Look into muting the reporter as dev default: https://github.com/ci-reporter/ci_reporter
 - Look into getting HieraDB wrapper to read .yml files
+- Terraform: Nil vars should default to empty hash?
+- Terraform CLI in docker probably isn't going anywhere, might need to figure out a nicer way of handling this
+- Consider automatically feeding in env values into docker as -env-file
+- Use covalence to do verification on the open source stacks:
+  - terraform-aws-openvpn
