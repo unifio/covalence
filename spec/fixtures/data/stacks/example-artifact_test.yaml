@@ -16,6 +16,9 @@ myapp2::vars:
     version: 1
     key: 'region.us-west-2'
 
+artifact_test::vars:
+  invalid_key: 'should not exist'
+
 # Test data
 myapp2::array_test:
   - 'stack_data'
@@ -34,3 +37,5 @@ myapp2::hash_test_1:
 myapp2::hash_test_2:
   ami:
     version: 'latest'
+
+myapp2::args: '-no-color'

@@ -1,4 +1,6 @@
 require 'rake'
+require 'slop'
+
 require_relative '../covalence'
 require_relative 'core/repositories/environment_repository'
 require_relative 'core/services/terraform_stack_tasks'
@@ -41,23 +43,32 @@ module Covalence
       environment_name = tf_tasks.environment_name
 
       desc "Create execution plan for the #{generate_rake_taskname(stack_name, context_name)} stack(:context) of the #{environment_name} environment"
-      task generate_rake_taskname(environment_name, stack_name, context_name, "plan") do
-        tf_tasks.context_plan(target_args)
+      task generate_rake_taskname(environment_name, stack_name, context_name, "plan") do |args|
+        custom_opts = Slop.parse(get_runtime_args, { suppress_errors: true, banner: false }) do |o|
+          o.bool '-nd', '--no-drift', 'enable \'-detailed-exitcode\''
+        end
+
+        runtime_args = []
+        if custom_opts.no_drift?
+          runtime_args << "-detailed-exitcode"
+        end
+        runtime_args += custom_opts.args
+        tf_tasks.context_plan(target_args, runtime_args)
       end
 
       desc "Create destruction plan for the #{generate_rake_taskname(stack_name, context_name)} stack(:context) of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "plan_destroy") do
-        tf_tasks.context_plan_destroy(target_args)
+        tf_tasks.context_plan_destroy(target_args, get_runtime_args)
       end
 
       desc "Apply changes to the #{generate_rake_taskname(stack_name, context_name)} stack(:context) of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "apply") do
-        tf_tasks.context_apply(target_args)
+        tf_tasks.context_apply(target_args, get_runtime_args)
       end
 
       desc "Destroy the #{generate_rake_taskname(stack_name, context_name)} stack(:context) of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "destroy") do
-        tf_tasks.context_destroy(target_args)
+        tf_tasks.context_destroy(target_args, get_runtime_args)
       end
     end
 
@@ -95,19 +106,19 @@ module Covalence
     def environment_namespace_terraform_tasks(environ)
       desc "Clean the #{environ.name} environment"
       task "#{environ.name}:clean" do
-        environ.stacks.each { |stack| execute_rake_task(environ.name, stack.name, "clean") }
+        environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "clean") }
       end
 
       desc "Verify the #{environ.name} environment"
       task "#{environ.name}:verify" do
-        environ.stacks.each { |stack| execute_rake_task(environ.name, stack.name, "verify") }
+        environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "verify") }
       end
 
       desc "Create execution plan for the #{environ.name} environment"
       task "#{environ.name}:plan" do
         environ.stacks.each do |stack|
           stack.contexts.each do |context|
-            execute_rake_task(environ.name, stack.name, context.name, "plan")
+            invoke_rake_task(environ.name, stack.name, context.name, "plan")
           end
         end
       end
@@ -116,7 +127,7 @@ module Covalence
       task "#{environ.name}:plan_destroy" do
         environ.stacks.reverse.each do |stack|
           stack.contexts.each do |context|
-            execute_rake_task(environ.name, stack.name, context.name, "plan_destroy")
+            invoke_rake_task(environ.name, stack.name, context.name, "plan_destroy")
           end
         end
       end
@@ -125,7 +136,7 @@ module Covalence
       task "#{environ.name}:apply" do
         environ.stacks.each do |stack|
           stack.contexts.each do |context|
-            execute_rake_task(environ.name, stack.name, context.name, "apply")
+            invoke_rake_task(environ.name, stack.name, context.name, "apply")
           end
         end
       end
@@ -134,14 +145,14 @@ module Covalence
       task "#{environ.name}:destroy" do
         environ.stacks.reverse.each do |stack|
           stack.contexts.each do |context|
-            execute_rake_task(environ.name, stack.name, context.name, "destroy")
+            invoke_rake_task(environ.name, stack.name, context.name, "destroy")
           end
         end
       end
 
       desc "Synchronize state stores for the #{environ.name} environment"
       task "#{environ.name}:sync" do
-        environ.stacks.each { |stack| execute_rake_task(environ.name, stack.name, "sync") }
+        environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "sync") }
       end
     end
 
@@ -149,12 +160,12 @@ module Covalence
     def all_namespace_terraform_tasks
       desc "Clean all environments"
       task "all:clean" do
-        environments.each { |environ| execute_rake_task(environ.name, "clean") }
+        environments.each { |environ| invoke_rake_task(environ.name, "clean") }
       end
 
       desc "Verify all environments"
       task "all:verify" do
-        environments.each { |environ| execute_rake_task(environ.name, "verify") }
+        environments.each { |environ| invoke_rake_task(environ.name, "verify") }
       end
     end
 
@@ -162,10 +173,15 @@ module Covalence
       args.delete_if(&:empty?).map(&:to_s).join(":")
     end
 
-    def execute_rake_task(*args)
+    def invoke_rake_task(*args)
       task_name = generate_rake_taskname(*args)
       logger.info "rake #{task_name}"
-      Rake::Task[task_name].execute
+      Rake::Task[task_name].invoke
+    end
+
+    def get_runtime_args
+      # strips out [<rake_task>, "--"]
+      ARGV.drop(2)
     end
   end
 end
