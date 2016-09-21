@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
   spec.files         = Dir["*.md", "#{gem_root}/**/*"]
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = [ gem_root ]
+  spec.required_ruby_version = '>= 2.0.0'
 
   spec.add_dependency "deep_merge", "~> 1.0.1"
   spec.add_dependency "hiera", "~> 3.2.0"
@@ -39,6 +40,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport", "~> 4.2.6"
   spec.add_dependency "activemodel", "~> 4.2.6"
   spec.add_dependency "semantic", "~> 1.4.1"
+  spec.add_dependency "slop", "~> 4.4.1"
 
   Covalence::Helpers::SpecDependencies.dependencies.each do |name, requirement|
     spec.add_development_dependency name, requirement
@@ -46,7 +48,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "awesome_print", "~> 1.7.0"
   spec.add_development_dependency "bundler", ">= 1.9.0"
   spec.add_development_dependency "dotenv", "~> 2.1.0"
-  spec.add_development_dependency "pry-byebug", "~> 3.4.0"
+  spec.add_development_dependency "byebug", "~> 9.0.5"
   spec.add_development_dependency "serverspec", "~> 2.36.0"
   spec.add_development_dependency "webmock", "~> 2.0.3"
   spec.add_development_dependency "gemfury", "~> 0.6.0"

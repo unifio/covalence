@@ -65,14 +65,26 @@ module Covalence
         it { expect(input.to_command_option).to eq("-var 'input=test'") }
       end
 
-      context "with Terraform Version < 0.7.0" do
+      context "Terraform Version < 0.7.0" do
         it { expect(input.to_command_option).to eq("-var input=\"test\"") }
+
+        context "interpolated shell value" do
+          let(:raw_value) { "$(pwd)" }
+
+          it { expect(input.to_command_option).to eq("-var input=\"$(pwd)\"") }
+        end
       end
 
-      context "with Terraform Version >= 0.7.0" do
+      context "Terraform Version >= 0.7.0" do
         let(:tf_version) { "0.7.0" }
 
         it { expect(input.to_command_option).to eq("-var 'input=\"test\"'") }
+
+        context "interpolated shell value" do
+          let(:raw_value) { "$(pwd)" }
+
+          it { expect(input.to_command_option).to eq("-var 'input=\"#{`pwd`.chomp}\"'") }
+        end
       end
     end
   end
