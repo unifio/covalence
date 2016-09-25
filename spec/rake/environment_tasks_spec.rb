@@ -18,6 +18,7 @@ module Covalence
       # suppress FileUtils verbose
       allow($stderr).to receive(:write)
       allow(Atlas).to receive(:get_artifact).and_return('artifact')
+      ARGV.clear
     end
 
     describe "example:myapp:clean" do
@@ -94,6 +95,45 @@ module Covalence
           "-target=\"module.az0\""
         ]))
         subject.invoke
+      end
+
+      context "--no-drift custom arg" do
+        before(:each) { ARGV.concat(%w(noop noop -detailed-exitcode)) }
+
+        it "executes a plan with -detailed-exitcode" do
+          expect(TerraformCli).to receive(:terraform_clean)
+          expect(TerraformCli).to receive(:terraform_remote_config).at_most(:twice)
+          expect(TerraformCli).to receive(:terraform_get)
+          expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
+            "-var 'label=\"test\"'",
+            "-input=false",
+            "-module-depth=-1",
+            "-no-color",
+            "-target=\"module.az0\"",
+            "-detailed-exitcode"
+          ]))
+          Rake::Task['example:myapp:az0:plan'].invoke
+        end
+      end
+
+
+      context "-some-passthrough-arg" do
+        before(:each) { ARGV.concat(%w(noop noop -some-passthrough-arg)) }
+
+        it "executes a plan with -detailed-exitcode" do
+          expect(TerraformCli).to receive(:terraform_clean)
+          expect(TerraformCli).to receive(:terraform_remote_config).at_most(:twice)
+          expect(TerraformCli).to receive(:terraform_get)
+          expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
+            "-var 'label=\"test\"'",
+            "-input=false",
+            "-module-depth=-1",
+            "-no-color",
+            "-target=\"module.az0\"",
+            "-some-passthrough-arg"
+          ]))
+          Rake::Task['example:myapp:az0:plan'].invoke
+        end
       end
     end
 

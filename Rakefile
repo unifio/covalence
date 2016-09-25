@@ -4,11 +4,18 @@ require 'dotenv'
 require 'rspec/core/rake_task'
 require 'ci/reporter/rake/rspec'
 
-Dotenv.load
+envs = %w(.env)
+if ENV['RAKE_ENV']
+  envs += [".env.#{ENV['RAKE_ENV'].downcase}"]
+end
+Dotenv.load(*envs)
 
 require_relative 'lib/covalence'
-#require_relative File.join(Covalence::GEM_ROOT, 'environment_tasks')
-#require_relative File.join(Covalence::GEM_ROOT, 'spec_tasks')
+
+if ENV['RAKE_ENV']
+  require_relative File.join(Covalence::GEM_ROOT, 'environment_tasks')
+  require_relative File.join(Covalence::GEM_ROOT, 'spec_tasks')
+end
 
 namespace :spec do
   # TODO: Might be able to just use the default rspec spec?

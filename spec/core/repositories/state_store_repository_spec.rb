@@ -7,7 +7,7 @@ module Covalence
       pending
     end
 
-    describe ".query_terraform_by_stack_name" do
+    describe ".query_packer_by_stack_name" do
       pending
     end
   end
