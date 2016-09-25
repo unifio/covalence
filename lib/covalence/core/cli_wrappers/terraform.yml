@@ -1,5 +1,5 @@
 ---
-version: Terraform v0.7.2
+version: Terraform v0.7.4
 commands:
   apply:
   destroy:
@@ -12,7 +12,7 @@ commands:
   push:
   refresh:
   remote:
-    config:
+    #config:
     pull:
     push:
   show:
