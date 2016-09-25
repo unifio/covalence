@@ -12,7 +12,7 @@ commands:
   push:
   refresh:
   remote:
-    config:
+    #config:
     pull:
     push:
   show:

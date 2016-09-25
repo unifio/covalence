@@ -2,6 +2,7 @@ require 'virtus'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 require 'active_model'
+require 'open3'
 
 module Covalence
   class Input
@@ -35,7 +36,13 @@ module Covalence
         "-var '#{name}=#{value}'"
       elsif (Semantic::Version.new(Covalence::TERRAFORM_VERSION) >= Semantic::Version.new("0.7.0") &&
              type == 'terraform')
-        "-var '#{name}=\"#{value}\"'"
+        if value.start_with?("$(")
+          Covalence::LOGGER.info "Evaluating interpolated value: \"#{value}\""
+          interpolated_value = Open3.capture2e(ENV, "echo \"#{value}\"")[0].chomp
+          "-var '#{name}=\"#{interpolated_value}\"'"
+        else
+          "-var '#{name}=\"#{value}\"'"
+        end
       else
         "-var #{name}=\"#{value}\""
       end
