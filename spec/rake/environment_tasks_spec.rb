@@ -337,9 +337,9 @@ module Covalence
       end
 
       it "should sync state from the primary remote state" do
-        expect(TerraformCli).to receive(:terraform_remote_config).with(args: /-backend=Atlas/)
-        expect(TerraformCli).to receive(:terraform_remote_config).with(args: '-disable')
-        expect(TerraformCli).to receive(:terraform_remote_config).with(args: /-backend=s3/)
+        expect(TerraformCli).to receive(:terraform_remote_config).with(anything, args: /-backend=Atlas/)
+        expect(TerraformCli).to receive(:terraform_remote_config).with(anything, args: '-disable')
+        expect(TerraformCli).to receive(:terraform_remote_config).with(anything, args: /-backend=s3/)
         expect(TerraformCli).to receive(:terraform_remote_push)
         subject.invoke
       end
