@@ -55,11 +55,11 @@ module Covalence
       Dir.mktmpdir do |tmpdir|
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
-          TerraformCli.terraform_remote_config(args: store_args)
+          TerraformCli.terraform_remote_config(path, args: store_args)
 
           stack.state_stores.drop(1).each do |store|
-            TerraformCli.terraform_remote_config(args: '-disable')
-            TerraformCli.terraform_remote_config(args: "#{store.get_config} -pull=false")
+            TerraformCli.terraform_remote_config(path, args: '-disable')
+            TerraformCli.terraform_remote_config(path, args: "#{store.get_config} -pull=false")
             TerraformCli.terraform_remote_push(path)
           end
         end
@@ -75,8 +75,8 @@ module Covalence
           logger.info "In #{tmpdir}:"
           TerraformCli.terraform_get(path)
 
-          TerraformCli.terraform_remote_config(args: store_args.split(" "))
-          TerraformCli.terraform_remote_config(args: ["-disable"])
+          TerraformCli.terraform_remote_config(path, args: store_args.split(" "))
+          TerraformCli.terraform_remote_config(path, args: ["-disable"])
           args = collect_args(stack.materialize_cmd_inputs,
                               "-input=false",
                               "-module-depth=-1",
@@ -97,8 +97,8 @@ module Covalence
           logger.info "In #{tmpdir}:"
           TerraformCli.terraform_get(path)
 
-          TerraformCli.terraform_remote_config(args: store_args.split(" "))
-          TerraformCli.terraform_remote_config(args: ["-disable"])
+          TerraformCli.terraform_remote_config(path, args: store_args.split(" "))
+          TerraformCli.terraform_remote_config(path, args: ["-disable"])
           args = collect_args(stack.materialize_cmd_inputs,
                               "-destroy",
                               "-input=false",
@@ -120,7 +120,7 @@ module Covalence
           logger.info "In #{tmpdir}:"
 
           TerraformCli.terraform_get(path)
-          TerraformCli.terraform_remote_config(args: store_args)
+          TerraformCli.terraform_remote_config(path, args: store_args)
           apply_args = collect_args(stack.materialize_cmd_inputs,
                                     stack.args,
                                     additional_args)
@@ -143,7 +143,7 @@ module Covalence
           logger.info "In #{tmpdir}:"
 
           TerraformCli.terraform_get(path)
-          TerraformCli.terraform_remote_config(args: store_args)
+          TerraformCli.terraform_remote_config(path, args: store_args)
           destroy_args = collect_args(stack.materialize_cmd_inputs,
                                       stack.args,
                                       additional_args)
