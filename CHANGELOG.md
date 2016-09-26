@@ -2,8 +2,14 @@
 
 BACKWARDS INCOMPATIBILITIES:
 FEATURES:
+- Terraform vars are now fed in via `-var-file` instead of individual `-var` commands. Should be able to leverage the new terraform data types to avoid intermediate serialization of array/hash data.
+
 IMPROVEMENTS:
 FIXES:
+
+## 0.4.2 (September 26, 2016)
+FIXES:
+- Terraform remote config now works from the module path instead of a temporary directory, which should ensure that the state gets read correctly when ran from a docker context
 
 ## 0.4.1 (September 25, 2016)
 
