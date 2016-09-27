@@ -3,7 +3,6 @@ require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 require 'active_model'
 require 'open3'
-require 'byebug'
 
 module Covalence
   class Input
@@ -39,7 +38,6 @@ module Covalence
         "-var '#{name}=#{parsed_value}'"
       elsif (Semantic::Version.new(Covalence::TERRAFORM_VERSION) >= Semantic::Version.new("0.7.0") &&
              type == 'terraform')
-        #byebug
         if parsed_value.is_a?(Hash)
           parsed_value = parsed_value.with_indifferent_access['value']
         end
