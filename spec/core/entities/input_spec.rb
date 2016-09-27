@@ -35,6 +35,19 @@ module Covalence
         expect(test_backend_class).to receive(:lookup).with(subcategory, raw_value).and_return(remote_value)
       end
 
+      context "new terraform api remote API response format" do
+        let(:remote_value) do
+          {
+            "sensitive": false,
+            "type": "string",
+            "value": "foo"
+          }
+        end
+
+        it 'returns the value' do
+          expect(input.to_command_option).to eq("-var 'input=\"foo\"'")
+        end
+      end
       it "returns the value for a non-local key by calling the backend lookup" do
         expect(input.value).to eq(remote_value)
         expect(input.raw_value).to_not eq(remote_value)
@@ -79,6 +92,7 @@ module Covalence
         let(:tf_version) { "0.7.0" }
 
         it { expect(input.to_command_option).to eq("-var 'input=\"test\"'") }
+
 
         context "interpolated shell value" do
           let(:raw_value) { "$(pwd)" }
