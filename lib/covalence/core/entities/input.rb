@@ -3,6 +3,7 @@ require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 require 'active_model'
 require 'open3'
+require 'byebug'
 
 module Covalence
   class Input
@@ -30,21 +31,27 @@ module Covalence
 
     #TODO: ugh, this is horrid and error prone. Address with var-file generation
     def to_command_option
-      if value.nil?
+      parsed_value = value()
+
+      if parsed_value.nil?
         "-var '#{name}='"
       elsif (type == 'packer')
-        "-var '#{name}=#{value}'"
+        "-var '#{name}=#{parsed_value}'"
       elsif (Semantic::Version.new(Covalence::TERRAFORM_VERSION) >= Semantic::Version.new("0.7.0") &&
              type == 'terraform')
-        if value.start_with?("$(")
-          Covalence::LOGGER.info "Evaluating interpolated value: \"#{value}\""
-          interpolated_value = Open3.capture2e(ENV, "echo \"#{value}\"")[0].chomp
+        #byebug
+        if parsed_value.is_a?(Hash)
+          parsed_value = parsed_value.with_indifferent_access['value']
+        end
+        if parsed_value.start_with?("$(")
+          Covalence::LOGGER.info "Evaluating interpolated value: \"#{parsed_value}\""
+          interpolated_value = Open3.capture2e(ENV, "echo \"#{parsed_value}\"")[0].chomp
           "-var '#{name}=\"#{interpolated_value}\"'"
         else
-          "-var '#{name}=\"#{value}\"'"
+          "-var '#{name}=\"#{parsed_value}\"'"
         end
       else
-        "-var #{name}=\"#{value}\""
+        "-var #{name}=\"#{parsed_value}\""
       end
     end
 
