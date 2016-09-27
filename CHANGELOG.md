@@ -6,6 +6,9 @@ FEATURES:
 
 IMPROVEMENTS:
 FIXES:
+## 0.4.3 (September 27, 2016)
+FIXES:
+- Handle new terraform API output formats for remote inputs
 
 ## 0.4.2 (September 26, 2016)
 FIXES:
