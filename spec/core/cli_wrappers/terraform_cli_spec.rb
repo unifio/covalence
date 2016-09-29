@@ -4,6 +4,7 @@ require 'active_support/core_ext/kernel/reporting'
 
 require 'spec_helper'
 require_relative File.join(Covalence::GEM_ROOT, 'core/cli_wrappers/terraform_cli')
+require_relative File.join(Covalence::GEM_ROOT, 'core/cli_wrappers/popen_wrapper')
 
 module Covalence
   RSpec.describe TerraformCli do
@@ -15,7 +16,7 @@ module Covalence
       %w(TERRAFORM_IMG TERRAFORM_CMD COVALENCE_WORKSPACE COVALENCE_TERRAFORM_DIR).each do |env_var|
         @cached_env[env_var] = ENV[env_var]
       end
-      allow($stdout).to receive(:write)
+      allow(PopenWrapper).to receive(:print_cmd_string)
     end
 
     after(:each) do
@@ -38,86 +39,86 @@ module Covalence
       end
 
       it "#terraform_apply" do
-        expected_args = [ENV.to_h, "terraform apply #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform apply #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_apply(path = @tmp_dir)).to be true
       end
 
       it "#terraform_destroy" do
-        expected_args = [ENV.to_h, "terraform destroy #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform destroy #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_destroy(path = @tmp_dir)).to be true
       end
 
       it "#terraform_fmt" do
-        expected_args = [ENV.to_h, "terraform fmt #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform fmt #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_fmt(path = @tmp_dir)).to be true
       end
 
       it "#terraform_get" do
-        expected_args = [ENV.to_h, "terraform get #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform get #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_get(path = @tmp_dir)).to be true
       end
 
       it "#terraform_graph" do
-        expected_args = [ENV.to_h, "terraform graph #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform graph #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_graph(path = @tmp_dir)).to be true
       end
 
       it "#terraform_plan" do
-        expected_args = [ENV.to_h, "terraform plan #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform plan #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_plan(path = @tmp_dir)).to be true
       end
 
       it "#terraform_push" do
-        expected_args = [ENV.to_h, "terraform push #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform push #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_push(path = @tmp_dir)).to be true
       end
 
       it "#terraform_refresh" do
-        expected_args = [ENV.to_h, "terraform refresh #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform refresh #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_refresh(path = @tmp_dir)).to be true
       end
 
       it "#terraform_remote_config" do
-        expected_args = [ENV.to_h, "terraform remote config #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform remote config #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_remote_config(path = @tmp_dir)).to be true
       end
 
       it "#terraform_remote_pull" do
-        expected_args = [ENV.to_h, "terraform remote pull #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform remote pull #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_remote_pull(path = @tmp_dir)).to be true
       end
 
       it "#terraform_remote_push" do
-        expected_args = [ENV.to_h, "terraform remote push #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform remote push #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_remote_push(path = @tmp_dir)).to be true
       end
 
       it "#terraform_show" do
-        expected_args = [ENV.to_h, "terraform show #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform show #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_show(path = @tmp_dir)).to be true
       end
 
       it "#terraform_validate" do
-        expected_args = [ENV.to_h, "terraform validate #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform validate #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_validate(path = @tmp_dir)).to be true
       end
 
       it "#terraform_version" do
-        expected_args = [ENV.to_h, "terraform version #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "terraform version #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_version(path = @tmp_dir)).to be true
       end
 
@@ -151,8 +152,8 @@ module Covalence
           load File.join(Covalence::GEM_ROOT, '../covalence.rb') rescue nil
         }
 
-        expected_args = [ENV.to_h, "/usr/local/bin/terraform plan #{@tmp_dir}"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "/usr/local/bin/terraform plan #{@tmp_dir}", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_plan(path = @tmp_dir)).to be true
       end
     end
@@ -165,7 +166,6 @@ module Covalence
         @tmp_dir_array = Pathname.new(@tmp_dir).each_filename.to_a
         ENV['COVALENCE_WORKSPACE'] = File::SEPARATOR + @tmp_dir_array[0,1].join(File::SEPARATOR)
         ENV['COVALENCE_TERRAFORM_DIR'] = @tmp_dir_array[1]
-
         # force constants to re-init
         Kernel.silence_warnings {
           load File.join(Covalence::GEM_ROOT, '../covalence.rb')
@@ -173,8 +173,8 @@ module Covalence
       end
 
       it "#terraform_plan" do
-        expected_args = [ENV.to_h, "#{ENV['TERRAFORM_CMD']} -v #{TERRAFORM}:/tf_base -w #{File.join('/tf_base/', @tmp_dir_array[2..-1].join(File::SEPARATOR))} #{ENV['TERRAFORM_IMG']} plan"]
-        expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
+        expected_args = [ENV, "#{ENV['TERRAFORM_CMD']} -v #{TERRAFORM}:/tf_base -w #{File.join('/tf_base/', @tmp_dir_array[2..-1].join(File::SEPARATOR))} #{ENV['TERRAFORM_IMG']} plan", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(true)
         expect(described_class.terraform_plan(path = @tmp_dir)).to be true
       end
 

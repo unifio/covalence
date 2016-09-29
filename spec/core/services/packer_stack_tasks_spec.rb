@@ -12,6 +12,7 @@ module Covalence
     end
 
     describe "#context_build" do
+      # TODO: check tempfile is generated in packer module directory
       pending
     end
 

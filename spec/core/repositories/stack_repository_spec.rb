@@ -19,21 +19,27 @@ module Covalence
         end
 
         context "with an invalid environment" do
-          it "raises an error with an invalid environment" do
-            expect {
-              described_class.find(data_store, 'examplez', 'artifact_test')
-            }.to raise_exception(RuntimeError, /missing 'state' hash/)
+          it "prints info about the invalid environment-stack combo" do
+            expect(Covalence::LOGGER).to receive(:info).and_return(true)
+            described_class.find(data_store, 'examplez', 'artifact_test')
+          end
+
+          it "returns nil" do
+            expect(described_class.find(data_store, 'examplez', 'artifact_test')).to be_nil
           end
         end
       end
 
-      context "with an invalid stack" do
+      context "with an invalid terraform stack" do
         let(:data_store) { HieraDB::Client.new("spec/fixtures/covalence_bad_state.yaml") }
 
-        it "raises an error" do
-          expect {
-            described_class.find(data_store, 'example', 'bad_state')
-          }.to raise_exception(RuntimeError, /missing 'state' hash/)
+        it "prints info about the invalid environment-stack combo" do
+          expect(Covalence::LOGGER).to receive(:info).and_return(true)
+          described_class.find(data_store, 'example', 'bad_state')
+        end
+
+        it "returns nil" do
+          expect( described_class.find(data_store, 'example', 'bad_state')).to be_nil
         end
       end
     end
