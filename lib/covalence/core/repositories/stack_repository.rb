@@ -13,7 +13,7 @@ module Covalence
         'environment' => environment_name,
         'stack' => stack_name,
       }
-      validate_terraform_stack_scope(data_store, stack_scope)
+      return if invalid_terraform_stack_scope(data_store, stack_scope)
 
       stack_data_store = data_store.initialize_scope(stack_scope)
       shared_namespace = lookup_shared_namespace(stack_data_store, stack_name).gsub('/', '::')
@@ -81,9 +81,9 @@ module Covalence
 
       # :reek:FeatureEnvy
       # :reek:NilCheck
-      def validate_terraform_stack_scope(data_store, arguments)
+      def invalid_terraform_stack_scope(data_store, arguments)
         if data_store.lookup("#{arguments['stack']}::state", nil, arguments).nil?
-          raise "#{arguments['stack']} stack missing 'state' hash of the #{arguments['environment']} environment"
+          Covalence::LOGGER.info "#{arguments['stack']} stack missing 'state' hash of the #{arguments['environment']} environment"
         end
       end
     end
