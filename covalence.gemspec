@@ -41,6 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activemodel", "~> 4.2.6"
   spec.add_dependency "semantic", "~> 1.4.1"
   spec.add_dependency "slop", "~> 4.4.1"
+  spec.add_dependency "highline", "~> 1.6.0"
 
   Covalence::Helpers::SpecDependencies.dependencies.each do |name, requirement|
     spec.add_development_dependency name, requirement

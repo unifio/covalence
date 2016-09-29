@@ -7,13 +7,13 @@ module Covalence
   class InputRepository
     class << self
       def query_terraform_by_namespace(data_store, namespace)
-        results = parse_var_file('terraform', input_file_key['terraform'], data_store, namespace)
-        results.merge(query_tool_by_namespace(input_key['terraform'], data_store, namespace))
+        results = parse_var_file('terraform', data_store, namespace)
+        results.merge(query_tool_by_namespace('terraform', data_store, namespace))
       end
 
       def query_packer_by_namespace(data_store, namespace)
-        results = parse_var_file('packer', input_file_key['packer'], data_store, namespace)
-        results.merge(query_tool_by_namespace(input_key['packer'], data_store, namespace))
+        results = parse_var_file('packer', data_store, namespace)
+        results.merge(query_tool_by_namespace('packer', data_store, namespace))
       end
 
       private
@@ -33,10 +33,11 @@ module Covalence
       end
 
       #TODO: refactor nested conditional
-      def parse_var_file(tool, tool_key, data_store, namespace)
+      def parse_var_file(tool, data_store, namespace)
         yaml_ext = %w(yaml yml)
         json_ext = %w(json)
 
+        tool_key = input_file_key[tool]
         varfile = data_store.lookup("#{namespace}::#{tool_key}", nil)
         return {} unless varfile
         tool_module_path ="Covalence::#{tool.upcase}".constantize
@@ -50,7 +51,7 @@ module Covalence
           end
 
           tmp_hash = tmp_hash.map do |name, raw_value|
-            [ name, Input.new(type: tool, name: name, raw_value: raw_value) ]
+            [ name, Input.new(name: name, type: tool, raw_value: raw_value) ]
           end
           Hash[*tmp_hash.flatten]
         else
@@ -58,9 +59,10 @@ module Covalence
         end
       end
 
-      def query_tool_by_namespace(tool_key, data_store, namespace)
+      def query_tool_by_namespace(tool, data_store, namespace)
+        tool_key = input_key[tool]
         tmp_hash = data_store.hash_lookup("#{namespace}::#{tool_key}", {}).map do |name, raw_value|
-          [ name, Input.new(name: name, raw_value: raw_value) ]
+          [ name, Input.new(name: name, type: tool, raw_value: raw_value) ]
         end
         Hash[*tmp_hash.flatten]
       end
