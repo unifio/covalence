@@ -7,12 +7,24 @@ require_relative File.join(Covalence::GEM_ROOT, 'core/cli_wrappers/terraform_cli
 
 module Covalence
   RSpec.describe TerraformCli do
-    before(:all) do
-      @tmp_dir = Dir.mktmpdir
-    end
+    before(:all) { @tmp_dir = Dir.mktmpdir }
     after(:all) { FileUtils.remove_entry(@tmp_dir) }
+
     before(:each) do
+      @cached_env = {}
+      %w(TERRAFORM_IMG TERRAFORM_CMD COVALENCE_WORKSPACE COVALENCE_TERRAFORM_DIR).each do |env_var|
+        @cached_env[env_var] = ENV[env_var]
+      end
       allow($stdout).to receive(:write)
+    end
+
+    after(:each) do
+      %w(TERRAFORM_IMG TERRAFORM_CMD COVALENCE_WORKSPACE COVALENCE_TERRAFORM_DIR).each do |env_var|
+        ENV[env_var] = @cached_env[env_var]
+      end
+      Kernel.silence_warnings {
+        load File.join(Covalence::GEM_ROOT, '../covalence.rb')
+      }
     end
 
     describe "when running native terraform", :native do
@@ -151,28 +163,17 @@ module Covalence
         ENV['TERRAFORM_CMD'] = "docker run -e ATLAS_TOKEN=$ATLAS_TOKEN --rm"
         # should probably figure out a way to ensure tmp dir created is deep enough
         @tmp_dir_array = Pathname.new(@tmp_dir).each_filename.to_a
-        ENV['COVALENCE_WORKSPACE'] = File::SEPARATOR + @tmp_dir_array[0,3].join(File::SEPARATOR)
-        ENV['COVALENCE_TERRAFORM_DIR'] = @tmp_dir_array[3]
-        puts
+        ENV['COVALENCE_WORKSPACE'] = File::SEPARATOR + @tmp_dir_array[0,1].join(File::SEPARATOR)
+        ENV['COVALENCE_TERRAFORM_DIR'] = @tmp_dir_array[1]
+
         # force constants to re-init
         Kernel.silence_warnings {
           load File.join(Covalence::GEM_ROOT, '../covalence.rb')
         }
       end
 
-      after(:each) do
-        %w(TERRAFORM_IMG TERRAFORM_CMD COVALENCE_WORKSPACE COVALENCE_TERRAFORM_DIR).each do |env_var|
-          ENV.delete(env_var)
-        end
-        Dotenv.load(*%w(.env .env.test))
-        Kernel.silence_warnings {
-          load File.join(Covalence::GEM_ROOT, '../covalence.rb')
-        }
-      end
-
-
       it "#terraform_plan" do
-        expected_args = [ENV.to_h, "#{ENV['TERRAFORM_CMD']} -v #{TERRAFORM}:/tf_base -w #{File.join('/tf_base/', @tmp_dir_array[4..-1].join(File::SEPARATOR))} #{ENV['TERRAFORM_IMG']} plan"]
+        expected_args = [ENV.to_h, "#{ENV['TERRAFORM_CMD']} -v #{TERRAFORM}:/tf_base -w #{File.join('/tf_base/', @tmp_dir_array[2..-1].join(File::SEPARATOR))} #{ENV['TERRAFORM_IMG']} plan"]
         expect(Kernel).to receive(:system).with(*expected_args).and_return(true)
         expect(described_class.terraform_plan(path = @tmp_dir)).to be true
       end
