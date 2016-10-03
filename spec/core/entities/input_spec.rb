@@ -36,11 +36,20 @@ module Covalence
       end
 
       context "new terraform api remote API response format" do
+        let(:tf_version) { "0.7.4" }
         let(:remote_value) do
           {
             "sensitive": false,
             "type": "string",
             "value": "foo"
+          }
+        end
+
+        before(:each) do
+          ENV['TERRAFORM_VERSION'] = tf_version
+          # force constants to re-init
+          Kernel.silence_warnings {
+            load File.join(Covalence::GEM_ROOT, '../covalence.rb')
           }
         end
 

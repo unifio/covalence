@@ -21,14 +21,14 @@ namespace :spec do
   # TODO: Might be able to just use the default rspec spec?
   desc 'Run Covalence tests'
   RSpec::Core::RakeTask.new(:covalence) do |t|
-    t.pattern = "#{File.join(Covalence::PROJECT_ROOT, 'spec/**/*_spec.rb')}"
+    t.pattern = "#{File.join(File.dirname(__FILE__), 'spec/**/*_spec.rb')}"
     t.rspec_opts = "--color --format documentation"
     t.verbose = true
   end
 
   desc 'Run CircleCI friendly Covalence tests'
   RSpec::Core::RakeTask.new(:circleci) do |t|
-    t.pattern = "#{File.join(Covalence::PROJECT_ROOT, 'spec/**/*_spec.rb')}"
+    t.pattern = "#{File.join(File.dirname(__FILE__), 'spec/**/*_spec.rb')}"
     t.rspec_opts = "--color --format documentation --tag ~native"
     t.verbose = true
   end
