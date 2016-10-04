@@ -25,7 +25,6 @@ module Covalence
   TERRAFORM_VERSION = ENV['TERRAFORM_VERSION'] || `#{TF_CMD} #{TF_IMG} version`.split("\n", 2)[0].gsub('Terraform v','')
 
   # Internal constants
-  PROJECT_ROOT = File.expand_path('../../../', __FILE__).freeze
   GEM_ROOT = File.expand_path('covalence', File.dirname(__FILE__)).freeze
   # look into logger-colors
   LOGGER = Logger.new(STDOUT)
