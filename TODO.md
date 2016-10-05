@@ -1,13 +1,13 @@
 - individual state-stores: would be nice if it had something to describe the backing input types
-- stack caching opportunities if they're called multiple times in the rake tasks
 - consider httparty vs rest-client
 - Use the invalid yaml syntax to figure out more things in rake tasks that needs to be lazy loaded
 - Like the idea of maybe splitting out the syntax elements to a different gem. Gem installation & management would become easier
 - missing spec around reports?
 - Look into muting the reporter as dev default: https://github.com/ci-reporter/ci_reporter
 - Look into getting HieraDB wrapper to read .yml files
-- Terraform: Nil vars should default to empty hash?
 - Terraform CLI in docker probably isn't going anywhere, might need to figure out a nicer way of handling this
-- Consider automatically feeding in env values into docker as -env-file
 - Use covalence to do verification on the open source stacks:
   - terraform-aws-openvpn
+- Plugin architecture
+- rollup tasks in terraform need to check terraform only tasks
+- stack_repository: backfill packer related tests

@@ -1,11 +1,34 @@
 ## (Unreleased)
 
 BACKWARDS INCOMPATIBILITIES:
+- In-line shell outputs now have a different format
+
 FEATURES:
 - Terraform vars are now fed in via `-var-file` instead of individual `-var` commands. Should be able to leverage the new terraform data types to avoid intermediate serialization of array/hash data.
+- Docker env variables can now be set by pointing at a DOCKER_ENV_FILE, which is fed to underlying docker commands via `-env-file`
 
 IMPROVEMENTS:
+- Terraform: Nil vars should default to empty hash?
+
 FIXES:
+
+## 0.5.0 (October 5, 2016)
+
+FEATURES:
+- Better control of running terraform/packer subprocesses:
+  - Ctrl-C breaks out of Terraform/Packer commands (also suppresses the normal debugging output from packer/terraform when they're natively sent a SIGINT)
+  - Debug capability built into the rake task runs to manually confirm each step
+
+IMPROVEMENTS:
+- Allow packer stacks to standalone
+- Finer grain control around terraform exit-codes and when to abort the rake task
+
+FIXES:
+- Non-zero error codes now return properly from rake tasks (if the
+  underlying CLI command did not choose to ignore error codes)
+- Packer runs generate temp JSON files in the packer module directory,
+  allows the use of `{{ template_dir }}` for script locations.
+
 ## 0.4.3 (September 27, 2016)
 FIXES:
 - Handle new terraform API output formats for remote inputs

@@ -43,7 +43,7 @@ module Covalence
       begin
         tmp_file = nil
         if template_is_yaml?(template_path)
-          tmp_file = Tempfile.new('file')
+          tmp_file = Tempfile.new('file', File.dirname(template_path))
           tmp_file.write(YAML.load_file(template_path).to_json)
           tmp_file.rewind
 
