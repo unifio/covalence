@@ -20,9 +20,15 @@ module Covalence
   TEST_ENVS = (ENV['COVALENCE_TEST_ENVS'] || ENV['PROMETHEUS_TEST_ENVS'] || "").split(',')
 
   # should be able to deprecate this with covalence bundled inside the container
-  TF_IMG = ENV['TERRAFORM_IMG'] || ""
-  TF_CMD = ENV['TERRAFORM_CMD'] || "terraform"
-  TERRAFORM_VERSION = ENV['TERRAFORM_VERSION'] || `#{TF_CMD} #{TF_IMG} version`.split("\n", 2)[0].gsub('Terraform v','')
+  TERRAFORM_IMG = ENV['TERRAFORM_IMG'] || ""
+  TERRAFORM_CMD = ENV['TERRAFORM_CMD'] || "terraform"
+  TERRAFORM_VERSION = ENV['TERRAFORM_VERSION'] || `#{TERRAFORM_CMD} #{TERRAFORM_IMG} version`.split("\n", 2)[0].gsub('Terraform v','')
+
+  # No-op shell command. Should not need to modify for most unix shells.
+  DRY_RUN_CMD = (ENV['COVALENCE_DRY_RUN_CMD'] || ":")
+  DEBUG_CLI = (ENV['COVALENCE_DEBUG'] || 'false') =~ (/(true|t|yes|y|1)$/i)
+
+  #DOCKER_ENV_FILE
 
   # Internal constants
   GEM_ROOT = File.expand_path('covalence', File.dirname(__FILE__)).freeze

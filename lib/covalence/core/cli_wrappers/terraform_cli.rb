@@ -34,10 +34,10 @@ module Covalence
     end
 
     def self.terraform_check_style(path)
-      if Covalence::TF_IMG.blank?
-        output, status = Open3.capture2e(ENV, Covalence::TF_CMD, "fmt", "-write=false", path)
+      if Covalence::TERRAFORM_IMG.blank?
+        output, status = Open3.capture2e(ENV, Covalence::TERRAFORM_CMD, "fmt", "-write=false", path)
       else
-        output, status = Open3.capture2e(ENV, "#{Covalence::TF_CMD} -v #{path}:/path -w /path #{Covalence::TF_IMG} fmt -write=false")
+        output, status = Open3.capture2e(ENV, "#{Covalence::TERRAFORM_CMD} -v #{path}:/path -w /path #{Covalence::TERRAFORM_IMG} fmt -write=false")
       end
       return false unless status.success?
       output = output.split("\n")
@@ -45,10 +45,10 @@ module Covalence
     end
 
     def self.terraform_remote_config(path=Dir.pwd(), args: '')
-      if Covalence::TF_IMG.blank?
-        PopenWrapper.run([Covalence::TF_CMD, "remote", "config"], path, args)
+      if Covalence::TERRAFORM_IMG.blank?
+        PopenWrapper.run([Covalence::TERRAFORM_CMD, "remote", "config"], path, args)
       else
-        PopenWrapper.run([Covalence::TF_CMD, "-v #{path}:/path -w /path #{Covalence::TF_IMG}", "remote", "config"], '', args)
+        PopenWrapper.run([Covalence::TERRAFORM_CMD, "-v #{path}:/path -w /path #{Covalence::TERRAFORM_IMG}", "remote", "config"], '', args)
       end
     end
 
@@ -79,11 +79,11 @@ module Covalence
 
             next if respond_to?(terraform_cmd.to_sym)
             define_singleton_method(terraform_cmd) do |path=Dir.pwd(), args: ''|
-              if Covalence::TF_IMG.blank?
-                PopenWrapper.run([Covalence::TF_CMD, cmd], path, args)
+              if Covalence::TERRAFORM_IMG.blank?
+                PopenWrapper.run([Covalence::TERRAFORM_CMD, cmd], path, args)
               else
                 parent, base = docker_scope_path(path)
-                PopenWrapper.run([Covalence::TF_CMD, "-v #{parent}:/tf_base -w #{File.join('/tf_base', base)} #{Covalence::TF_IMG}", cmd], '', args)
+                PopenWrapper.run([Covalence::TERRAFORM_CMD, "-v #{parent}:/tf_base -w #{File.join('/tf_base', base)} #{Covalence::TERRAFORM_IMG}", cmd], '', args)
               end
             end
           elsif sub_hash.is_a?(Hash)
@@ -92,11 +92,11 @@ module Covalence
 
               next if respond_to?(terraform_cmd.to_sym)
               define_singleton_method(terraform_cmd) do |path=Dir.pwd(), args: ''|
-                if Covalence::TF_IMG.blank?
-                  PopenWrapper.run([Covalence::TF_CMD, cmd, sub_command], path, args)
+                if Covalence::TERRAFORM_IMG.blank?
+                  PopenWrapper.run([Covalence::TERRAFORM_CMD, cmd, sub_command], path, args)
                 else
                   parent, base = docker_scope_path(path)
-                  PopenWrapper.run([Covalence::TF_CMD, "-v #{parent}:/tf_base -w #{File.join('/tf_base', base)} #{Covalence::TF_IMG}", cmd, sub_command], '', args)
+                  PopenWrapper.run([Covalence::TERRAFORM_CMD, "-v #{parent}:/tf_base -w #{File.join('/tf_base', base)} #{Covalence::TERRAFORM_IMG}", cmd, sub_command], '', args)
                 end
               end
             end
