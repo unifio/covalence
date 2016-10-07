@@ -58,7 +58,7 @@ module Covalence
           TerraformCli.terraform_remote_config(path, args: store_args)
 
           stack.state_stores.drop(1).each do |store|
-            TerraformCli.terraform_remote_config(path, args: '-disable')
+            TerraformCli.terraform_remote_config(path, args: '-disable', ignore_exitcode: true)
             TerraformCli.terraform_remote_config(path, args: "#{store.get_config} -pull=false")
             TerraformCli.terraform_remote_push(path)
           end
@@ -76,7 +76,7 @@ module Covalence
           TerraformCli.terraform_get(path)
 
           TerraformCli.terraform_remote_config(path, args: store_args.split(" "))
-          TerraformCli.terraform_remote_config(path, args: ["-disable"])
+          TerraformCli.terraform_remote_config(path, args: ["-disable"], ignore_exitcode: true)
           args = collect_args(stack.materialize_cmd_inputs,
                               "-input=false",
                               "-module-depth=-1",
@@ -98,7 +98,7 @@ module Covalence
           TerraformCli.terraform_get(path)
 
           TerraformCli.terraform_remote_config(path, args: store_args.split(" "))
-          TerraformCli.terraform_remote_config(path, args: ["-disable"])
+          TerraformCli.terraform_remote_config(path, args: ["-disable"], ignore_exitcode: true)
           args = collect_args(stack.materialize_cmd_inputs,
                               "-destroy",
                               "-input=false",
