@@ -27,7 +27,6 @@ module Covalence
         end
 
         it 'passes execution' do
-          TerraformCli.terraform_remote_config(args: "-disable")
           args = stack.materialize_cmd_inputs + [
             "-input=false",
             "-module-depth=-1",
