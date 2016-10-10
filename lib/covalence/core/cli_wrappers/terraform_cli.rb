@@ -54,6 +54,7 @@ module Covalence
         (output == 0)
       else
         output = PopenWrapper.run([
+          Covalence::TERRAFORM_CMD,
           "-v #{path}:/path -w /path #{Covalence::TERRAFORM_IMG}",
           "remote",
           "config"],
