@@ -12,6 +12,15 @@ IMPROVEMENTS:
 
 FIXES:
 
+## 0.5.1 (October 10, 2016)
+
+FEATURES:
+- Packer build and validate now accept runtime arguments, ie `rake example:packer-module:build -- -var "foo=baz"`
+
+FIXES:
+- PopenWrapper issues with mismatching exit-codes for happy path runs.
+- Terraform remote config needed to ignore exitcodes in a few places where it was being called as a precaution or for 0.6.x compatibility reasons.
+
 ## 0.5.0 (October 5, 2016)
 
 FEATURES:

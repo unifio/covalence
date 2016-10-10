@@ -11,3 +11,4 @@
 - Plugin architecture
 - rollup tasks in terraform need to check terraform only tasks
 - stack_repository: backfill packer related tests
+- packer: utils to gen uuids as inputs?

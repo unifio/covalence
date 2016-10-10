@@ -37,7 +37,8 @@ module Covalence
 
       desc "Build the #{generate_rake_taskname(stack_name, context_name)} packer stack(:context) of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "packer-build") do
-        packer_tasks.context_build(target_args)
+        custom_opts = Slop.parse(get_runtime_args, { suppress_errors: true, banner: false })
+        packer_tasks.context_build(target_args, custom_opts.args)
       end
 
       desc "Inspect the #{generate_rake_taskname(stack_name, context_name)} packer stack(:context) of the #{environment_name} environment"
@@ -50,12 +51,18 @@ module Covalence
 
       desc "Validate the #{generate_rake_taskname(stack_name, context_name)} packer stack(:context) of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "packer-validate") do
-        packer_tasks.context_validate(target_args)
+        custom_opts = Slop.parse(get_runtime_args, { suppress_errors: true, banner: false })
+        packer_tasks.context_validate(target_args, custom_opts.args)
       end
     end
 
     def generate_rake_taskname(*args)
       args.delete_if(&:empty?).map(&:to_s).join(":")
+    end
+
+    def get_runtime_args
+      # strips out [<rake_task>, "--"]
+      ARGV.drop(2)
     end
   end
 end
