@@ -72,8 +72,9 @@ module Covalence
 
         Signal.trap("INT") { exit } #Restore parent SIGINT
 
-        return if ignore_exitcode
+        return 0 if ignore_exitcode
         exit(wait_thread.value.exitstatus) unless wait_thread.value.success?
+        return wait_thread.value.exitstatus
       end
 
       def handle_io_streams(mappings, stdin_io)
