@@ -35,7 +35,16 @@ module Covalence
       if parsed_value.nil?
         "-var '#{name}='"
       elsif (type == 'packer')
-        "-var '#{name}=#{parsed_value}'"
+        if parsed_value.is_a?(Hash)
+          parsed_value = parsed_value.with_indifferent_access['value']
+        end
+        if parsed_value.start_with?("$(")
+          Covalence::LOGGER.info "Evaluating interpolated value: \"#{parsed_value}\""
+          interpolated_value = Open3.capture2e(ENV, "echo \"#{parsed_value}\"")[0].chomp
+          "-var '#{name}=#{interpolated_value}'"
+        else
+          "-var '#{name}=#{parsed_value}'"
+        end
       elsif (Semantic::Version.new(Covalence::TERRAFORM_VERSION) >= Semantic::Version.new("0.7.0") &&
              type == 'terraform')
         if parsed_value.is_a?(Hash)

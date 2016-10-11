@@ -7,7 +7,7 @@ module Covalence
       def self.dependencies
         {
           "ci_reporter_rspec" => "~> 1.0.0",
-          "rspec" => "~> 3.4.0"
+          "rspec" => "~> 3.4"
         }
       end
 

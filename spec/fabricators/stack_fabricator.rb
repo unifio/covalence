@@ -3,7 +3,6 @@ require_relative File.join(Covalence::GEM_ROOT, 'core/entities/stack')
 Fabricator(:stack, from: 'Covalence::Stack') do
   on_init { init_with(name: "example_stack") }
   environment_name "example_environment"
-  state_stores { Fabricate.times(3, :state_store) }
   inputs do
     {
       'local_input' => Fabricate(:local_input),
@@ -12,10 +11,10 @@ Fabricator(:stack, from: 'Covalence::Stack') do
   end
   contexts { Fabricate.times(2, :context) }
   args "-no-color"
-  #tf_module
-  #packer_template
-  #state_stores
-  #inputs
+  #state_stores - terraform only
+  #tf_module - terraform only
+  #packer_template - packer only
+  #state_stores - terraform only
 
   after_build(&:valid?)
 end
@@ -23,7 +22,8 @@ end
 Fabricator(:terraform_stack, from: :stack) do
   on_init do
     init_with(name: "example_stack",
-              type: "terraform")
+              type: "terraform",
+              state_stores: Fabricate.times(3, :state_store))
   end
 end
 
@@ -31,6 +31,7 @@ end
 Fabricator(:packer_stack, from: :stack) do
   on_init do
     init_with(name: "example_stack",
-              type: "packer")
+              type: "packer",
+              packer_template: 'example_packer_template')
   end
 end
