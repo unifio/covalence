@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    covalence (0.5.1)
+    covalence (0.5.2)
       activemodel (~> 4.2.6)
       activesupport (~> 4.2.6)
       aws-sdk (~> 2.3.8)
@@ -123,7 +123,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (4.4.1)
-    specinfra (2.63.1)
+    specinfra (2.63.3)
       net-scp
       net-ssh (>= 2.7, < 4.0)
       net-telnet
@@ -157,7 +157,7 @@ DEPENDENCIES
   dotenv (~> 2.1.0)
   fabrication (~> 2.15.2)
   gemfury (~> 0.6.0)
-  rspec (~> 3.4.0)
+  rspec (~> 3.4)
   serverspec (~> 2.36.0)
   simplecov (~> 0.12.0)
   webmock (~> 2.0.3)
