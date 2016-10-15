@@ -16,13 +16,15 @@ module Covalence
   # TODO: could use better naming
   PACKER = File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_PACKER_DIR'] || ENV['PROMETHEUS_PACKER_DIR'] || 'packer')))
   TERRAFORM =  File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_TERRAFORM_DIR'] || ENV['PROMETHEUS_TERRAFORM_DIR'] || 'terraform')))
-  PACKER_CMD = ENV['PACKER_CMD'] || "packer"
   TEST_ENVS = (ENV['COVALENCE_TEST_ENVS'] || ENV['PROMETHEUS_TEST_ENVS'] || "").split(',')
 
   # should be able to deprecate this with covalence bundled inside the container
   TERRAFORM_IMG = ENV['TERRAFORM_IMG'] || ""
   TERRAFORM_CMD = ENV['TERRAFORM_CMD'] || "terraform"
   TERRAFORM_VERSION = ENV['TERRAFORM_VERSION'] || `#{TERRAFORM_CMD} #{TERRAFORM_IMG} version`.split("\n", 2)[0].gsub('Terraform v','')
+
+  PACKER_IMG = ENV['PACKER_IMG'] || ""
+  PACKER_CMD = ENV['PACKER_CMD'] || "packer"
 
   # No-op shell command. Should not need to modify for most unix shells.
   DRY_RUN_CMD = (ENV['COVALENCE_DRY_RUN_CMD'] || ":")

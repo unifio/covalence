@@ -31,7 +31,7 @@ module Covalence
         end
 
         if debug
-          return unless HighLine.new.agree('Execute? [y/n]')
+          return 0 unless HighLine.new.agree('Execute? [y/n]')
         end
 
         spawn_subprocess(ENV, run_cmd, {

@@ -12,6 +12,15 @@ IMPROVEMENTS:
 
 FIXES:
 
+## 0.5.2 (October 12, 2016)
+FEATURES:
+- Packer can now be ran from docker containers. Follows the same conventions as terraform by specifying `PACKER_IMG`, `PACKER_CMD`
+
+FIXES:
+- More minor PopenWrapper return code fixes
+- Allow packer to deal with shell interpolation values via the same terraform shell interpolation prefix: `$(...`
+
+
 ## 0.5.1 (October 10, 2016)
 
 FEATURES:
