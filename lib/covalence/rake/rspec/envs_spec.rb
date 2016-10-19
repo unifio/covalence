@@ -13,7 +13,6 @@ module Covalence
 
         before(:all) do
           TerraformCli.terraform_clean(path)
-          TerraformCli.terraform_get(path)
         end
 
         it 'passes style check' do
@@ -27,6 +26,8 @@ module Covalence
         end
 
         it 'passes execution' do
+          TerraformCli.terraform_get(path)
+
           args = stack.materialize_cmd_inputs + [
             "-input=false",
             "-module-depth=-1",
