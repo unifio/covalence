@@ -12,6 +12,11 @@ IMPROVEMENTS:
 
 FIXES:
 
+## 0.5.3 (October 19, 2016)
+FIXES:
+- terraform destroy tasks receive the `-force` param instead of `-input=false`.
+- `env:spec` only does format checking on the specific path module, not the dependent modules referenced underneath.
+
 ## 0.5.2 (October 12, 2016)
 FEATURES:
 - Packer can now be ran from docker containers. Follows the same conventions as terraform by specifying `PACKER_IMG`, `PACKER_CMD`
