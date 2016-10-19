@@ -236,7 +236,8 @@ module Covalence
         expect(TerraformCli).to receive(:terraform_destroy).with(anything, hash_including(args: [
           "-var 'label=\"test\"'",
           "-no-color",
-          "-target=\"module.az0\""
+          "-target=\"module.az0\"",
+          "-force",
         ]))
         subject.invoke
       end
@@ -318,12 +319,13 @@ module Covalence
       end
 
       it "executes a destroy" do
-        expect(TerraformCli).to receive(:terraform_destroy).with(anything, hash_including(args: [
+        expect(TerraformCli).to receive(:terraform_destroy).with(anything, hash_including(args: array_including(
           "-var 'label=\"test\"'",
           "-no-color",
           "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\""
-        ]))
+          "-target=\"module.common.aws_eip.myapp\"",
+          "-force",
+        )))
         subject.invoke
       end
     end
@@ -400,7 +402,9 @@ module Covalence
       end
 
       it "executes a destroy" do
-        expect(TerraformCli).to receive(:terraform_destroy).with(anything, hash_including(args: []))
+        expect(TerraformCli).to receive(:terraform_destroy).with(anything, hash_including(args: array_including(
+          "-force",
+        )))
         subject.invoke
       end
     end
