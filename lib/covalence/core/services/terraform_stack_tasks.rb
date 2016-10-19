@@ -135,7 +135,7 @@ module Covalence
     end
 
     # :reek:TooManyStatements
-    def context_destroy(*additional_args)
+    def context_destroy(target_args, *additional_args)
       TerraformCli.terraform_clean(path)
 
       Dir.mktmpdir do |tmpdir|
@@ -144,15 +144,17 @@ module Covalence
 
           TerraformCli.terraform_get(path)
           TerraformCli.terraform_remote_config(path, args: store_args)
-          destroy_args = collect_args(stack.materialize_cmd_inputs,
-                                      stack.args,
-                                      additional_args)
-          args = collect_args(destroy_args,
+          base_args = collect_args(stack.materialize_cmd_inputs, stack.args, target_args)
+
+          plan_args = collect_args(base_args,
                               "-destroy",
                               "-input=false",
                               "-module-depth=-1")
+          destroy_args = collect_args(base_args,
+                                      additional_args,
+                                      "-force")
 
-          TerraformCli.terraform_plan(path, args: args)
+          TerraformCli.terraform_plan(path, args: plan_args)
           TerraformCli.terraform_destroy(path, args: destroy_args)
         end
       end
