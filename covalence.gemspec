@@ -35,7 +35,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "json", "~> 1.8.3"
   spec.add_dependency "rest-client", "~> 2.0.0.rc3"
   spec.add_dependency "rake", ">= 11.1.2"
-  spec.add_dependency "aws-sdk", "~> 2.3.8"
+  spec.add_dependency "aws-sdk", "~> 2.9.5"
   spec.add_dependency "virtus", "~> 1.0.5"
   spec.add_dependency "activesupport", "~> 4.2.6"
   spec.add_dependency "activemodel", "~> 4.2.6"
