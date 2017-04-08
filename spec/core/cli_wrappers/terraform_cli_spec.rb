@@ -69,7 +69,7 @@ module Covalence
       end
 
       it "#terraform_init" do
-        expected_args = [ENV, "terraform init -get=true -input=false", anything]
+        expected_args = [ENV, "terraform init -get=false -input=false", anything]
         expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
         expect(described_class.terraform_init).to be true
       end
