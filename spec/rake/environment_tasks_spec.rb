@@ -9,10 +9,11 @@ require_relative '../shared_contexts/rake.rb'
 module Covalence
   describe EnvironmentTasks do
     let(:task_files) { "environment_tasks.rb" }
+    let(:state_file) { 'state.tf' }
 
     before(:each) do
       Kernel.silence_warnings {
-        Covalence::TERRAFORM_VERSION = "0.7.0"
+        Covalence::TERRAFORM_VERSION = "0.9.2"
       }
       allow(PopenWrapper).to receive(:run).and_return(true)
       # suppress FileUtils verbose
@@ -42,28 +43,22 @@ module Covalence
     describe "example:myapp:verify" do
       include_context "rake"
 
-      it "cleans the workspace" do
-        expect(TerraformCli).to receive(:terraform_clean)
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
-
-      it "gets Terraform modules" do
-        expect(TerraformCli).to receive(:terraform_get)
-        subject.invoke
-      end
-
+      
       it "executes template validation" do
         expect(TerraformCli).to receive(:terraform_validate)
         subject.invoke
       end
 
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
           "-input=false",
-          "-module-depth=-1",
           "-no-color"
-        ]))
+        )))
         subject.invoke
       end
     end
@@ -71,29 +66,18 @@ module Covalence
     describe "example:myapp:az0:plan" do
       include_context "rake"
 
-      it "cleans the workspace" do
-        expect(TerraformCli).to receive(:terraform_clean)
-        subject.invoke
-      end
-
-      it "configures remote state" do
-        expect(TerraformCli).to receive(:terraform_remote_config).at_most(:twice)
-        subject.invoke
-      end
-
-      it "gets Terraform modules" do
-        expect(TerraformCli).to receive(:terraform_get)
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
           "-input=false",
-          "-module-depth=-1",
           "-no-color",
           "-target=\"module.az0\""
-        ]))
+        )))
         subject.invoke
       end
 
@@ -101,17 +85,14 @@ module Covalence
         before(:each) { ARGV.concat(%w(noop noop -detailed-exitcode)) }
 
         it "executes a plan with -detailed-exitcode" do
-          expect(TerraformCli).to receive(:terraform_clean)
-          expect(TerraformCli).to receive(:terraform_remote_config).at_most(:twice)
-          expect(TerraformCli).to receive(:terraform_get)
-          expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
+          expect(TerraformCli).to receive(:terraform_init)
+          expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
             "-var 'label=\"test\"'",
             "-input=false",
-            "-module-depth=-1",
             "-no-color",
             "-target=\"module.az0\"",
             "-detailed-exitcode"
-          ]))
+          )))
           Rake::Task['example:myapp:az0:plan'].invoke
         end
       end
@@ -121,17 +102,14 @@ module Covalence
         before(:each) { ARGV.concat(%w(noop noop -some-passthrough-arg)) }
 
         it "executes a plan with -detailed-exitcode" do
-          expect(TerraformCli).to receive(:terraform_clean)
-          expect(TerraformCli).to receive(:terraform_remote_config).at_most(:twice)
-          expect(TerraformCli).to receive(:terraform_get)
-          expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
+          expect(TerraformCli).to receive(:terraform_init)
+          expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
             "-var 'label=\"test\"'",
             "-input=false",
-            "-module-depth=-1",
             "-no-color",
             "-target=\"module.az0\"",
             "-some-passthrough-arg"
-          ]))
+          )))
           Rake::Task['example:myapp:az0:plan'].invoke
         end
       end
@@ -140,25 +118,19 @@ module Covalence
     describe "example:myapp:az0:plan_destroy" do
       include_context "rake"
 
-      it "cleans the workspace" do
-        expect(TerraformCli).to receive(:terraform_clean)
-        subject.invoke
-      end
-
-      it "gets Terraform modules" do
-        expect(TerraformCli).to receive(:terraform_get)
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
           "-destroy",
           "-input=false",
-          "-module-depth=-1",
           "-no-color",
           "-target=\"module.az0\""
-        ]))
+        )))
         subject.invoke
       end
     end
@@ -166,26 +138,15 @@ module Covalence
     describe "example:myapp:az0:apply" do
       include_context "rake"
 
-      it "cleans the workspace" do
-        expect(TerraformCli).to receive(:terraform_clean)
-        subject.invoke
-      end
-
-      it "configures remote state" do
-        expect(TerraformCli).to receive(:terraform_remote_config)
-        subject.invoke
-      end
-
-      it "gets Terraform modules" do
-        expect(TerraformCli).to receive(:terraform_get)
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: array_including(
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
           "-input=false",
-          "-module-depth=-1",
           "-no-color",
           "-target=\"module.az0\""
         )))
@@ -193,11 +154,12 @@ module Covalence
       end
 
       it "executes an apply" do
-        expect(TerraformCli).to receive(:terraform_apply).with(anything, hash_including(args: [
+        expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
+          "-input=false",
           "-no-color",
           "-target=\"module.az0\""
-        ]))
+        )))
         subject.invoke
       end
     end
@@ -205,27 +167,16 @@ module Covalence
     describe "example:myapp:az0:destroy" do
       include_context "rake"
 
-      it "cleans the workspace" do
-        expect(TerraformCli).to receive(:terraform_clean)
-        subject.invoke
-      end
-
-      it "configures remote state" do
-        expect(TerraformCli).to receive(:terraform_remote_config)
-        subject.invoke
-      end
-
-      it "gets Terraform modules" do
-        expect(TerraformCli).to receive(:terraform_get)
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: array_including(
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
           "-destroy",
           "-input=false",
-          "-module-depth=-1",
           "-no-color",
           "-target=\"module.az0\""
         )))
@@ -233,12 +184,13 @@ module Covalence
       end
 
       it "executes a destroy" do
-        expect(TerraformCli).to receive(:terraform_destroy).with(anything, hash_including(args: [
+        expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
+          "-input=false",
           "-no-color",
           "-target=\"module.az0\"",
           "-force",
-        ]))
+        )))
         subject.invoke
       end
     end
@@ -246,15 +198,19 @@ module Covalence
     describe "example:myapp:az1:plan" do
       include_context "rake"
 
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
+        subject.invoke
+      end
+
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
           "-input=false",
-          "-module-depth=-1",
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\""
-        ]))
+        )))
         subject.invoke
       end
     end
@@ -262,16 +218,20 @@ module Covalence
     describe "example:myapp:az1:plan_destroy" do
       include_context "rake"
 
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
+        subject.invoke
+      end
+
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
           "-destroy",
           "-input=false",
-          "-module-depth=-1",
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\""
-        ]))
+        )))
         subject.invoke
       end
     end
@@ -279,11 +239,15 @@ module Covalence
     describe "example:myapp:az1:apply" do
       include_context "rake"
 
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
+        subject.invoke
+      end
+
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: array_including(
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
           "-input=false",
-          "-module-depth=-1",
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\""
@@ -292,12 +256,13 @@ module Covalence
       end
 
       it "executes an apply" do
-        expect(TerraformCli).to receive(:terraform_apply).with(anything, hash_including(args: [
+        expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
+          "-input=false",
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\""
-        ]))
+        )))
         subject.invoke
       end
     end
@@ -305,27 +270,32 @@ module Covalence
     describe "example:myapp:az1:destroy" do
       include_context "rake"
 
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
+        subject.invoke
+      end
+
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: array_including(
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
           "-var 'label=\"test\"'",
-          "-destroy",
           "-input=false",
-          "-module-depth=-1",
           "-no-color",
           "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\""
-        )))
+          "-target=\"module.common.aws_eip.myapp\"",
+          "-destroy"
+        ]))
         subject.invoke
       end
 
       it "executes a destroy" do
-        expect(TerraformCli).to receive(:terraform_destroy).with(anything, hash_including(args: array_including(
+        expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: [
           "-var 'label=\"test\"'",
+          "-input=false",
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\"",
           "-force",
-        )))
+        ]))
         subject.invoke
       end
     end
@@ -333,16 +303,8 @@ module Covalence
     describe "example:myapp:sync" do
       include_context "rake"
 
-      it "cleans the workspace" do
-        expect(TerraformCli).to receive(:terraform_clean)
-        subject.invoke
-      end
-
-      it "should sync state from the primary remote state" do
-        expect(TerraformCli).to receive(:terraform_remote_config).with(anything, args: /-backend=Atlas/)
-        expect(TerraformCli).to receive(:terraform_remote_config).with(anything, args: '-disable', ignore_exitcode: true)
-        expect(TerraformCli).to receive(:terraform_remote_config).with(anything, args: /-backend=s3/)
-        expect(TerraformCli).to receive(:terraform_remote_push)
+      it "should reinitiailze the backend and copy the state" do
+        expect(TerraformCli).to receive(:terraform_init).at_most(:twice)
         subject.invoke
       end
     end
@@ -350,10 +312,14 @@ module Covalence
     describe "example:module_test:plan" do
       include_context "rake"
 
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
+        subject.invoke
+      end
+
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
-          "-input=false",
-          "-module-depth=-1"
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
+          "-input=false"
         ]))
         subject.invoke
       end
@@ -362,11 +328,15 @@ module Covalence
     describe "example:module_test:plan_destroy" do
       include_context "rake"
 
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
+        subject.invoke
+      end
+
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
           "-destroy",
-          "-input=false",
-          "-module-depth=-1"
+          "-input=false"
         ]))
         subject.invoke
       end
@@ -375,16 +345,22 @@ module Covalence
     describe "example:module_test:apply" do
       include_context "rake"
 
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
+        subject.invoke
+      end
+
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
-          "-input=false",
-          "-module-depth=-1"
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
+          "-input=false"
         ]))
         subject.invoke
       end
 
       it "executes an apply" do
-        expect(TerraformCli).to receive(:terraform_apply).with(anything, hash_including(args: []))
+        expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: [
+          "-input=false"
+        ]))
         subject.invoke
       end
     end
@@ -392,19 +368,24 @@ module Covalence
     describe "example:module_test:destroy" do
       include_context "rake"
 
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
+        subject.invoke
+      end
+
       it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(anything, hash_including(args: [
-          "-destroy",
+        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
           "-input=false",
-          "-module-depth=-1"
+          "-destroy"
         ]))
         subject.invoke
       end
 
       it "executes a destroy" do
-        expect(TerraformCli).to receive(:terraform_destroy).with(anything, hash_including(args: array_including(
-          "-force",
-        )))
+        expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: [
+          "-input=false",
+          "-force"
+        ]))
         subject.invoke
       end
     end

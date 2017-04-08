@@ -30,37 +30,41 @@ module Covalence
 
     # :reek:TooManyStatements
     def stack_verify
-      TerraformCli.terraform_clean(path)
-
       Dir.mktmpdir do |tmpdir|
+        FileUtils.copy_entry @path, tmpdir
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
-          TerraformCli.terraform_get(path)
-          TerraformCli.terraform_validate(path)
+          TerraformCli.terraform_init
+          TerraformCli.terraform_validate
+
           args = collect_args(stack.materialize_cmd_inputs,
                               "-input=false",
-                              "-module-depth=-1",
                               stack.args)
 
-          TerraformCli.terraform_plan(path, args: args)
+          TerraformCli.terraform_plan(args: args)
         end
       end
     end
 
     # :reek:TooManyStatements
     def stack_sync
-      # might want some control/logic around which one is the source of truth other than the first
-      TerraformCli.terraform_clean(path)
-
       Dir.mktmpdir do |tmpdir|
+        FileUtils.copy_entry @path, tmpdir
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
-          TerraformCli.terraform_remote_config(path, args: store_args)
+
+          # Create the state configuration file
+          logger.info "\nState store configuration:\n\n#{@store_args}"
+          File.open('state.tf','w') {|f| f.write(@store_args)}
+
+          TerraformCli.terraform_init
 
           stack.state_stores.drop(1).each do |store|
-            TerraformCli.terraform_remote_config(path, args: '-disable', ignore_exitcode: true)
-            TerraformCli.terraform_remote_config(path, args: "#{store.get_config} -pull=false")
-            TerraformCli.terraform_remote_push(path)
+            args = store.get_config
+            # Update the state configuration and reinitialize
+            logger.info "\nState store configuration:\n\n#{args}"
+            File.open('state.tf','w') {|f| f.write(args)}
+            TerraformCli.terraform_init("-force-copy")
           end
         end
       end
@@ -68,94 +72,100 @@ module Covalence
 
     # :reek:TooManyStatements
     def context_plan(*additional_args)
-      TerraformCli.terraform_clean(path)
-
       Dir.mktmpdir do |tmpdir|
+        FileUtils.copy_entry @path, tmpdir
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
-          TerraformCli.terraform_get(path)
 
-          TerraformCli.terraform_remote_config(path, args: store_args.split(" "))
-          TerraformCli.terraform_remote_config(path, args: ["-disable"], ignore_exitcode: true)
+          # Create the state configuration file
+          logger.info "\nState store configuration:\n\n#{@store_args}"
+          File.open('state.tf','w') {|f| f.write(@store_args)}
+
+          TerraformCli.terraform_init
+
           args = collect_args(stack.materialize_cmd_inputs,
                               "-input=false",
-                              "-module-depth=-1",
                               stack.args,
                               additional_args)
 
-          TerraformCli.terraform_plan(path, args: args)
+          TerraformCli.terraform_plan(args: args)
         end
       end
     end
 
     # :reek:TooManyStatements
     def context_plan_destroy(*additional_args)
-      TerraformCli.terraform_clean(path)
-
       Dir.mktmpdir do |tmpdir|
+        FileUtils.copy_entry @path, tmpdir
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
-          TerraformCli.terraform_get(path)
 
-          TerraformCli.terraform_remote_config(path, args: store_args.split(" "))
-          TerraformCli.terraform_remote_config(path, args: ["-disable"], ignore_exitcode: true)
+          # Create the state configuration file
+          logger.info "\nState store configuration:\n\n#{@store_args}"
+          File.open('state.tf','w') {|f| f.write(@store_args)}
+
+          TerraformCli.terraform_init
+
           args = collect_args(stack.materialize_cmd_inputs,
                               "-destroy",
                               "-input=false",
-                              "-module-depth=-1",
                               stack.args,
                               additional_args)
 
-          TerraformCli.terraform_plan(path, args: args)
+          TerraformCli.terraform_plan(args: args)
         end
       end
     end
 
     # :reek:TooManyStatements
     def context_apply(*additional_args)
-      TerraformCli.terraform_clean(path)
-
       Dir.mktmpdir do |tmpdir|
+        FileUtils.copy_entry @path, tmpdir
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          TerraformCli.terraform_get(path)
-          TerraformCli.terraform_remote_config(path, args: store_args)
-          apply_args = collect_args(stack.materialize_cmd_inputs,
-                                    stack.args,
-                                    additional_args)
-          args = collect_args(apply_args,
-                              "-input=false",
-                              "-module-depth=-1")
+          # Create the state configuration file
+          logger.info "\nState store configuration:\n\n#{@store_args}"
+          File.open('state.tf','w') {|f| f.write(@store_args)}
 
-          TerraformCli.terraform_plan(path, args: args)
-          TerraformCli.terraform_apply(path, args: apply_args)
+          TerraformCli.terraform_init
+
+          args = collect_args(stack.materialize_cmd_inputs,
+                              "-input=false",
+                              stack.args,
+                              additional_args)
+
+          TerraformCli.terraform_plan(args: args)
+          TerraformCli.terraform_apply(args: args)
         end
       end
     end
 
     # :reek:TooManyStatements
-    def context_destroy(target_args, *additional_args)
-      TerraformCli.terraform_clean(path)
-
+    def context_destroy(*additional_args)
       Dir.mktmpdir do |tmpdir|
+        FileUtils.copy_entry @path, tmpdir
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          TerraformCli.terraform_get(path)
-          TerraformCli.terraform_remote_config(path, args: store_args)
-          base_args = collect_args(stack.materialize_cmd_inputs, stack.args, target_args)
+          # Create the state configuration file
+          logger.info "\nState store configuration:\n\n#{@store_args}"
+          File.open('state.tf','w') {|f| f.write(@store_args)}
+
+          TerraformCli.terraform_init
+          base_args = collect_args(stack.materialize_cmd_inputs,
+                                   "-input=false",
+                                   stack.args,
+                                   additional_args)
 
           plan_args = collect_args(base_args,
-                              "-destroy",
-                              "-input=false",
-                              "-module-depth=-1")
+                              "-destroy")
+
           destroy_args = collect_args(base_args,
-                                      additional_args,
                                       "-force")
 
-          TerraformCli.terraform_plan(path, args: plan_args)
-          TerraformCli.terraform_destroy(path, args: destroy_args)
+          TerraformCli.terraform_plan(args: plan_args)
+          TerraformCli.terraform_destroy(args: destroy_args)
         end
       end
     end
