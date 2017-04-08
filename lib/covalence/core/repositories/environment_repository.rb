@@ -43,8 +43,8 @@ module Covalence
         if invalid_stacks.size > 0
           error_string = <<-eos
           Invalid stack(s) #{invalid_stacks} for environment #{environment_name}.
-          Valid terraform stacks: #{terraform_stack_names}
-          Valid packer stacks: #{packer_stack_names}
+          Valid Terraform stacks: #{terraform_stack_names}
+          Valid Packer stacks: #{packer_stack_names}
           eos
           raise error_string.strip
         end

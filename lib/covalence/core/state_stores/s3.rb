@@ -64,20 +64,26 @@ module Covalence
       raise "State store parameters must be a Hash" unless params.is_a?(Hash)
       required_params = [
         'bucket',
-        'name',
+        'name'
       ]
       required_params.each do |param|
         raise "Missing '#{param}' store parameter" unless params.has_key?(param)
       end
 
-      config_string = "-backend=s3 -backend-config=\"key=#{params['name']}/terraform.tfstate\""
+      config = <<-CONF
+terraform {
+  backend "s3" {
+    key = "#{params['name']}/terraform.tfstate"
+CONF
 
       params.delete('name')
       params.each do |k,v|
-        config_string += " -backend-config=\"#{k}=#{v}\""
+        config += "    #{k} = \"#{v}\"\n"
       end
 
-      return config_string
+      config += "  }\n}\n"
+
+      return config
     end
 
     # Return module capabilities

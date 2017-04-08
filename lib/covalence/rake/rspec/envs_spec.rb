@@ -30,7 +30,6 @@ module Covalence
 
           args = stack.materialize_cmd_inputs + [
             "-input=false",
-            "-module-depth=-1",
             stack.args.strip,
           ]
           expect(TerraformCli.terraform_plan(path, args: args)).to be true
