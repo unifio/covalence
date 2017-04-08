@@ -68,6 +68,12 @@ module Covalence
         expect(described_class.terraform_graph(@tmp_dir)).to be true
       end
 
+      it "#terraform_init" do
+        expected_args = [ENV, "terraform init -get=true -input=false", anything]
+        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
+        expect(described_class.terraform_init).to be true
+      end
+
       it "#terraform_plan" do
         expected_args = [ENV, "terraform plan #{@tmp_dir}", anything]
         expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
@@ -84,24 +90,6 @@ module Covalence
         expected_args = [ENV, "terraform refresh #{@tmp_dir}", anything]
         expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
         expect(described_class.terraform_refresh(@tmp_dir)).to be true
-      end
-
-      it "#terraform_remote_config" do
-        expected_args = [ENV, "terraform remote config #{@tmp_dir}", anything]
-        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
-        expect(described_class.terraform_remote_config(@tmp_dir)).to be true
-      end
-
-      it "#terraform_remote_pull" do
-        expected_args = [ENV, "terraform remote pull #{@tmp_dir}", anything]
-        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
-        expect(described_class.terraform_remote_pull(@tmp_dir)).to be true
-      end
-
-      it "#terraform_remote_push" do
-        expected_args = [ENV, "terraform remote push #{@tmp_dir}", anything]
-        expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
-        expect(described_class.terraform_remote_push(@tmp_dir)).to be true
       end
 
       it "#terraform_show" do

@@ -1,27 +1,33 @@
 ---
-version: Terraform v0.7.4
+version: Terraform v0.9.2
 commands:
   apply:
+  #console:
   destroy:
+  #env:
+    #list:
+    #select:
+    #new:
+    #delete:
   fmt:
+  #force-unlock
   get:
   graph:
-  #init: #too messy
-  #output: #handle manually (required arg)
+  #import
+  #init:
+  #output:
   plan:
   push:
   refresh:
-  remote:
-    #config:
-    pull:
-    push:
   show:
-  #taint: #handle manually (required arg)
-  #untaint: #handle manually (required arg)
-  validate:
-  version:
-  #state: todo
+  state:
     #list:
     #mv:
+    #pull:
+    #push:
     #rm:
     #show:
+  #taint:
+  #untaint:
+  validate:
+  version:
