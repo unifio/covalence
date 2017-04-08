@@ -115,7 +115,14 @@ module Covalence
     context "State store configuration" do
       it "is returned given valid store parameters" do
         config = Atlas::get_state_store({'name'=>'unifio/example-vpc'})
-        expect(config).to eql('-backend-config="name=unifio/example-vpc" -backend=Atlas')
+        output = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "unifio/example-vpc"
+  }
+}
+CONF
+        expect(config).to eql(output)
       end
 
       it "is not returned given invalid store parameters" do

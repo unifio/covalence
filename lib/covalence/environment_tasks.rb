@@ -42,7 +42,7 @@ module Covalence
       stack_name = tf_tasks.stack_name
       environment_name = tf_tasks.environment_name
 
-      desc "Create execution plan for the #{generate_rake_taskname(stack_name, context_name)} stack(:context) of the #{environment_name} environment"
+      desc "Create execution plan for the #{generate_rake_taskname(stack_name, context_name)} stack of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "plan") do |args|
         custom_opts = Slop.parse(get_runtime_args, { suppress_errors: true, banner: false }) do |o|
           o.bool '-nd', '--no-drift', 'enable \'-detailed-exitcode\''
@@ -56,17 +56,17 @@ module Covalence
         tf_tasks.context_plan(target_args, runtime_args)
       end
 
-      desc "Create destruction plan for the #{generate_rake_taskname(stack_name, context_name)} stack(:context) of the #{environment_name} environment"
+      desc "Create destruction plan for the #{generate_rake_taskname(stack_name, context_name)} stack of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "plan_destroy") do
         tf_tasks.context_plan_destroy(target_args, get_runtime_args)
       end
 
-      desc "Apply changes to the #{generate_rake_taskname(stack_name, context_name)} stack(:context) of the #{environment_name} environment"
+      desc "Apply changes to the #{generate_rake_taskname(stack_name, context_name)} stack of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "apply") do
         tf_tasks.context_apply(target_args, get_runtime_args)
       end
 
-      desc "Destroy the #{generate_rake_taskname(stack_name, context_name)} stack(:context) of the #{environment_name} environment"
+      desc "Destroy the #{generate_rake_taskname(stack_name, context_name)} stack of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "destroy") do
         tf_tasks.context_destroy(target_args, get_runtime_args)
       end

@@ -86,8 +86,16 @@ module Covalence
 
     context "State store configuration" do
       it "is returned given valid store parameters" do
-        config = Consul::get_state_store({'name'=>'unifio/example-vpc'})
-        expect(config).to eql('-backend-config="path=unifio/example-vpc" -backend=Consul')
+        config = Consul::get_state_store({'name'=>'unifio/example-vpc','access_token'=>'token'})
+        output = <<-CONF
+terraform {
+  backend "consul" {
+    path = "unifio/example-vpc"
+    access_token = "token"
+  }
+}
+CONF
+        expect(config).to eql(output)
       end
 
       it "is not returned given invalid store parameters" do
