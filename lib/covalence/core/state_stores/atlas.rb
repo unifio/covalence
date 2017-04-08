@@ -90,7 +90,15 @@ module Covalence
       raise "State store parameters must be a Hash" unless params.is_a?(Hash)
       raise "Missing 'name' store parameter" unless params.has_key? 'name'
 
-      "-backend-config=\"name=#{params['name']}\" -backend=Atlas"
+      config = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "#{params['name']}"
+  }
+}
+CONF
+
+      return config
     end
 
     def self.ensure_atlas_token_set

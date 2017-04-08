@@ -83,9 +83,28 @@ module Covalence
     # Return configuration for remote state store.
     def self.get_state_store(params)
       raise "State store parameters must be a Hash" unless params.is_a?(Hash)
-      raise "Missing 'name' store parameter" unless params.has_key? 'name'
+      required_params = [
+        'access_token',
+        'name'
+      ]
+      required_params.each do |param|
+        raise "Missing '#{param}' store parameter" unless params.has_key?(param)
+      end
 
-      "-backend-config=\"path=#{params['name']}\" -backend=Consul"
+      config = <<-CONF
+terraform {
+  backend "consul" {
+    path = "#{params['name']}"
+CONF
+
+      params.delete('name')
+      params.each do |k,v|
+        config += "    #{k} = \"#{v}\"\n"
+      end
+
+      config += "  }\n}\n"
+
+      return config
     end
 
     # Return module capabilities

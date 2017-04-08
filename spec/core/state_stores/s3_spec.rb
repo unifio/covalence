@@ -65,8 +65,17 @@ module Covalence
 
     context "State store configuration" do
       it "is returned given valid store parameters" do
-        config = S3::get_state_store({'name'=>'unifio/example-vpc','bucket'=>'unifio-terraform'})
-        expect(config).to eql('-backend=s3 -backend-config="key=unifio/example-vpc/terraform.tfstate" -backend-config="bucket=unifio-terraform"')
+        config = S3::get_state_store({'name'=>'unifio/example-vpc','bucket'=>'unifio-terraform','region'=>'us-east-1'})
+        output = <<-CONF
+terraform {
+  backend "s3" {
+    key = "unifio/example-vpc/terraform.tfstate"
+    bucket = "unifio-terraform"
+    region = "us-east-1"
+  }
+}
+CONF
+        expect(config).to eql(output)
       end
 
       it "is not returned given invalid store parameters" do
