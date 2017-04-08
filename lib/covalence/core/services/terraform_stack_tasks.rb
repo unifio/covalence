@@ -21,11 +21,11 @@ module Covalence
     end
 
     def stack_clean
-      TerraformCli.terraform_clean(path)
+      TerraformCli.terraform_clean(@path)
     end
 
     def stack_format
-      TerraformCli.terraform_fmt(path)
+      TerraformCli.terraform_fmt(@path)
     end
 
     # :reek:TooManyStatements
@@ -34,7 +34,10 @@ module Covalence
         FileUtils.copy_entry @path, tmpdir
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
+
+          TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
+
           TerraformCli.terraform_validate
 
           args = collect_args(stack.materialize_cmd_inputs,
@@ -81,6 +84,7 @@ module Covalence
           logger.info "\nState store configuration:\n\n#{@store_args}"
           File.open('state.tf','w') {|f| f.write(@store_args)}
 
+          TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
           args = collect_args(stack.materialize_cmd_inputs,
@@ -104,6 +108,7 @@ module Covalence
           logger.info "\nState store configuration:\n\n#{@store_args}"
           File.open('state.tf','w') {|f| f.write(@store_args)}
 
+          TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
           args = collect_args(stack.materialize_cmd_inputs,
@@ -128,6 +133,7 @@ module Covalence
           logger.info "\nState store configuration:\n\n#{@store_args}"
           File.open('state.tf','w') {|f| f.write(@store_args)}
 
+          TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
           args = collect_args(stack.materialize_cmd_inputs,
@@ -152,7 +158,9 @@ module Covalence
           logger.info "\nState store configuration:\n\n#{@store_args}"
           File.open('state.tf','w') {|f| f.write(@store_args)}
 
+          TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
+
           base_args = collect_args(stack.materialize_cmd_inputs,
                                    "-input=false",
                                    stack.args,

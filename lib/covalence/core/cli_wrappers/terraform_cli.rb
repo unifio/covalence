@@ -47,7 +47,7 @@ module Covalence
     def self.terraform_init(path='', args: '', ignore_exitcode: false)
       if Covalence::TERRAFORM_IMG.blank?
         output = PopenWrapper.run([
-          Covalence::TERRAFORM_CMD, "init", "-get=true", "-input=false"],
+          Covalence::TERRAFORM_CMD, "init", "-get=false", "-input=false"],
           path,
           args,
           ignore_exitcode: ignore_exitcode)
