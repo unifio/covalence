@@ -11,10 +11,10 @@ require_relative 'popen_wrapper'
 module Covalence
   class TerraformCli
     def self.require_init()
-      if Semantic::Version.new(Covalence::TERRAFORM_VERSION) >= Semantic::Version.new("0.7.0")
-        cmds_yml = File.expand_path("terraform.yml", __dir__)
+      if Semantic::Version.new(Covalence::TERRAFORM_VERSION) < Semantic::Version.new("0.9.0")
+        raise "Terraform v0.9.0 or newer required"
       else
-        cmds_yml = File.expand_path("terraform-0.6.16.yml", __dir__)
+        cmds_yml = File.expand_path("terraform.yml", __dir__)
       end
       init_terraform_cmds(cmds_yml)
     end
@@ -44,10 +44,10 @@ module Covalence
       (output.size == 0)
     end
 
-    def self.terraform_remote_config(path=Dir.pwd(), args: '', ignore_exitcode: false)
+    def self.terraform_init(path='', args: '', ignore_exitcode: false)
       if Covalence::TERRAFORM_IMG.blank?
         output = PopenWrapper.run([
-          Covalence::TERRAFORM_CMD, "remote", "config"],
+          Covalence::TERRAFORM_CMD, "init", "-get=true", "-input=false"],
           path,
           args,
           ignore_exitcode: ignore_exitcode)
@@ -55,10 +55,12 @@ module Covalence
       else
         output = PopenWrapper.run([
           Covalence::TERRAFORM_CMD,
-          "-v #{path}:/path -w /path #{Covalence::TERRAFORM_IMG}",
-          "remote",
-          "config"],
+          "-v #{Dir.pwd()}:/path -w /path #{Covalence::TERRAFORM_IMG}",
+          "init",
+          "-get=true",
+          "-input=false"],
           '',
+          path,
           args,
           ignore_exitcode: ignore_exitcode)
         (output == 0)

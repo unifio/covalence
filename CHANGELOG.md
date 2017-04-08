@@ -12,6 +12,16 @@ IMPROVEMENTS:
 
 FIXES:
 
+## 0.6.0 (April 8, 2017)
+BACKWARDS INCOMPATIBILITIES:
+- Versions of Terraform prior to v0.9.0 are no longer supported.
+
+FEATURES:
+- Added support for remote backends.
+
+IMPROVEMENTS:
+- Log level now configurable via the COVALENCE_LOG environment variable.
+
 ## 0.5.3 (October 19, 2016)
 FIXES:
 - terraform destroy tasks receive the `-force` param instead of `-input=false`.
