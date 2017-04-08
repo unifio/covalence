@@ -12,6 +12,13 @@ IMPROVEMENTS:
 
 FIXES:
 
+## 0.6.1 (April 8, 2017)
+IMPROVEMENTS:
+- Stack sync no longer sources modules when retrieving state.
+
+FIXES:
+- Fixed regression in sourcing modules from relative paths.
+
 ## 0.6.0 (April 8, 2017)
 BACKWARDS INCOMPATIBILITIES:
 - Versions of Terraform prior to v0.9.0 are no longer supported.
