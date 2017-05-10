@@ -42,6 +42,16 @@ module Covalence
       stack_name = tf_tasks.stack_name
       environment_name = tf_tasks.environment_name
 
+      desc "Apply changes to the #{generate_rake_taskname(stack_name, context_name)} stack of the #{environment_name} environment"
+      task generate_rake_taskname(environment_name, stack_name, context_name, "apply") do
+        tf_tasks.context_apply(target_args, get_runtime_args)
+      end
+
+      desc "Destroy the #{generate_rake_taskname(stack_name, context_name)} stack of the #{environment_name} environment"
+      task generate_rake_taskname(environment_name, stack_name, context_name, "destroy") do
+        tf_tasks.context_destroy(target_args, get_runtime_args)
+      end
+
       desc "Create execution plan for the #{generate_rake_taskname(stack_name, context_name)} stack of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "plan") do |args|
         custom_opts = Slop.parse(get_runtime_args, { suppress_errors: true, banner: false }) do |o|
@@ -52,6 +62,7 @@ module Covalence
         if custom_opts.no_drift?
           runtime_args << "-detailed-exitcode"
         end
+        
         runtime_args += custom_opts.args
         tf_tasks.context_plan(target_args, runtime_args)
       end
@@ -59,16 +70,6 @@ module Covalence
       desc "Create destruction plan for the #{generate_rake_taskname(stack_name, context_name)} stack of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, context_name, "plan_destroy") do
         tf_tasks.context_plan_destroy(target_args, get_runtime_args)
-      end
-
-      desc "Apply changes to the #{generate_rake_taskname(stack_name, context_name)} stack of the #{environment_name} environment"
-      task generate_rake_taskname(environment_name, stack_name, context_name, "apply") do
-        tf_tasks.context_apply(target_args, get_runtime_args)
-      end
-
-      desc "Destroy the #{generate_rake_taskname(stack_name, context_name)} stack of the #{environment_name} environment"
-      task generate_rake_taskname(environment_name, stack_name, context_name, "destroy") do
-        tf_tasks.context_destroy(target_args, get_runtime_args)
       end
     end
 
@@ -87,6 +88,11 @@ module Covalence
         tf_tasks.stack_format
       end
 
+      desc "Refresh the #{stack_name} stack of the #{environment_name} environment"
+      task generate_rake_taskname(environment_name, stack_name, "refresh") do
+        tf_tasks.stack_refresh
+      end
+
       desc "Synchronize state stores for the #{stack_name} stack of the #{environment_name} environment"
       task generate_rake_taskname(environment_name, stack_name, "sync") do
         tf_tasks.stack_sync
@@ -96,11 +102,6 @@ module Covalence
       # Maybe verify_local to highlight that it skips pulling in remote state
       task generate_rake_taskname(environment_name, stack_name, "verify") do
         tf_tasks.stack_verify
-      end
-
-      desc "Refresh the #{stack_name} stack of the #{environment_name} environment"
-      task generate_rake_taskname(environment_name, stack_name, "refresh") do
-        tf_tasks.stack_refresh
       end
     end
 
@@ -114,11 +115,6 @@ module Covalence
         environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "clean") }
       end
 
-      desc "Verify the #{environ.name} environment"
-      task "#{environ.name}:verify" do
-        environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "verify") }
-      end
-
       desc "Format the #{environ.name} environment"
       task "#{environ.name}:format" do
         environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "format") }
@@ -127,6 +123,30 @@ module Covalence
       desc "Refresh the #{environ.name} environment"
       task "#{environ.name}:refresh" do
         environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "refresh") }
+      end
+
+      desc "Verify the #{environ.name} environment"
+      task "#{environ.name}:verify" do
+        environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "verify") }
+      end
+
+      ## Tasks that support multiple contexts
+      desc "Apply changes to the #{environ.name} environment"
+      task "#{environ.name}:apply" do
+        environ.stacks.each do |stack|
+          stack.contexts.each do |context|
+            invoke_rake_task(environ.name, stack.name, context.name, "apply")
+          end
+        end
+      end
+
+      desc "Destroy the #{environ.name} environment"
+      task "#{environ.name}:destroy" do
+        environ.stacks.reverse.each do |stack|
+          stack.contexts.each do |context|
+            invoke_rake_task(environ.name, stack.name, context.name, "destroy")
+          end
+        end
       end
 
       desc "Create execution plan for the #{environ.name} environment"
@@ -147,24 +167,6 @@ module Covalence
         end
       end
 
-      desc "Apply changes to the #{environ.name} environment"
-      task "#{environ.name}:apply" do
-        environ.stacks.each do |stack|
-          stack.contexts.each do |context|
-            invoke_rake_task(environ.name, stack.name, context.name, "apply")
-          end
-        end
-      end
-
-      desc "Destroy the #{environ.name} environment"
-      task "#{environ.name}:destroy" do
-        environ.stacks.reverse.each do |stack|
-          stack.contexts.each do |context|
-            invoke_rake_task(environ.name, stack.name, context.name, "destroy")
-          end
-        end
-      end
-
       desc "Synchronize state stores for the #{environ.name} environment"
       task "#{environ.name}:sync" do
         environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "sync") }
@@ -178,9 +180,10 @@ module Covalence
         environments.each { |environ| invoke_rake_task(environ.name, "clean") }
       end
 
-      desc "Verify all environments"
-      task "all:verify" do
-        environments.each { |environ| invoke_rake_task(environ.name, "verify") }
+      desc "Format all environments"
+      task "all:format" do
+        environments.each { |environ| invoke_rake_task(environ.name, "format") }
+      end
 
       desc "Plan all environments"
       task "all:plan" do
@@ -192,9 +195,9 @@ module Covalence
         environments.each { |environ| invoke_rake_task(environ.name, "refresh") }
       end
 
-      desc "Format all environments"
-      task "all:format" do
-        environments.each { |environ| invoke_rake_task(environ.name, "format") }
+      desc "Verify all environments"
+      task "all:verify" do
+        environments.each { |environ| invoke_rake_task(environ.name, "verify") }
       end
     end
 
