@@ -152,16 +152,6 @@ module Covalence
         subject.invoke
       end
 
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
-          "-input=false",
-          "-no-color",
-          "-target=\"module.az0\""
-        )))
-        subject.invoke
-      end
-
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
@@ -178,17 +168,6 @@ module Covalence
 
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
-        subject.invoke
-      end
-
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
-          "-destroy",
-          "-input=false",
-          "-no-color",
-          "-target=\"module.az0\""
-        )))
         subject.invoke
       end
 
@@ -253,17 +232,6 @@ module Covalence
         subject.invoke
       end
 
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
-          "-input=false",
-          "-no-color",
-          "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\""
-        )))
-        subject.invoke
-      end
-
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: array_including(
           "-var 'label=\"test\"'",
@@ -284,26 +252,14 @@ module Covalence
         subject.invoke
       end
 
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
-          "-var 'label=\"test\"'",
-          "-input=false",
-          "-no-color",
-          "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\"",
-          "-destroy"
-        ]))
-        subject.invoke
-      end
-
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: [
           "-var 'label=\"test\"'",
           "-input=false",
+          "-force",
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\"",
-          "-force",
         ]))
         subject.invoke
       end
@@ -359,13 +315,6 @@ module Covalence
         subject.invoke
       end
 
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
-          "-input=false"
-        ]))
-        subject.invoke
-      end
-
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: [
           "-input=false"
@@ -379,14 +328,6 @@ module Covalence
 
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
-        subject.invoke
-      end
-
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
-          "-input=false",
-          "-destroy"
-        ]))
         subject.invoke
       end
 
