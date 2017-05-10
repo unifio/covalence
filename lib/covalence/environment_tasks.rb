@@ -181,6 +181,10 @@ module Covalence
       desc "Verify all environments"
       task "all:verify" do
         environments.each { |environ| invoke_rake_task(environ.name, "verify") }
+
+      desc "Plan all environments"
+      task "all:plan" do
+        environments.each { |environ| invoke_rake_task(environ.name, "plan") }
       end
 
       desc "Refresh all environments"
