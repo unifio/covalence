@@ -119,6 +119,11 @@ module Covalence
         environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "verify") }
       end
 
+      desc "Format the #{environ.name} environment"
+      task "#{environ.name}:format" do
+        environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "format") }
+      end
+
       desc "Refresh the #{environ.name} environment"
       task "#{environ.name}:refresh" do
         environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "refresh") }
@@ -181,6 +186,11 @@ module Covalence
       desc "Refresh all environments"
       task "all:refresh" do
         environments.each { |environ| invoke_rake_task(environ.name, "refresh") }
+      end
+
+      desc "Format all environments"
+      task "all:format" do
+        environments.each { |environ| invoke_rake_task(environ.name, "format") }
       end
     end
 
