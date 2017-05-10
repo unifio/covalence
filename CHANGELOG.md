@@ -12,6 +12,10 @@ IMPROVEMENTS:
 
 FIXES:
 
+## 0.6.2
+IMPROVEMENTS:
+- Exposed Terraform `refresh` command.
+- Added `refresh` command at the environment and global scope.
 ## 0.6.1 (April 8, 2017)
 IMPROVEMENTS:
 - Stack sync no longer sources modules when retrieving state.

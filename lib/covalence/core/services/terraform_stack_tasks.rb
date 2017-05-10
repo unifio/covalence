@@ -50,6 +50,23 @@ module Covalence
     end
 
     # :reek:TooManyStatements
+    def stack_refresh
+      Dir.mktmpdir do |tmpdir|
+        FileUtils.copy_entry @path, tmpdir
+        Dir.chdir(tmpdir) do
+          logger.info "In #{tmpdir}:"
+
+          # Create the state configuration file
+          logger.info "\nState store configuration:\n\n#{@store_args}"
+          File.open('state.tf','w') {|f| f.write(@store_args)}
+
+          TerraformCli.terraform_get(@path)
+          TerraformCli.terraform_refresh
+        end
+      end
+    end
+
+    # :reek:TooManyStatements
     def stack_sync
       Dir.mktmpdir do |tmpdir|
         FileUtils.copy_entry @path, tmpdir
