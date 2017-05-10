@@ -40,6 +40,15 @@ module Covalence
       end
     end
 
+    describe "example:myapp:refresh" do
+      include_context "rake"
+
+      it "refreshes the workspace" do
+        expect(TerraformCli).to receive(:terraform_refresh)
+        subject.invoke
+      end
+    end
+
     describe "example:myapp:verify" do
       include_context "rake"
 

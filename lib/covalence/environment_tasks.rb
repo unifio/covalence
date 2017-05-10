@@ -97,6 +97,11 @@ module Covalence
       task generate_rake_taskname(environment_name, stack_name, "verify") do
         tf_tasks.stack_verify
       end
+
+      desc "Refresh the #{stack_name} stack of the #{environment_name} environment"
+      task generate_rake_taskname(environment_name, stack_name, "refresh") do
+        tf_tasks.stack_refresh
+      end
     end
 
     # :reek:TooManyStatements
@@ -112,6 +117,11 @@ module Covalence
       desc "Verify the #{environ.name} environment"
       task "#{environ.name}:verify" do
         environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "verify") }
+      end
+
+      desc "Refresh the #{environ.name} environment"
+      task "#{environ.name}:refresh" do
+        environ.stacks.each { |stack| invoke_rake_task(environ.name, stack.name, "refresh") }
       end
 
       desc "Create execution plan for the #{environ.name} environment"
@@ -166,6 +176,11 @@ module Covalence
       desc "Verify all environments"
       task "all:verify" do
         environments.each { |environ| invoke_rake_task(environ.name, "verify") }
+      end
+
+      desc "Refresh all environments"
+      task "all:refresh" do
+        environments.each { |environ| invoke_rake_task(environ.name, "refresh") }
       end
     end
 
