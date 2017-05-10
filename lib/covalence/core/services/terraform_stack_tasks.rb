@@ -158,7 +158,6 @@ module Covalence
                               stack.args,
                               additional_args)
 
-          TerraformCli.terraform_plan(args: args)
           TerraformCli.terraform_apply(args: args)
         end
       end
@@ -178,19 +177,13 @@ module Covalence
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          base_args = collect_args(stack.materialize_cmd_inputs,
-                                   "-input=false",
-                                   stack.args,
-                                   additional_args)
+          args = collect_args(stack.materialize_cmd_inputs,
+                              "-input=false",
+                              "-force",
+                              stack.args,
+                              additional_args)
 
-          plan_args = collect_args(base_args,
-                              "-destroy")
-
-          destroy_args = collect_args(base_args,
-                                      "-force")
-
-          TerraformCli.terraform_plan(args: plan_args)
-          TerraformCli.terraform_destroy(args: destroy_args)
+          TerraformCli.terraform_destroy(args: args)
         end
       end
     end
