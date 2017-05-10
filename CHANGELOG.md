@@ -13,6 +13,9 @@ IMPROVEMENTS:
 FIXES:
 
 ## 0.6.2
+BACKWARDS INCOMPATIBILITIES:
+- Terraform `apply` and `destroy` tasks will no longer include `plan` and `plan_destroy` respectively.
+
 IMPROVEMENTS:
 - Exposed Terraform `refresh` command.
 - Added `refresh` command at the environment and global scope.
