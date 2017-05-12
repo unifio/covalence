@@ -15,7 +15,8 @@ module Covalence
     attribute :type, String
     attribute :name, String
     attribute :environment_name, String
-    attribute :tf_module, String
+    attribute :module_path, String
+    attribute :dependencies, Array[String]
     attribute :packer_template, String
     attribute :state_stores, Array[StateStore]
     attribute :contexts, Array[Context]
@@ -46,13 +47,13 @@ module Covalence
           config += input + "\n"
         end
         logger.info "\nStack inputs:\n\n#{config}"
-        File.open('covalence.tfvars','w') {|f| f.write(config)}
+        File.open('covalence-inputs.tfvars','w') {|f| f.write(config)}
       elsif type == "packer"
         config = Hash.new
         inputs.each do |name, input|
           config[name] = input.value
         end
-        File.open('covalence.json','w') {|f| f.write(JSON.generate(config))}
+        File.open('covalence-inputs.json','w') {|f| f.write(JSON.generate(config))}
       end
     end
 
@@ -65,6 +66,6 @@ module Covalence
     def logger
       Covalence::LOGGER
     end
-    
+
   end
 end

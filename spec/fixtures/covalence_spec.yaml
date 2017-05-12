@@ -7,12 +7,10 @@
 :merge_behavior: 'deeper'
 
 :hierarchy:
-  - "dev/%{environment}-%{stack}"
-  - "dev/envs"
   - "stacks/%{environment}-%{stack}"
   - "envs/%{environment}"
-  - "global"
-  - "envs"
+  - 'envs'
+  - 'global'
 
 :yaml:
    :datadir: spec/fixtures/data

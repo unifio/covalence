@@ -6,25 +6,18 @@ module Covalence
   class StateStoreRepository
     class << self
       def query_terraform_by_stack_name(data_store, stack_name)
-        query_tool_by_stack_name(state_store_key['terraform'], data_store, stack_name)
+        query_tool_by_stack_name('terraform', data_store, stack_name)
       end
 
       def query_packer_by_stack_name(data_store, stack_name)
-        query_tool_by_stack_name(state_store_key['packer'], data_store, stack_name)
+        query_tool_by_stack_name('packer', data_store, stack_name)
       end
 
       private
 
-      def state_store_key
-        @state_store_key ||= {
-          'terraform' => 'state',
-          'packer' => 'packer-state'
-        }
-      end
-
-      def query_tool_by_stack_name(tool_key, data_store, stack_name)
-        stores = data_store.lookup("#{stack_name}::#{tool_key}", [])
-        if (stores.blank? && tool_key == 'state')
+      def query_tool_by_stack_name(tool, data_store, stack_name)
+        stores = data_store.lookup("#{stack_name}::state", [])
+        if (stores.blank? && tool == 'terraform')
           raise "State store array cannot be empty"
         end
         stores.map do |store|
