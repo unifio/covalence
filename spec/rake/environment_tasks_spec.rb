@@ -75,6 +75,23 @@ module Covalence
     describe "example:myapp:az0:plan" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+      
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -127,6 +144,23 @@ module Covalence
     describe "example:myapp:az0:plan_destroy" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -147,6 +181,23 @@ module Covalence
     describe "example:myapp:az0:apply" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -165,6 +216,23 @@ module Covalence
 
     describe "example:myapp:az0:destroy" do
       include_context "rake"
+
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
 
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
@@ -186,6 +254,23 @@ module Covalence
     describe "example:myapp:az1:plan" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -205,6 +290,23 @@ module Covalence
 
     describe "example:myapp:az1:plan_destroy" do
       include_context "rake"
+
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
 
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
@@ -227,6 +329,23 @@ module Covalence
     describe "example:myapp:az1:apply" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -246,6 +365,23 @@ module Covalence
 
     describe "example:myapp:az1:destroy" do
       include_context "rake"
+
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
 
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
@@ -268,6 +404,30 @@ module Covalence
     describe "example:myapp:sync" do
       include_context "rake"
 
+      it "generates the source & sync target state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+terraform {
+  backend "s3" {
+    key = "some_name/terraform.tfstate"
+    bucket = "some_bucket"
+    region = "some_region"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "should reinitiailze the backend and copy the state" do
         expect(TerraformCli).to receive(:terraform_init).at_most(:twice)
         subject.invoke
@@ -276,6 +436,23 @@ module Covalence
 
     describe "example:module_test:plan" do
       include_context "rake"
+
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
 
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
@@ -292,6 +469,23 @@ module Covalence
 
     describe "example:module_test:plan_destroy" do
       include_context "rake"
+
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
 
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
@@ -310,6 +504,23 @@ module Covalence
     describe "example:module_test:apply" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -325,6 +536,23 @@ module Covalence
 
     describe "example:module_test:destroy" do
       include_context "rake"
+
+      it "generates a state configuration" do
+        @buffer = StringIO.new()
+        @filename = 'covalence-state.tf'
+        @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
 
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)

@@ -42,5 +42,16 @@ module Covalence
     def materialize_cmd_inputs
       inputs.values.map(&:to_command_option)
     end
+
+    def materialize_state_inputs(store: state_stores.first)
+      config = store.get_config
+      logger.info "\nState store configuration:\n\n#{config}"
+      File.open('covalence-state.tf','w') {|f| f.write(config)}
+    end
+
+    def logger
+      Covalence::LOGGER
+    end
+    
   end
 end
