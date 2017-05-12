@@ -37,9 +37,10 @@ module Covalence
 
           TerraformCli.terraform_validate
 
-          args = collect_args(stack.materialize_cmd_inputs,
-                              "-input=false",
-                              stack.args)
+          stack.materialize_cmd_inputs
+          args = collect_args("-input=false",
+                              stack.args,
+                              "-var-file=covalence.tfvars")
 
           TerraformCli.terraform_plan(args: args)
         end
@@ -53,7 +54,7 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          @stack.materialize_state_inputs
+          stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_refresh
         end
@@ -67,11 +68,11 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          @stack.materialize_state_inputs
+          stack.materialize_state_inputs
           TerraformCli.terraform_init
 
           stack.state_stores.drop(1).each do |store|
-            @stack.materialize_state_inputs(store: store)
+            stack.materialize_state_inputs(store: store)
             TerraformCli.terraform_init("-force-copy")
           end
         end
@@ -85,14 +86,15 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          @stack.materialize_state_inputs
+          stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          args = collect_args(stack.materialize_cmd_inputs,
-                              "-input=false",
+          stack.materialize_cmd_inputs
+          args = collect_args("-input=false",
                               stack.args,
-                              additional_args)
+                              additional_args,
+                              "-var-file=covalence.tfvars")
 
           TerraformCli.terraform_plan(args: args)
         end
@@ -106,15 +108,16 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          @stack.materialize_state_inputs
+          stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          args = collect_args(stack.materialize_cmd_inputs,
-                              "-destroy",
+          stack.materialize_cmd_inputs
+          args = collect_args("-destroy",
                               "-input=false",
                               stack.args,
-                              additional_args)
+                              additional_args,
+                              "-var-file=covalence.tfvars")
 
           TerraformCli.terraform_plan(args: args)
         end
@@ -128,14 +131,15 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          @stack.materialize_state_inputs
+          stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          args = collect_args(stack.materialize_cmd_inputs,
-                              "-input=false",
+          stack.materialize_cmd_inputs
+          args = collect_args("-input=false",
                               stack.args,
-                              additional_args)
+                              additional_args,
+                              "-var-file=covalence.tfvars")
 
           TerraformCli.terraform_apply(args: args)
         end
@@ -149,15 +153,16 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          @stack.materialize_state_inputs
+          stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          args = collect_args(stack.materialize_cmd_inputs,
-                              "-input=false",
+          stack.materialize_cmd_inputs
+          args = collect_args("-input=false",
                               "-force",
                               stack.args,
-                              additional_args)
+                              additional_args,
+                              "-var-file=covalence.tfvars")
 
           TerraformCli.terraform_destroy(args: args)
         end

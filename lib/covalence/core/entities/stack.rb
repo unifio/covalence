@@ -40,7 +40,20 @@ module Covalence
     end
 
     def materialize_cmd_inputs
-      inputs.values.map(&:to_command_option)
+      if type == "terraform"
+        config = ""
+        inputs.values.map(&:to_command_option).each do |input|
+          config += input + "\n"
+        end
+        logger.info "\nStack inputs:\n\n#{config}"
+        File.open('covalence.tfvars','w') {|f| f.write(config)}
+      elsif type == "packer"
+        config = Hash.new
+        inputs.each do |name, input|
+          config[name] = input.value
+        end
+        File.open('covalence.json','w') {|f| f.write(JSON.generate(config))}
+      end
     end
 
     def materialize_state_inputs(store: state_stores.first)
