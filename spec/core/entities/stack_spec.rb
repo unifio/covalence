@@ -3,7 +3,12 @@ require_relative File.expand_path(Covalence::GEM_ROOT, 'core/entities/stack')
 
 module Covalence
   RSpec.describe Stack do
-    let(:stack) { Fabricate(:terraform_stack) }
+    let(:stack) do
+      Fabricate(:terraform_stack,
+                inputs: {
+                  'local_input' => Fabricate(:local_input),
+                })
+    end
 
     describe "validators" do
       it "does not allow names with spaces" do
@@ -19,8 +24,45 @@ module Covalence
     end
 
     it "#materialize_cmd_inputs" do
-      allow_any_instance_of(Input).to receive(:to_command_option).and_return("-var 'local_input=\"value\"'")
-      expect(stack.materialize_cmd_inputs).to eq(["-var 'local_input=\"value\"'"] * 2)
+      @buffer = StringIO.new()
+      @filename = 'covalence.tfvars'
+      @content = "local_input = \"foo\"\n"
+
+      allow(File).to receive(:open).and_call_original
+      allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+      allow_any_instance_of(Input).to receive(:to_command_option).and_return("local_input = \"foo\"")
+
+      Dir.mktmpdir do |tmpdir|
+        Dir.chdir(tmpdir) do
+          stack.materialize_cmd_inputs
+        end
+      end
+
+      expect(@buffer.string).to eq(@content)
+    end
+
+    it "#materialize_state_inputs" do
+      @buffer = StringIO.new()
+      @filename = 'covalence-state.tf'
+      @content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "exmpl/stack"
+  }
+}
+CONF
+
+      allow(File).to receive(:open).and_call_original
+      allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+      allow_any_instance_of(StateStore).to receive(:get_config).and_return(@content)
+
+      Dir.mktmpdir do |tmpdir|
+        Dir.chdir(tmpdir) do
+          stack.materialize_state_inputs
+        end
+      end
+
+      expect(@buffer.string).to eq(@content)
     end
 
     it "should accept empty args" do

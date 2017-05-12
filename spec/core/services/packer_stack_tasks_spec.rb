@@ -11,7 +11,7 @@ module Covalence
       Fabricate(:packer_stack,
                 name: name,
                 environment_name: environment_name,
-                packer_template: packer_template,
+                packer_template: Tempfile.open(['packer_template','.json']) {|f| f.write("{}")},
                 args: args,
                 inputs: {
                   'local_input' => Fabricate(:local_input, type: 'packer'),
@@ -35,11 +35,23 @@ module Covalence
     end
 
     describe "#context_build" do
+
+      it "generates an inputs JSON file" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.json'
+        @content = "{\"local_input\":\"foo\"}"
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        described_class.new(stack).context_build
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "calls packer build with specific args" do
         expect(PackerCli).to receive(:public_send).with(
           :packer_build, anything, { args: array_including(
-            "-var 'local_input=foo'",
-            args
+            args,
+            "-var-file=covalence.json"
           )})
         described_class.new(stack).context_build
       end
@@ -55,11 +67,22 @@ module Covalence
     end
 
     describe "#context_validate" do
+      it "generates an inputs JSON file" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.json'
+        @content = "{\"local_input\":\"foo\"}"
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        described_class.new(stack).context_build
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "calls packer validate with specific args" do
         expect(PackerCli).to receive(:public_send).with(
           :packer_validate, anything, { args: array_including(
-            "-var 'local_input=foo'",
-            args
+            args,
+            "-var-file=covalence.json"
           )})
         described_class.new(stack).context_validate
       end

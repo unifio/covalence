@@ -62,11 +62,24 @@ module Covalence
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+      
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
-          "-no-color"
+          "-no-color",
+          "-var-file=covalence.tfvars"
         )))
         subject.invoke
       end
@@ -97,12 +110,25 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
           "-no-color",
-          "-target=\"module.az0\""
+          "-target=\"module.az0\"",
+          "-var-file=covalence.tfvars"
         )))
         subject.invoke
       end
@@ -113,11 +139,11 @@ CONF
         it "executes a plan with -detailed-exitcode" do
           expect(TerraformCli).to receive(:terraform_init)
           expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-            "-var 'label=\"test\"'",
             "-input=false",
             "-no-color",
             "-target=\"module.az0\"",
-            "-detailed-exitcode"
+            "-detailed-exitcode",
+            "-var-file=covalence.tfvars"
           )))
           Rake::Task['example:myapp:az0:plan'].invoke
         end
@@ -130,11 +156,11 @@ CONF
         it "executes a plan with -detailed-exitcode" do
           expect(TerraformCli).to receive(:terraform_init)
           expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-            "-var 'label=\"test\"'",
             "-input=false",
             "-no-color",
             "-target=\"module.az0\"",
-            "-some-passthrough-arg"
+            "-some-passthrough-arg",
+            "-var-file=covalence.tfvars"
           )))
           Rake::Task['example:myapp:az0:plan'].invoke
         end
@@ -166,13 +192,26 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-destroy",
           "-input=false",
           "-no-color",
-          "-target=\"module.az0\""
+          "-target=\"module.az0\"",
+          "-var-file=covalence.tfvars"
         )))
         subject.invoke
       end
@@ -203,12 +242,25 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
           "-no-color",
-          "-target=\"module.az0\""
+          "-target=\"module.az0\"",
+          "-var-file=covalence.tfvars"
         )))
         subject.invoke
       end
@@ -239,13 +291,26 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
           "-no-color",
           "-target=\"module.az0\"",
           "-force",
+          "-var-file=covalence.tfvars"
         )))
         subject.invoke
       end
@@ -276,13 +341,26 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
           "-no-color",
           "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\""
+          "-target=\"module.common.aws_eip.myapp\"",
+          "-var-file=covalence.tfvars"
         )))
         subject.invoke
       end
@@ -313,14 +391,27 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-destroy",
           "-input=false",
           "-no-color",
           "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\""
+          "-target=\"module.common.aws_eip.myapp\"",
+          "-var-file=covalence.tfvars"
         )))
         subject.invoke
       end
@@ -351,13 +442,26 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
           "-no-color",
           "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\""
+          "-target=\"module.common.aws_eip.myapp\"",
+          "-var-file=covalence.tfvars"
         )))
         subject.invoke
       end
@@ -388,14 +492,27 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: [
-          "-var 'label=\"test\"'",
           "-input=false",
           "-force",
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\"",
+          "-var-file=covalence.tfvars"
         ]))
         subject.invoke
       end
@@ -459,9 +576,21 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = ""
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
-          "-input=false"
+          "-input=false",
+          "-var-file=covalence.tfvars"
         ]))
         subject.invoke
       end
@@ -492,10 +621,22 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = ""
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
           "-destroy",
-          "-input=false"
+          "-input=false",
+          "-var-file=covalence.tfvars"
         ]))
         subject.invoke
       end
@@ -526,9 +667,21 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = ""
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: [
-          "-input=false"
+          "-input=false",
+          "-var-file=covalence.tfvars"
         ]))
         subject.invoke
       end
@@ -559,10 +712,22 @@ CONF
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        @buffer = StringIO.new()
+        @filename = 'covalence.tfvars'
+        @content = ""
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        subject.invoke
+        expect(@buffer.string).to eq(@content)
+      end
+
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: [
           "-input=false",
-          "-force"
+          "-force",
+          "-var-file=covalence.tfvars"
         ]))
         subject.invoke
       end

@@ -35,8 +35,7 @@ module Covalence
         expect(test_backend_class).to receive(:lookup).with(subcategory, raw_value).and_return(remote_value)
       end
 
-      context "new terraform api remote API response format" do
-        let(:tf_version) { "0.7.4" }
+      context "Terraform API response format" do
         let(:remote_value) do
           {
             "sensitive": false,
@@ -46,7 +45,6 @@ module Covalence
         end
 
         before(:each) do
-          ENV['TERRAFORM_VERSION'] = tf_version
           # force constants to re-init
           Kernel.silence_warnings {
             load File.join(Covalence::GEM_ROOT, '../covalence.rb')
@@ -54,7 +52,7 @@ module Covalence
         end
 
         it 'returns the value' do
-          expect(input.to_command_option).to eq("-var 'input=\"foo\"'")
+          expect(input.to_command_option).to eq("input = \"foo\"")
         end
       end
       it "returns the value for a non-local key by calling the backend lookup" do
@@ -65,10 +63,8 @@ module Covalence
 
     describe "#to_command_option" do
       let(:raw_value) { "test" }
-      let(:tf_version) { "0.6.5" }
 
       before(:each) do
-        ENV['TERRAFORM_VERSION'] = tf_version
         # force constants to re-init
         Kernel.silence_warnings {
           load File.join(Covalence::GEM_ROOT, '../covalence.rb')
@@ -78,36 +74,17 @@ module Covalence
       context "with nil value" do
         let(:raw_value) { nil }
 
-        it { expect(input.to_command_option).to eq("-var 'input='") }
+        it { expect(input.to_command_option).to eq("input = \"\"") }
       end
 
-      context "#type: 'packer'" do
-        let(:type) { 'packer' }
+      context "interpolated shell value" do
+        let(:raw_value) { "$(pwd)" }
 
-        it { expect(input.to_command_option).to eq("-var 'input=test'") }
+        it { expect(input.to_command_option).to eq("input = \"#{`pwd`.chomp}\"") }
       end
 
-      context "Terraform Version < 0.7.0" do
-        it { expect(input.to_command_option).to eq("-var input=\"test\"") }
-
-        context "interpolated shell value" do
-          let(:raw_value) { "$(pwd)" }
-
-          it { expect(input.to_command_option).to eq("-var input=\"$(pwd)\"") }
-        end
-      end
-
-      context "Terraform Version >= 0.7.0" do
-        let(:tf_version) { "0.7.0" }
-
-        it { expect(input.to_command_option).to eq("-var 'input=\"test\"'") }
-
-
-        context "interpolated shell value" do
-          let(:raw_value) { "$(pwd)" }
-
-          it { expect(input.to_command_option).to eq("-var 'input=\"#{`pwd`.chomp}\"'") }
-        end
+      context "all other values" do
+        it { expect(input.to_command_option).to eq("input = \"test\"") }
       end
     end
   end
