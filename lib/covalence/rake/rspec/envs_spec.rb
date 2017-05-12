@@ -7,7 +7,7 @@ module Covalence
 
   envs.each do |env|
     env.stacks.each do |stack|
-      path = File.expand_path(File.join(TERRAFORM, stack.tf_module))
+      path = File.expand_path(File.join(TERRAFORM, stack.module_path))
 
       describe "Verify #{env.name}:#{stack.name}" do
 

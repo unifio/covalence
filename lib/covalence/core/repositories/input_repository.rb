@@ -18,27 +18,12 @@ module Covalence
 
       private
 
-      def input_key
-        @input_key ||= {
-          'terraform' => 'vars',
-          'packer' => 'packer-vars'
-        }
-      end
-
-      def input_file_key
-        @input_file_key ||= {
-          'terraform' => 'vars-file',
-          'packer' => 'packer-vars-file'
-        }
-      end
-
       #TODO: refactor nested conditional
       def parse_var_file(tool, data_store, namespace)
         yaml_ext = %w(yaml yml)
         json_ext = %w(json)
 
-        tool_key = input_file_key[tool]
-        varfile = data_store.lookup("#{namespace}::#{tool_key}", nil)
+        varfile = data_store.lookup("#{namespace}::vars-file", nil)
         return {} unless varfile
         tool_module_path ="Covalence::#{tool.upcase}".constantize
         varfile = File.expand_path(File.join(tool_module_path, varfile.to_s))
@@ -60,8 +45,7 @@ module Covalence
       end
 
       def query_tool_by_namespace(tool, data_store, namespace)
-        tool_key = input_key[tool]
-        tmp_hash = data_store.hash_lookup("#{namespace}::#{tool_key}", {}).map do |name, raw_value|
+        tmp_hash = data_store.hash_lookup("#{namespace}::vars", {}).map do |name, raw_value|
           [ name, Input.new(name: name, type: tool, raw_value: raw_value) ]
         end
         Hash[*tmp_hash.flatten]

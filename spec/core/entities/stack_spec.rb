@@ -24,12 +24,12 @@ module Covalence
     end
 
     it "#materialize_cmd_inputs" do
-      @buffer = StringIO.new()
-      @filename = 'covalence.tfvars'
-      @content = "local_input = \"foo\"\n"
+      buffer = StringIO.new()
+      filename = 'covalence-inputs.tfvars'
+      content = "local_input = \"foo\"\n"
 
       allow(File).to receive(:open).and_call_original
-      allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+      allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
       allow_any_instance_of(Input).to receive(:to_command_option).and_return("local_input = \"foo\"")
 
       Dir.mktmpdir do |tmpdir|
@@ -38,13 +38,13 @@ module Covalence
         end
       end
 
-      expect(@buffer.string).to eq(@content)
+      expect(buffer.string).to eq(content)
     end
 
     it "#materialize_state_inputs" do
-      @buffer = StringIO.new()
-      @filename = 'covalence-state.tf'
-      @content = <<-CONF
+      buffer = StringIO.new()
+      filename = 'covalence-state.tf'
+      content = <<-CONF
 terraform {
   backend "atlas" {
     name = "exmpl/stack"
@@ -53,8 +53,8 @@ terraform {
 CONF
 
       allow(File).to receive(:open).and_call_original
-      allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
-      allow_any_instance_of(StateStore).to receive(:get_config).and_return(@content)
+      allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+      allow_any_instance_of(StateStore).to receive(:get_config).and_return(content)
 
       Dir.mktmpdir do |tmpdir|
         Dir.chdir(tmpdir) do
@@ -62,7 +62,7 @@ CONF
         end
       end
 
-      expect(@buffer.string).to eq(@content)
+      expect(buffer.string).to eq(content)
     end
 
     it "should accept empty args" do

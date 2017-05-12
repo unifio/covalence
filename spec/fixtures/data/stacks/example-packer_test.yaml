@@ -1,0 +1,16 @@
+---
+# Module path & template
+packer_test::module: 'packer/example-build'
+packer_test::packer-template: 'packer_template.yml'
+
+# Dependencies
+packer_test::deps:
+  - 'mock_responses'
+
+# Additional arguments
+packer::example-build::args: '-no-color'
+
+# Input variables
+packer::example-build::vars:
+  aws_access_key: 'testing'
+  aws_secret_key: 'testing'
