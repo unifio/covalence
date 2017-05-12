@@ -14,8 +14,8 @@ module Covalence
   WORKSPACE = File.absolute_path((ENV['COVALENCE_WORKSPACE'] || '.'))
   CONFIG = File.join(WORKSPACE, (ENV['COVALENCE_CONFIG'] || 'covalence.yaml'))
   # TODO: could use better naming
-  PACKER = File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_PACKER_DIR'] || 'packer')))
-  TERRAFORM =  File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_TERRAFORM_DIR'] || 'terraform')))
+  PACKER = File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_PACKER_DIR'] || '.')))
+  TERRAFORM =  File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_TERRAFORM_DIR'] || '.')))
   TEST_ENVS = (ENV['COVALENCE_TEST_ENVS'] || "").split(',')
 
   # should be able to deprecate this with covalence bundled inside the container

@@ -8,12 +8,12 @@ require_relative '../shared_contexts/rake.rb'
 
 module Covalence
   describe EnvironmentTasks do
-    let(:task_files) { "environment_tasks.rb" }
+    let(:task_files) { 'environment_tasks.rb' }
     let(:state_file) { 'state.tf' }
 
     before(:each) do
       Kernel.silence_warnings {
-        Covalence::TERRAFORM_VERSION = "0.9.2"
+        Covalence::TERRAFORM_VERSION = "0.9.0"
       }
       allow(PopenWrapper).to receive(:run).and_return(true)
       # suppress FileUtils verbose
@@ -56,30 +56,30 @@ module Covalence
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
-      
+
       it "executes template validation" do
         expect(TerraformCli).to receive(:terraform_validate)
         subject.invoke
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
 label = "test"
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
-      
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
           "-input=false",
           "-no-color",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -89,9 +89,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -100,27 +100,27 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
-      
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
 label = "test"
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a plan" do
@@ -128,7 +128,7 @@ CONF
           "-input=false",
           "-no-color",
           "-target=\"module.az0\"",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -143,7 +143,7 @@ CONF
             "-no-color",
             "-target=\"module.az0\"",
             "-detailed-exitcode",
-            "-var-file=covalence.tfvars"
+            "-var-file=covalence-inputs.tfvars"
           )))
           Rake::Task['example:myapp:az0:plan'].invoke
         end
@@ -160,7 +160,7 @@ CONF
             "-no-color",
             "-target=\"module.az0\"",
             "-some-passthrough-arg",
-            "-var-file=covalence.tfvars"
+            "-var-file=covalence-inputs.tfvars"
           )))
           Rake::Task['example:myapp:az0:plan'].invoke
         end
@@ -171,9 +171,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -182,9 +182,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -193,16 +193,16 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
 label = "test"
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a plan" do
@@ -211,7 +211,7 @@ CONF
           "-input=false",
           "-no-color",
           "-target=\"module.az0\"",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -221,9 +221,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -232,9 +232,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -243,16 +243,16 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
 label = "test"
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes an apply" do
@@ -260,7 +260,7 @@ CONF
           "-input=false",
           "-no-color",
           "-target=\"module.az0\"",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -270,9 +270,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -281,9 +281,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -292,16 +292,16 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
 label = "test"
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a destroy" do
@@ -310,7 +310,7 @@ CONF
           "-no-color",
           "-target=\"module.az0\"",
           "-force",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -320,9 +320,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -331,9 +331,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -342,16 +342,16 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
 label = "test"
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a plan" do
@@ -360,7 +360,7 @@ CONF
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\"",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -370,9 +370,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -381,9 +381,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -392,16 +392,16 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
 label = "test"
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a plan" do
@@ -411,7 +411,7 @@ CONF
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\"",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -421,9 +421,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -432,9 +432,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -443,16 +443,16 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
 label = "test"
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes an apply" do
@@ -461,7 +461,7 @@ CONF
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\"",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -471,9 +471,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -482,9 +482,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -493,16 +493,16 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
 label = "test"
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a destroy" do
@@ -512,7 +512,7 @@ CONF
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\"",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
       end
@@ -522,9 +522,9 @@ CONF
       include_context "rake"
 
       it "generates the source & sync target state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -540,9 +540,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "should reinitiailze the backend and copy the state" do
@@ -555,9 +555,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -566,9 +566,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -577,20 +577,20 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = ""
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = ""
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
           "-input=false",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
       end
@@ -600,9 +600,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -611,9 +611,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -622,21 +622,21 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = ""
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = ""
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
           "-destroy",
           "-input=false",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
       end
@@ -646,9 +646,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -657,9 +657,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -668,20 +668,20 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = ""
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = ""
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: [
           "-input=false",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
       end
@@ -691,9 +691,9 @@ CONF
       include_context "rake"
 
       it "generates a state configuration" do
-        @buffer = StringIO.new()
-        @filename = 'covalence-state.tf'
-        @content = <<-CONF
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
 terraform {
   backend "atlas" {
     name = "example/myapp"
@@ -702,9 +702,9 @@ terraform {
 CONF
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "initializes the workspace" do
@@ -713,21 +713,21 @@ CONF
       end
 
       it "generates an inputs varfile" do
-        @buffer = StringIO.new()
-        @filename = 'covalence.tfvars'
-        @content = ""
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = ""
 
         allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(@filename,'w').and_yield(@buffer)
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
-        expect(@buffer.string).to eq(@content)
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: [
           "-input=false",
           "-force",
-          "-var-file=covalence.tfvars"
+          "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
       end

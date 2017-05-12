@@ -12,7 +12,6 @@ Fabricator(:stack, from: 'Covalence::Stack') do
   contexts { Fabricate.times(2, :context) }
   args "-no-color"
   #state_stores - terraform only
-  #tf_module - terraform only
   #packer_template - packer only
   #state_stores - terraform only
 

@@ -5,7 +5,7 @@ module Covalence
   class TerraformStackTasks
 
     def initialize(stack)
-      @path = File.expand_path(File.join(Covalence::TERRAFORM, stack.tf_module))
+      @path = File.expand_path(File.join(Covalence::TERRAFORM, stack.module_path))
       @stack = stack
     end
 
@@ -28,7 +28,7 @@ module Covalence
     # :reek:TooManyStatements
     def stack_verify
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
@@ -40,7 +40,7 @@ module Covalence
           stack.materialize_cmd_inputs
           args = collect_args("-input=false",
                               stack.args,
-                              "-var-file=covalence.tfvars")
+                              "-var-file=covalence-inputs.tfvars")
 
           TerraformCli.terraform_plan(args: args)
         end
@@ -50,7 +50,7 @@ module Covalence
     # :reek:TooManyStatements
     def stack_refresh
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
@@ -64,7 +64,7 @@ module Covalence
     # :reek:TooManyStatements
     def stack_sync
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
@@ -82,7 +82,7 @@ module Covalence
     # :reek:TooManyStatements
     def context_plan(*additional_args)
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
@@ -94,7 +94,7 @@ module Covalence
           args = collect_args("-input=false",
                               stack.args,
                               additional_args,
-                              "-var-file=covalence.tfvars")
+                              "-var-file=covalence-inputs.tfvars")
 
           TerraformCli.terraform_plan(args: args)
         end
@@ -104,7 +104,7 @@ module Covalence
     # :reek:TooManyStatements
     def context_plan_destroy(*additional_args)
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
@@ -117,7 +117,7 @@ module Covalence
                               "-input=false",
                               stack.args,
                               additional_args,
-                              "-var-file=covalence.tfvars")
+                              "-var-file=covalence-inputs.tfvars")
 
           TerraformCli.terraform_plan(args: args)
         end
@@ -127,7 +127,7 @@ module Covalence
     # :reek:TooManyStatements
     def context_apply(*additional_args)
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
@@ -139,7 +139,7 @@ module Covalence
           args = collect_args("-input=false",
                               stack.args,
                               additional_args,
-                              "-var-file=covalence.tfvars")
+                              "-var-file=covalence-inputs.tfvars")
 
           TerraformCli.terraform_apply(args: args)
         end
@@ -149,7 +149,7 @@ module Covalence
     # :reek:TooManyStatements
     def context_destroy(*additional_args)
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
@@ -162,7 +162,7 @@ module Covalence
                               "-force",
                               stack.args,
                               additional_args,
-                              "-var-file=covalence.tfvars")
+                              "-var-file=covalence-inputs.tfvars")
 
           TerraformCli.terraform_destroy(args: args)
         end
@@ -171,6 +171,18 @@ module Covalence
 
     private
     attr_reader :path, :stack, :store_args
+
+    def populate_workspace(workspace)
+      # Copy module to the workspace
+      FileUtils.copy_entry @path, workspace
+
+      # Copy any dependencies to the workspace
+      @stack.dependencies.each do |dep|
+        logger.info "Copying '#{dep}' dependency to #{workspace}"
+        dep_path = File.expand_path(File.join(Covalence::TERRAFORM, dep))
+        FileUtils.cp_r dep_path, workspace
+      end
+    end
 
     def logger
       Covalence::LOGGER
