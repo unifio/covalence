@@ -19,10 +19,18 @@ module Covalence
     end
 
     def context_build(*additional_args)
-      args = collect_args(stack.materialize_cmd_inputs,
-                          stack.args,
-                          additional_args)
-      call_packer_cmd("packer_build", args)
+      Dir.mktmpdir do |tmpdir|
+        Dir.chdir(tmpdir) do
+          logger.info "In #{tmpdir}:"
+
+          stack.materialize_cmd_inputs
+          args = collect_args(stack.args,
+                              additional_args,
+                              "-var-file=covalence.json")
+
+          call_packer_cmd("packer_build", args)
+        end
+      end
     end
 
     def context_inspect(*additional_args)
@@ -30,10 +38,18 @@ module Covalence
     end
 
     def context_validate(*additional_args)
-      args = collect_args(stack.materialize_cmd_inputs,
-                          stack.args,
-                          additional_args)
-      call_packer_cmd("packer_validate", args)
+      Dir.mktmpdir do |tmpdir|
+        Dir.chdir(tmpdir) do
+          logger.info "In #{tmpdir}:"
+
+          stack.materialize_cmd_inputs
+          args = collect_args(stack.args,
+                              additional_args,
+                              "-var-file=covalence.json")
+
+          call_packer_cmd("packer_validate", args)
+        end
+      end
     end
 
     private
@@ -43,9 +59,8 @@ module Covalence
       begin
         tmp_file = nil
         if template_is_yaml?(template_path)
-          tmp_file = Tempfile.new('file', File.dirname(template_path))
+          tmp_file = Tempfile.new(['template-','.json'])
           tmp_file.write(YAML.load_file(template_path).to_json)
-          tmp_file.rewind
 
           PackerCli.public_send(packer_cmd.to_sym, tmp_file.path, args: args)
         else
@@ -65,6 +80,10 @@ module Covalence
 
     def collect_args(*args)
       args.flatten.compact.reject(&:empty?).map(&:strip)
+    end
+
+    def logger
+      Covalence::LOGGER
     end
   end
 end

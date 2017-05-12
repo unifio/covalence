@@ -1,26 +1,15 @@
-## (Unreleased)
-
-BACKWARDS INCOMPATIBILITIES:
-- In-line shell outputs now have a different format
-
-FEATURES:
-- Terraform vars are now fed in via `-var-file` instead of individual `-var` commands. Should be able to leverage the new terraform data types to avoid intermediate serialization of array/hash data.
-- Docker env variables can now be set by pointing at a DOCKER_ENV_FILE, which is fed to underlying docker commands via `-env-file`
-
-IMPROVEMENTS:
-- Terraform: Nil vars should default to empty hash?
-
-FIXES:
-
 ## 0.6.2
 BACKWARDS INCOMPATIBILITIES:
 - Terraform `apply` and `destroy` tasks will no longer include `plan` and `plan_destroy` respectively.
 
+FEATURES:
+- Terraform input variables are now fed in via `-var-file` instead of individual `-var` arguments.
+
 IMPROVEMENTS:
 - Exposed Terraform `refresh` command.
 - Added `refresh` command at the environment and global scope.
-- Added `format` command at the environment and global scope.
-- Added `plan` command at the global scope.
+- Added `format` command at the environment and global scope (#33).
+- Added `plan` command at the global scope (#40).
 
 ## 0.6.1 (April 8, 2017)
 IMPROVEMENTS:
