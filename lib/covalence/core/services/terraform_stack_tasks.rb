@@ -6,9 +6,6 @@ module Covalence
 
     def initialize(stack)
       @path = File.expand_path(File.join(Covalence::TERRAFORM, stack.tf_module))
-
-      # Primary state store assumption
-      @store_args = stack.state_stores.first.get_config
       @stack = stack
     end
 
@@ -56,10 +53,7 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
-
+          @stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_refresh
         end
@@ -73,17 +67,11 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
-
+          @stack.materialize_state_inputs
           TerraformCli.terraform_init
 
           stack.state_stores.drop(1).each do |store|
-            args = store.get_config
-            # Update the state configuration and reinitialize
-            logger.info "\nState store configuration:\n\n#{args}"
-            File.open('state.tf','w') {|f| f.write(args)}
+            @stack.materialize_state_inputs(store: store)
             TerraformCli.terraform_init("-force-copy")
           end
         end
@@ -97,10 +85,7 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
-
+          @stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
@@ -121,10 +106,7 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
-
+          @stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
@@ -146,10 +128,7 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
-
+          @stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
@@ -170,10 +149,7 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
-
+          @stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
