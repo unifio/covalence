@@ -16,7 +16,7 @@ module Covalence
                 packer_template: packer_template,
                 args: args,
                 inputs: {
-                  'local_input' => Fabricate(:local_input, type: 'packer'),
+                  'local_input' => Fabricate(:local_input),
                 })
     end
 
