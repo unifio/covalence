@@ -36,7 +36,7 @@ module Covalence
           end
 
           tmp_hash = tmp_hash.map do |name, raw_value|
-            [ name, Input.new(name: name, type: tool, raw_value: raw_value) ]
+            [ name, Input.new(name: name, raw_value: raw_value) ]
           end
           Hash[*tmp_hash.flatten]
         else
@@ -46,7 +46,7 @@ module Covalence
 
       def query_tool_by_namespace(tool, data_store, namespace)
         tmp_hash = data_store.hash_lookup("#{namespace}::vars", {}).map do |name, raw_value|
-          [ name, Input.new(name: name, type: tool, raw_value: raw_value) ]
+          [ name, Input.new(name: name, raw_value: raw_value) ]
         end
         Hash[*tmp_hash.flatten]
       end

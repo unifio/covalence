@@ -10,11 +10,8 @@ module Covalence
     include ActiveModel::Validations
 
     attribute :name, String
-    attribute :type, String, default: 'terraform'
     # unprocessed value, could be remote
     attribute :raw_value, Object
-
-    validate :remote_input_type_is_valid
 
     def initialize(attributes = {}, *args)
       super
@@ -22,10 +19,8 @@ module Covalence
     end
 
     def value
-      return raw_value if value_is_local?
-
-      backend, subcategory = parse_type()
-      backend::lookup(subcategory, raw_value)
+      return raw_value if !raw_value.is_a?(Hash)
+      get_value(raw_value)
     end
 
     def to_command_option
@@ -35,8 +30,18 @@ module Covalence
         "#{name} = \"\""
 
       elsif parsed_value.is_a?(Hash)
-        parsed_value = parsed_value.with_indifferent_access['value']
-        "#{name} = \"#{parsed_value}\""
+        config = "#{name} = {\n"
+        parsed_value.each do |k,v|
+          config += "  \"#{k}\" = \"#{v}\"\n"
+        end
+        config += "}"
+
+      elsif parsed_value.is_a?(Array)
+        config = "#{name} = [\n"
+        parsed_value.each do |v|
+          config += "  \"#{v}\",\n"
+        end
+        config += "]"
 
       elsif parsed_value.start_with?("$(")
         Covalence::LOGGER.info "Evaluating interpolated value: \"#{parsed_value}\""
@@ -49,23 +54,50 @@ module Covalence
     end
 
     private
-    def value_is_local?
-      !raw_value.is_a?(Hash)
+
+    def get_value(input)
+      backend, type = parse_type(input)
+
+      if backend != "local"
+        remote_value = backend::lookup(type, input)
+        if remote_value.is_a?(Hash)
+          get_value(remote_value)
+        else
+          remote_value
+        end
+      elsif input.stringify_keys.has_key?('value')
+        input.stringify_keys.fetch('value')
+      else
+        input
+      end
     end
 
     # :reek:FeatureEnvy
-    def parse_type
-      pieces = raw_value.stringify_keys.fetch('type').split('.', 2)
-      return [ "Covalence::#{pieces.first.camelize}".constantize,
-               pieces[1] ]
-    end
+    def parse_type(input)
+      if input.stringify_keys.has_key?('type')
+        type = input.stringify_keys.fetch('type')
 
-    def remote_input_type_is_valid
-      if (!value_is_local? && !raw_value.stringify_keys.has_key?('type'))
-        errors.add(:base,
-                   "'type' not specified for remote value: #{Hash(raw_value)}",
-        strict: true)
+        local_types = %w(
+          list
+          map
+          string
+        )
+
+        if local_types.any? {|local_type| type == local_type }
+          return [ "local", type ]
+        elsif type.include?('.')
+          pieces = type.split('.', 2)
+          return [ "Covalence::#{pieces.first.camelize}".constantize,
+                   pieces[1] ]
+        else
+          errors.add(:base,
+                     "invalid input type specified: #{type}",
+                     strict: true)
+        end
+      else
+        return [ "local", "map" ]
       end
     end
+
   end
 end
