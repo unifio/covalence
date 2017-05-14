@@ -86,9 +86,6 @@ module Covalence
           expect(query_result["key"].raw_value).to eq('non-file value')
         end
       end
-
-      it "returns a hash of names and inputs" do
-      end
     end
 
     describe ".query_terraform_by_namespace" do
