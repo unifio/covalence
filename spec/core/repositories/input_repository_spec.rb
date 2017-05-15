@@ -86,9 +86,6 @@ module Covalence
           expect(query_result["key"].raw_value).to eq('non-file value')
         end
       end
-
-      it "returns a hash of names and inputs" do
-      end
     end
 
     describe ".query_terraform_by_namespace" do
@@ -103,8 +100,8 @@ module Covalence
     describe ".query_packer_by_namespace" do
       it_behaves_like "an InputRepository query" do
         let(:query_result) { described_class.query_packer_by_namespace(datastore, 'foo') }
-        let(:vars_search_key) { "::packer-vars" }
-        let(:vars_file_search_key) { "::packer-vars-file" }
+        let(:vars_search_key) { "::vars" }
+        let(:vars_file_search_key) { "::vars-file" }
         let(:tool_modules_path) { PACKER }
       end
     end

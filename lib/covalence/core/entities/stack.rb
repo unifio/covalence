@@ -15,7 +15,8 @@ module Covalence
     attribute :type, String
     attribute :name, String
     attribute :environment_name, String
-    attribute :tf_module, String
+    attribute :module_path, String
+    attribute :dependencies, Array[String]
     attribute :packer_template, String
     attribute :state_stores, Array[StateStore]
     attribute :contexts, Array[Context]
@@ -40,7 +41,31 @@ module Covalence
     end
 
     def materialize_cmd_inputs
-      inputs.values.map(&:to_command_option)
+      if type == "terraform"
+        config = ""
+        inputs.values.map(&:to_command_option).each do |input|
+          config += input + "\n"
+        end
+        logger.info "\nStack inputs:\n\n#{config}"
+        File.open('covalence-inputs.tfvars','w') {|f| f.write(config)}
+      elsif type == "packer"
+        config = Hash.new
+        inputs.each do |name, input|
+          config[name] = input.value
+        end
+        File.open('covalence-inputs.json','w') {|f| f.write(JSON.generate(config))}
+      end
     end
+
+    def materialize_state_inputs(store: state_stores.first)
+      config = store.get_config
+      logger.info "\nState store configuration:\n\n#{config}"
+      File.open('covalence-state.tf','w') {|f| f.write(config)}
+    end
+
+    def logger
+      Covalence::LOGGER
+    end
+
   end
 end

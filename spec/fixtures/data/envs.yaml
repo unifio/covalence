@@ -5,3 +5,4 @@ environments:
     - 'myapp'
     - 'module_test'
     - 'artifact_test'
+    - 'packer_test'

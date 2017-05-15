@@ -10,7 +10,7 @@ module Covalence
     it "can lookup without a scope defined" do
       response = client.lookup('environments')
 
-      expect(response).to eql({"example"=>["myapp", "module_test", "artifact_test"]})
+      expect(response).to eql({"example"=>["myapp", "module_test", "artifact_test", "packer_test"]})
     end
 
     it "can lookup with a scope defined" do
