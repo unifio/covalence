@@ -1,3 +1,14 @@
+## Unreleased
+* Add support for Terraform environments
+* Add ability to toggle primary state store
+
+## 0.7.1 (May 15, 2017)
+IMPROVEMENTS:
+- Updated Hiera to 3.3.1 to enable `list` and `map` lookups from within the data using the alias lookup function.
+
+FIXES:
+- Updated Packer `inspect` task to operate in a temporary directory, so that any generated assets are cleaned up after execution.
+
 ## 0.7.0 (May 15. 2017)
 BACKWARDS INCOMPATIBILITIES:
 - Terraform `apply` and `destroy` tasks will no longer include `plan` and `plan_destroy` respectively.
