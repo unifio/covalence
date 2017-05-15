@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.0.0'
 
   spec.add_dependency "deep_merge", "~> 1.0.1"
-  spec.add_dependency "hiera", "~> 3.2.0"
+  spec.add_dependency "hiera", "~> 3.3.0"
   spec.add_dependency "json", "~> 1.8.3"
   spec.add_dependency "rest-client", "~> 2.0.0.rc3"
   spec.add_dependency "rake", ">= 11.1.2"

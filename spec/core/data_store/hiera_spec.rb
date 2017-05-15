@@ -17,7 +17,7 @@ module Covalence
       client.set_scope('example','myapp')
       response = client.lookup('myapp::vars')
 
-      expect(response).to eql({'label'=>'test'})
+      expect(response).to eql({'label'=>'test', 'list_test_simple'=>['foo', 'bar'], 'map_test_simple'=>{'foo'=>'bar', 'bar'=>'foo'}})
     end
 
     it "can perform an array lookup" do
