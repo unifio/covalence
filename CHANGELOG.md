@@ -1,13 +1,15 @@
-## 0.6.2
+## 0.7.0 (May 15. 2017)
 BACKWARDS INCOMPATIBILITIES:
 - Terraform `apply` and `destroy` tasks will no longer include `plan` and `plan_destroy` respectively.
 - The Packer stack `packer-module` parameter has been replaced by `module` for standardization with Terraform stacks.
 - The Packer namespace `packer-template` parameter has been moved to the stack scope and is now a relative path to the module (e.g. `packer::build::packer-template: 'fully/qualified/path/template.json'` would become `mystack::packer-template: 'template.json'` for `mystack::module: 'fully/qualified/path'`)
 - The Packer namespace `packer-targets` parameter has been removed.
+- The `COVLANCE_TERRAFORM_DIR` and `COVALENCE_PACKER_DIR` environment variables now default to the same value as `COVALENCE_WORKPACE` and are now deprecated.
 
 FEATURES:
 - Terraform input variables are now fed in via `-var-file` instead of individual `-var` arguments.
 - Depedencies can now be specified at the stack scope using `<stack>::deps`, which is an Array of directory paths that are to be made available in the working directory. Paths are relative to the Covalence root directory.
+- Added support for `list` and `map` input types.
 
 IMPROVEMENTS:
 - Exposed Terraform `refresh` command.
@@ -17,6 +19,7 @@ IMPROVEMENTS:
 
 FIXES:
 - The `targets` namespace parameter is now properly ignored for Packer stacks.
+- Environment spec tasks now properly account for execution errors (#43)
 
 ## 0.6.1 (April 8, 2017)
 IMPROVEMENTS:
