@@ -5,10 +5,7 @@ module Covalence
   class TerraformStackTasks
 
     def initialize(stack)
-      @path = File.expand_path(File.join(Covalence::TERRAFORM, stack.tf_module))
-
-      # Primary state store assumption
-      @store_args = stack.state_stores.first.get_config
+      @path = File.expand_path(File.join(Covalence::TERRAFORM, stack.module_path))
       @stack = stack
     end
 
@@ -31,7 +28,7 @@ module Covalence
     # :reek:TooManyStatements
     def stack_verify
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
@@ -40,9 +37,10 @@ module Covalence
 
           TerraformCli.terraform_validate
 
-          args = collect_args(stack.materialize_cmd_inputs,
-                              "-input=false",
-                              stack.args)
+          stack.materialize_cmd_inputs
+          args = collect_args("-input=false",
+                              stack.args,
+                              "-var-file=covalence-inputs.tfvars")
 
           TerraformCli.terraform_plan(args: args)
         end
@@ -50,23 +48,31 @@ module Covalence
     end
 
     # :reek:TooManyStatements
-    def stack_sync
+    def stack_refresh
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
+          stack.materialize_state_inputs
+          TerraformCli.terraform_get(@path)
+          TerraformCli.terraform_refresh
+        end
+      end
+    end
 
+    # :reek:TooManyStatements
+    def stack_sync
+      Dir.mktmpdir do |tmpdir|
+        populate_workspace(tmpdir)
+        Dir.chdir(tmpdir) do
+          logger.info "In #{tmpdir}:"
+
+          stack.materialize_state_inputs
           TerraformCli.terraform_init
 
           stack.state_stores.drop(1).each do |store|
-            args = store.get_config
-            # Update the state configuration and reinitialize
-            logger.info "\nState store configuration:\n\n#{args}"
-            File.open('state.tf','w') {|f| f.write(args)}
+            stack.materialize_state_inputs(store: store)
             TerraformCli.terraform_init("-force-copy")
           end
         end
@@ -76,21 +82,19 @@ module Covalence
     # :reek:TooManyStatements
     def context_plan(*additional_args)
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
-
+          stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          args = collect_args(stack.materialize_cmd_inputs,
-                              "-input=false",
+          stack.materialize_cmd_inputs
+          args = collect_args("-input=false",
                               stack.args,
-                              additional_args)
+                              additional_args,
+                              "-var-file=covalence-inputs.tfvars")
 
           TerraformCli.terraform_plan(args: args)
         end
@@ -100,22 +104,20 @@ module Covalence
     # :reek:TooManyStatements
     def context_plan_destroy(*additional_args)
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
-
+          stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          args = collect_args(stack.materialize_cmd_inputs,
-                              "-destroy",
+          stack.materialize_cmd_inputs
+          args = collect_args("-destroy",
                               "-input=false",
                               stack.args,
-                              additional_args)
+                              additional_args,
+                              "-var-file=covalence-inputs.tfvars")
 
           TerraformCli.terraform_plan(args: args)
         end
@@ -125,23 +127,20 @@ module Covalence
     # :reek:TooManyStatements
     def context_apply(*additional_args)
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
-
+          stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          args = collect_args(stack.materialize_cmd_inputs,
-                              "-input=false",
+          stack.materialize_cmd_inputs
+          args = collect_args("-input=false",
                               stack.args,
-                              additional_args)
+                              additional_args,
+                              "-var-file=covalence-inputs.tfvars")
 
-          TerraformCli.terraform_plan(args: args)
           TerraformCli.terraform_apply(args: args)
         end
       end
@@ -150,36 +149,40 @@ module Covalence
     # :reek:TooManyStatements
     def context_destroy(*additional_args)
       Dir.mktmpdir do |tmpdir|
-        FileUtils.copy_entry @path, tmpdir
+        populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          # Create the state configuration file
-          logger.info "\nState store configuration:\n\n#{@store_args}"
-          File.open('state.tf','w') {|f| f.write(@store_args)}
-
+          stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          base_args = collect_args(stack.materialize_cmd_inputs,
-                                   "-input=false",
-                                   stack.args,
-                                   additional_args)
+          stack.materialize_cmd_inputs
+          args = collect_args("-input=false",
+                              "-force",
+                              stack.args,
+                              additional_args,
+                              "-var-file=covalence-inputs.tfvars")
 
-          plan_args = collect_args(base_args,
-                              "-destroy")
-
-          destroy_args = collect_args(base_args,
-                                      "-force")
-
-          TerraformCli.terraform_plan(args: plan_args)
-          TerraformCli.terraform_destroy(args: destroy_args)
+          TerraformCli.terraform_destroy(args: args)
         end
       end
     end
 
     private
     attr_reader :path, :stack, :store_args
+
+    def populate_workspace(workspace)
+      # Copy module to the workspace
+      FileUtils.copy_entry @path, workspace
+
+      # Copy any dependencies to the workspace
+      @stack.dependencies.each do |dep|
+        logger.info "Copying '#{dep}' dependency to #{workspace}"
+        dep_path = File.expand_path(File.join(Covalence::TERRAFORM, dep))
+        FileUtils.cp_r dep_path, workspace
+      end
+    end
 
     def logger
       Covalence::LOGGER

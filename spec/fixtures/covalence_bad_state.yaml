@@ -7,7 +7,7 @@
 :merge_behavior: 'deeper'
 
 :hierarchy:
-  - "envs-bad-state"
+  - 'envs-bad-state'
 
 :yaml:
    :datadir: spec/fixtures/data
