@@ -14,6 +14,12 @@ myapp::args: '-no-color'
 # Input variables
 myapp::vars:
   label: 'test'
+  list_test_simple:
+    - 'foo'
+    - 'bar'
+  map_test_simple:
+    foo: 'bar'
+    bar: 'foo'
 
 # Execution targets
 myapp::targets:
