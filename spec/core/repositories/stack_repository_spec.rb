@@ -9,7 +9,7 @@ module Covalence
         let(:data_store) { HieraDB::Client.new("spec/fixtures/covalence_spec.yaml") }
 
         context "with a valid environment" do
-          it "finds the stack with an valid environment" do
+          it "finds the stack" do
             stack = described_class.find(data_store, 'example', 'artifact_test')
 
             expect(stack.args).to_not be_empty
@@ -20,7 +20,7 @@ module Covalence
 
         context "with an invalid environment" do
           it "prints info about the invalid environment-stack combo" do
-            expect(Covalence::LOGGER).to receive(:info).and_return(true)
+            expect(Covalence::LOGGER).to receive(:debug).and_return(true)
             described_class.find(data_store, 'examplez', 'artifact_test')
           end
 
@@ -30,11 +30,11 @@ module Covalence
         end
       end
 
-      context "with an invalid terraform stack" do
+      context "with an invalid stack" do
         let(:data_store) { HieraDB::Client.new("spec/fixtures/covalence_bad_state.yaml") }
 
         it "prints info about the invalid environment-stack combo" do
-          expect(Covalence::LOGGER).to receive(:info).and_return(true)
+          expect(Covalence::LOGGER).to receive(:debug).and_return(true)
           described_class.find(data_store, 'example', 'bad_state')
         end
 
@@ -44,8 +44,44 @@ module Covalence
       end
     end
 
-    describe ".packer-find" do
-      pending
+    describe ".packer_find" do
+      context "with a valid stack" do
+        let(:data_store) { HieraDB::Client.new("spec/fixtures/covalence_spec.yaml") }
+
+        context "with a valid environment" do
+          it "finds the stack" do
+            stack = described_class.packer_find(data_store, 'example', 'packer_test')
+
+            expect(stack.args).to_not be_empty
+            expect(stack.inputs.has_key?('invalid_key')).to be false
+            expect(stack.inputs['aws_access_key'].value).to eq('testing')
+          end
+        end
+
+        context "with an invalid environment" do
+          it "prints info about the invalid environment-stack combo" do
+            expect(Covalence::LOGGER).to receive(:debug).and_return(true)
+            described_class.packer_find(data_store, 'examplez', 'packer_test')
+          end
+
+          it "returns nil" do
+            expect(described_class.packer_find(data_store, 'examplez', 'packer_test')).to be_nil
+          end
+        end
+      end
+
+      context "with an invalid stack" do
+        let(:data_store) { HieraDB::Client.new("spec/fixtures/covalence_bad_state.yaml") }
+
+        it "prints info about the invalid environment-stack combo" do
+          expect(Covalence::LOGGER).to receive(:debug).and_return(true)
+          described_class.packer_find(data_store, 'example', 'bad_state')
+        end
+
+        it "returns nil" do
+          expect( described_class.packer_find(data_store, 'example', 'bad_state')).to be_nil
+        end
+      end
     end
   end
 end

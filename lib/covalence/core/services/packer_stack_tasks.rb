@@ -6,8 +6,9 @@ module Covalence
   class PackerStackTasks
 
     def initialize(stack)
-      @template_path = File.expand_path(File.join(Covalence::PACKER, stack.packer_template))
+      @path = File.expand_path(File.join(Covalence::PACKER, stack.module_path))
       @stack = stack
+      @template = "#{@path}/#{stack.packer_template}"
     end
 
     def stack_name
@@ -19,10 +20,19 @@ module Covalence
     end
 
     def context_build(*additional_args)
-      args = collect_args(stack.materialize_cmd_inputs,
-                          stack.args,
-                          additional_args)
-      call_packer_cmd("packer_build", args)
+      Dir.mktmpdir do |tmpdir|
+        populate_workspace(tmpdir)
+        Dir.chdir(tmpdir) do
+          logger.info "In #{tmpdir}:"
+
+          stack.materialize_cmd_inputs
+          args = collect_args(stack.args,
+                              additional_args,
+                              "-var-file=covalence-inputs.json")
+
+          call_packer_cmd("packer_build", args)
+        end
+      end
     end
 
     def context_inspect(*additional_args)
@@ -30,41 +40,58 @@ module Covalence
     end
 
     def context_validate(*additional_args)
-      args = collect_args(stack.materialize_cmd_inputs,
-                          stack.args,
-                          additional_args)
-      call_packer_cmd("packer_validate", args)
+      Dir.mktmpdir do |tmpdir|
+        populate_workspace(tmpdir)
+        Dir.chdir(tmpdir) do
+          logger.info "In #{tmpdir}:"
+
+          stack.materialize_cmd_inputs
+          args = collect_args(stack.args,
+                              additional_args,
+                              "-var-file=covalence-inputs.json")
+
+          call_packer_cmd("packer_validate", args)
+        end
+      end
     end
 
     private
     attr_reader :template_path, :stack
 
-    def call_packer_cmd(packer_cmd, args)
-      begin
-        tmp_file = nil
-        if template_is_yaml?(template_path)
-          tmp_file = Tempfile.new('file', File.dirname(template_path))
-          tmp_file.write(YAML.load_file(template_path).to_json)
-          tmp_file.rewind
+    def populate_workspace(workspace)
+      # Copy module to the workspace
+      FileUtils.copy_entry @path, workspace
 
-          PackerCli.public_send(packer_cmd.to_sym, tmp_file.path, args: args)
-        else
-          PackerCli.public_send(packer_cmd.to_sym, template_path, args: args)
-        end
-      ensure
-        if tmp_file
-          tmp_file.close
-          tmp_file.unlink
-        end
+      # Copy any dependencies to the workspace
+      @stack.dependencies.each do |dep|
+        logger.info "Copying '#{dep}' dependency to #{workspace}"
+        dep_path = File.expand_path(File.join(Covalence::PACKER, dep))
+        FileUtils.cp_r dep_path, workspace
       end
     end
 
-    def template_is_yaml?(template_path)
-      %w(.yaml .yml).include?(File.extname(template_path))
+    def call_packer_cmd(packer_cmd, args)
+      if template_is_yaml?(@template)
+        config = YAML.load_file(@template).to_json
+        logger.info "\nGenerated build template:\n\n#{config}"
+        File.open('covalence-packer-template.json','w') {|f| f.write(config)}
+
+        PackerCli.public_send(packer_cmd.to_sym, 'covalence-packer-template.json', args: args)
+      else
+        PackerCli.public_send(packer_cmd.to_sym, @template, args: args)
+      end
+    end
+
+    def template_is_yaml?(template)
+      %w(.yaml .yml).include?(File.extname(template))
     end
 
     def collect_args(*args)
       args.flatten.compact.reject(&:empty?).map(&:strip)
+    end
+
+    def logger
+      Covalence::LOGGER
     end
   end
 end

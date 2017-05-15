@@ -8,12 +8,12 @@ require_relative '../shared_contexts/rake.rb'
 
 module Covalence
   describe EnvironmentTasks do
-    let(:task_files) { "environment_tasks.rb" }
+    let(:task_files) { 'environment_tasks.rb' }
     let(:state_file) { 'state.tf' }
 
     before(:each) do
       Kernel.silence_warnings {
-        Covalence::TERRAFORM_VERSION = "0.9.2"
+        Covalence::TERRAFORM_VERSION = "0.9.0"
       }
       allow(PopenWrapper).to receive(:run).and_return(true)
       # suppress FileUtils verbose
@@ -40,6 +40,15 @@ module Covalence
       end
     end
 
+    describe "example:myapp:refresh" do
+      include_context "rake"
+
+      it "refreshes the workspace" do
+        expect(TerraformCli).to receive(:terraform_refresh)
+        subject.invoke
+      end
+    end
+
     describe "example:myapp:verify" do
       include_context "rake"
 
@@ -47,17 +56,30 @@ module Covalence
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
-      
+
       it "executes template validation" do
         expect(TerraformCli).to receive(:terraform_validate)
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
-          "-no-color"
+          "-no-color",
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -66,17 +88,47 @@ module Covalence
     describe "example:myapp:az0:plan" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
           "-no-color",
-          "-target=\"module.az0\""
+          "-target=\"module.az0\"",
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -87,11 +139,11 @@ module Covalence
         it "executes a plan with -detailed-exitcode" do
           expect(TerraformCli).to receive(:terraform_init)
           expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-            "-var 'label=\"test\"'",
             "-input=false",
             "-no-color",
             "-target=\"module.az0\"",
-            "-detailed-exitcode"
+            "-detailed-exitcode",
+            "-var-file=covalence-inputs.tfvars"
           )))
           Rake::Task['example:myapp:az0:plan'].invoke
         end
@@ -104,11 +156,11 @@ module Covalence
         it "executes a plan with -detailed-exitcode" do
           expect(TerraformCli).to receive(:terraform_init)
           expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-            "-var 'label=\"test\"'",
             "-input=false",
             "-no-color",
             "-target=\"module.az0\"",
-            "-some-passthrough-arg"
+            "-some-passthrough-arg",
+            "-var-file=covalence-inputs.tfvars"
           )))
           Rake::Task['example:myapp:az0:plan'].invoke
         end
@@ -118,18 +170,48 @@ module Covalence
     describe "example:myapp:az0:plan_destroy" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-destroy",
           "-input=false",
           "-no-color",
-          "-target=\"module.az0\""
+          "-target=\"module.az0\"",
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -138,27 +220,47 @@ module Covalence
     describe "example:myapp:az0:apply" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
-          "-input=false",
-          "-no-color",
-          "-target=\"module.az0\""
-        )))
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
+        expect(buffer.string).to eq(content)
       end
 
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
           "-no-color",
-          "-target=\"module.az0\""
+          "-target=\"module.az0\"",
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -167,29 +269,48 @@ module Covalence
     describe "example:myapp:az0:destroy" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
-          "-destroy",
-          "-input=false",
-          "-no-color",
-          "-target=\"module.az0\""
-        )))
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
           "-no-color",
           "-target=\"module.az0\"",
           "-force",
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -198,18 +319,48 @@ module Covalence
     describe "example:myapp:az1:plan" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
           "-no-color",
           "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\""
+          "-target=\"module.common.aws_eip.myapp\"",
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -218,19 +369,49 @@ module Covalence
     describe "example:myapp:az1:plan_destroy" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-destroy",
           "-input=false",
           "-no-color",
           "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\""
+          "-target=\"module.common.aws_eip.myapp\"",
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -239,29 +420,48 @@ module Covalence
     describe "example:myapp:az1:apply" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
-          "-input=false",
-          "-no-color",
-          "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\""
-        )))
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
+        expect(buffer.string).to eq(content)
       end
 
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: array_including(
-          "-var 'label=\"test\"'",
           "-input=false",
           "-no-color",
           "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\""
+          "-target=\"module.common.aws_eip.myapp\"",
+          "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
       end
@@ -270,31 +470,49 @@ module Covalence
     describe "example:myapp:az1:destroy" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
-          "-var 'label=\"test\"'",
-          "-input=false",
-          "-no-color",
-          "-target=\"module.az1\"",
-          "-target=\"module.common.aws_eip.myapp\"",
-          "-destroy"
-        ]))
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = <<-CONF
+label = "test"
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: [
-          "-var 'label=\"test\"'",
           "-input=false",
+          "-force",
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\"",
-          "-force",
+          "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
       end
@@ -302,6 +520,30 @@ module Covalence
 
     describe "example:myapp:sync" do
       include_context "rake"
+
+      it "generates the source & sync target state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+terraform {
+  backend "s3" {
+    key = "some_name/terraform.tfstate"
+    bucket = "some_bucket"
+    region = "some_region"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
 
       it "should reinitiailze the backend and copy the state" do
         expect(TerraformCli).to receive(:terraform_init).at_most(:twice)
@@ -312,14 +554,43 @@ module Covalence
     describe "example:module_test:plan" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = ""
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
-          "-input=false"
+          "-input=false",
+          "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
       end
@@ -328,15 +599,44 @@ module Covalence
     describe "example:module_test:plan_destroy" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = ""
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "executes a plan" do
         expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
           "-destroy",
-          "-input=false"
+          "-input=false",
+          "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
       end
@@ -345,21 +645,43 @@ module Covalence
     describe "example:module_test:apply" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
-          "-input=false"
-        ]))
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = ""
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
+        expect(buffer.string).to eq(content)
       end
 
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: [
-          "-input=false"
+          "-input=false",
+          "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
       end
@@ -368,23 +690,44 @@ module Covalence
     describe "example:module_test:destroy" do
       include_context "rake"
 
+      it "generates a state configuration" do
+        buffer = StringIO.new()
+        filename = 'covalence-state.tf'
+        content = <<-CONF
+terraform {
+  backend "atlas" {
+    name = "example/myapp"
+  }
+}
+CONF
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+        subject.invoke
+        expect(buffer.string).to eq(content)
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
       end
 
-      it "executes a plan" do
-        expect(TerraformCli).to receive(:terraform_plan).with(hash_including(args: [
-          "-input=false",
-          "-destroy"
-        ]))
+      it "generates an inputs varfile" do
+        buffer = StringIO.new()
+        filename = 'covalence-inputs.tfvars'
+        content = ""
+
+        allow(File).to receive(:open).and_call_original
+        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
+        expect(buffer.string).to eq(content)
       end
 
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: [
           "-input=false",
-          "-force"
+          "-force",
+          "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
       end

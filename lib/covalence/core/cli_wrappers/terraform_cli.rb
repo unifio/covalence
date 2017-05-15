@@ -126,13 +126,13 @@ module Covalence
       end #init_terraform_cmds
 
       # When terraform runs inside a container, dir scoping and volume mounts need to be considered.
-      # This enforces the standard that terraform modules need to be scoped under the TERRAFORM dir module
+      # This enforces the standard that terraform modules need to be scoped under the WORKSPACE dir module
       # to avoid volume mount problems.
       def docker_scope_path(path)
-        if !path.start_with?(TERRAFORM)
-          raise "cannot target terraform module #{path} outside TERRAFORM base path: #{TERRAFORM}"
+        if !path.start_with?(WORKSPACE)
+          raise "cannot target terraform module #{path} outside WORKSPACE base path: #{WORKSPACE}"
         end
-        [TERRAFORM, path.sub(TERRAFORM, "")]
+        [WORKSPACE, path.sub(WORKSPACE, "")]
       end
     end #private
   end #TerraformCli
