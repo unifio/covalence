@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    covalence (0.7.0)
+    covalence (0.7.1)
       activemodel (~> 4.2.6)
       activesupport (~> 4.2.6)
       aws-sdk (~> 2.9.5)
