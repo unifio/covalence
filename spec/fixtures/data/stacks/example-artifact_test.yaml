@@ -9,7 +9,9 @@ artifact_test::state:
 
 # Input variables
 myapp2::vars:
-  label: 'test'
+  label:
+    type: 'string'
+    value: 'test'
   ami:
     type: 'atlas.artifact'
     slug: 'unifio/aws-linux/amazon.ami'
