@@ -67,6 +67,14 @@ module Covalence
         filename = 'covalence-inputs.tfvars'
         content = <<-CONF
 label = "test"
+list_test_simple = [
+  "foo",
+  "bar",
+]
+map_test_simple = {
+  "foo" = "bar"
+  "bar" = "foo"
+}
 CONF
 
         allow(File).to receive(:open).and_call_original
@@ -115,6 +123,14 @@ CONF
         filename = 'covalence-inputs.tfvars'
         content = <<-CONF
 label = "test"
+list_test_simple = [
+  "foo",
+  "bar",
+]
+map_test_simple = {
+  "foo" = "bar"
+  "bar" = "foo"
+}
 CONF
 
         allow(File).to receive(:open).and_call_original
@@ -197,6 +213,14 @@ CONF
         filename = 'covalence-inputs.tfvars'
         content = <<-CONF
 label = "test"
+list_test_simple = [
+  "foo",
+  "bar",
+]
+map_test_simple = {
+  "foo" = "bar"
+  "bar" = "foo"
+}
 CONF
 
         allow(File).to receive(:open).and_call_original
@@ -247,6 +271,14 @@ CONF
         filename = 'covalence-inputs.tfvars'
         content = <<-CONF
 label = "test"
+list_test_simple = [
+  "foo",
+  "bar",
+]
+map_test_simple = {
+  "foo" = "bar"
+  "bar" = "foo"
+}
 CONF
 
         allow(File).to receive(:open).and_call_original
@@ -296,6 +328,14 @@ CONF
         filename = 'covalence-inputs.tfvars'
         content = <<-CONF
 label = "test"
+list_test_simple = [
+  "foo",
+  "bar",
+]
+map_test_simple = {
+  "foo" = "bar"
+  "bar" = "foo"
+}
 CONF
 
         allow(File).to receive(:open).and_call_original
@@ -346,6 +386,14 @@ CONF
         filename = 'covalence-inputs.tfvars'
         content = <<-CONF
 label = "test"
+list_test_simple = [
+  "foo",
+  "bar",
+]
+map_test_simple = {
+  "foo" = "bar"
+  "bar" = "foo"
+}
 CONF
 
         allow(File).to receive(:open).and_call_original
@@ -396,6 +444,14 @@ CONF
         filename = 'covalence-inputs.tfvars'
         content = <<-CONF
 label = "test"
+list_test_simple = [
+  "foo",
+  "bar",
+]
+map_test_simple = {
+  "foo" = "bar"
+  "bar" = "foo"
+}
 CONF
 
         allow(File).to receive(:open).and_call_original
@@ -447,6 +503,14 @@ CONF
         filename = 'covalence-inputs.tfvars'
         content = <<-CONF
 label = "test"
+list_test_simple = [
+  "foo",
+  "bar",
+]
+map_test_simple = {
+  "foo" = "bar"
+  "bar" = "foo"
+}
 CONF
 
         allow(File).to receive(:open).and_call_original
@@ -497,6 +561,14 @@ CONF
         filename = 'covalence-inputs.tfvars'
         content = <<-CONF
 label = "test"
+list_test_simple = [
+  "foo",
+  "bar",
+]
+map_test_simple = {
+  "foo" = "bar"
+  "bar" = "foo"
+}
 CONF
 
         allow(File).to receive(:open).and_call_original
@@ -579,7 +651,12 @@ CONF
       it "generates an inputs varfile" do
         buffer = StringIO.new()
         filename = 'covalence-inputs.tfvars'
-        content = ""
+        content = <<-CONF
+list_test_lookup = [
+  "foo",
+  "bar",
+]
+CONF
 
         allow(File).to receive(:open).and_call_original
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
@@ -624,7 +701,12 @@ CONF
       it "generates an inputs varfile" do
         buffer = StringIO.new()
         filename = 'covalence-inputs.tfvars'
-        content = ""
+        content = <<-CONF
+list_test_lookup = [
+  "foo",
+  "bar",
+]
+CONF
 
         allow(File).to receive(:open).and_call_original
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
@@ -670,7 +752,12 @@ CONF
       it "generates an inputs varfile" do
         buffer = StringIO.new()
         filename = 'covalence-inputs.tfvars'
-        content = ""
+        content = <<-CONF
+list_test_lookup = [
+  "foo",
+  "bar",
+]
+CONF
 
         allow(File).to receive(:open).and_call_original
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
@@ -715,7 +802,12 @@ CONF
       it "generates an inputs varfile" do
         buffer = StringIO.new()
         filename = 'covalence-inputs.tfvars'
-        content = ""
+        content = <<-CONF
+list_test_lookup = [
+  "foo",
+  "bar",
+]
+CONF
 
         allow(File).to receive(:open).and_call_original
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
