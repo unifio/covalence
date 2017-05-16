@@ -36,7 +36,14 @@ module Covalence
     end
 
     def context_inspect(*additional_args)
-      call_packer_cmd("packer_inspect", [])
+      Dir.mktmpdir do |tmpdir|
+        populate_workspace(tmpdir)
+        Dir.chdir(tmpdir) do
+          logger.info "In #{tmpdir}:"
+
+          call_packer_cmd("packer_inspect", [])
+        end
+      end
     end
 
     def context_validate(*additional_args)

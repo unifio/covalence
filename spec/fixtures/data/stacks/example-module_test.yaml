@@ -6,3 +6,7 @@ module_test::module: 'myapp2'
 module_test::state:
   - atlas:
       name: 'example/myapp'
+
+# Input variables
+myapp2::vars:
+  list_test_lookup: "%{alias('lookup_test_list')}"
