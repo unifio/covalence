@@ -43,6 +43,16 @@ module Covalence
     describe "example:myapp:refresh" do
       include_context "rake"
 
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
+      end
+
+      it "initializes the workspace" do
+        expect(TerraformCli).to receive(:terraform_init)
+        subject.invoke
+      end
+
       it "refreshes the workspace" do
         expect(TerraformCli).to receive(:terraform_refresh)
         subject.invoke
@@ -51,6 +61,11 @@ module Covalence
 
     describe "example:myapp:verify" do
       include_context "rake"
+
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
+      end
 
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
@@ -111,6 +126,11 @@ CONF
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
         expect(buffer.string).to eq(content)
+      end
+
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
       end
 
       it "initializes the workspace" do
@@ -203,6 +223,11 @@ CONF
         expect(buffer.string).to eq(content)
       end
 
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -261,6 +286,11 @@ CONF
         expect(buffer.string).to eq(content)
       end
 
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -316,6 +346,11 @@ CONF
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
         expect(buffer.string).to eq(content)
+      end
+
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
       end
 
       it "initializes the workspace" do
@@ -376,6 +411,11 @@ CONF
         expect(buffer.string).to eq(content)
       end
 
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -432,6 +472,11 @@ CONF
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
         expect(buffer.string).to eq(content)
+      end
+
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
       end
 
       it "initializes the workspace" do
@@ -493,6 +538,11 @@ CONF
         expect(buffer.string).to eq(content)
       end
 
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -549,6 +599,11 @@ CONF
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
         expect(buffer.string).to eq(content)
+      end
+
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
       end
 
       it "initializes the workspace" do
@@ -643,6 +698,11 @@ CONF
         expect(buffer.string).to eq(content)
       end
 
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -691,6 +751,11 @@ CONF
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
         expect(buffer.string).to eq(content)
+      end
+
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
       end
 
       it "initializes the workspace" do
@@ -744,6 +809,11 @@ CONF
         expect(buffer.string).to eq(content)
       end
 
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
+      end
+
       it "initializes the workspace" do
         expect(TerraformCli).to receive(:terraform_init)
         subject.invoke
@@ -792,6 +862,11 @@ CONF
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
         expect(buffer.string).to eq(content)
+      end
+
+      it "sources modules" do
+        expect(TerraformCli).to receive(:terraform_get)
+        subject.invoke
       end
 
       it "initializes the workspace" do
