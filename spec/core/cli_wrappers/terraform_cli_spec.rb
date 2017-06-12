@@ -13,12 +13,11 @@ module Covalence
 
     before(:each) do
       @cached_env = {}
-      %w(TERRAFORM_IMG TERRAFORM_CMD COVALENCE_WORKSPACE COVALENCE_TERRAFORM_DIR).each do |env_var|
+      %w(TERRAFORM_CMD COVALENCE_WORKSPACE COVALENCE_TERRAFORM_DIR).each do |env_var|
         @cached_env[env_var] = ENV[env_var]
       end
       allow(PopenWrapper).to receive(:print_cmd_string)
 
-      ENV['TERRAFORM_IMG'] = ""
       ENV['TERRAFORM_CMD'] = "terraform"
       # force constants to re-init
       Kernel.silence_warnings {
@@ -27,7 +26,7 @@ module Covalence
     end
 
     after(:each) do
-      %w(TERRAFORM_IMG TERRAFORM_CMD COVALENCE_WORKSPACE COVALENCE_TERRAFORM_DIR).each do |env_var|
+      %w(TERRAFORM_CMD COVALENCE_WORKSPACE COVALENCE_TERRAFORM_DIR).each do |env_var|
         ENV[env_var] = @cached_env[env_var]
       end
       Kernel.silence_warnings {

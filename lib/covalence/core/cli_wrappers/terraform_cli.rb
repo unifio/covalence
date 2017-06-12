@@ -34,37 +34,19 @@ module Covalence
     end
 
     def self.terraform_check_style(path)
-      if Covalence::TERRAFORM_IMG.blank?
-        output, status = Open3.capture2e(ENV, Covalence::TERRAFORM_CMD, "fmt", "-write=false", path)
-      else
-        output, status = Open3.capture2e(ENV, "#{Covalence::TERRAFORM_CMD} -v #{path}:/path -w /path #{Covalence::TERRAFORM_IMG} fmt -write=false")
-      end
+      output, status = Open3.capture2e(ENV, Covalence::TERRAFORM_CMD, "fmt", "-write=false", path)
       return false unless status.success?
       output = output.split("\n")
       (output.size == 0)
     end
 
     def self.terraform_init(path='', args: '', ignore_exitcode: false)
-      if Covalence::TERRAFORM_IMG.blank?
-        output = PopenWrapper.run([
-          Covalence::TERRAFORM_CMD, "init", "-get=false", "-input=false"],
-          path,
-          args,
-          ignore_exitcode: ignore_exitcode)
-        (output == 0)
-      else
-        output = PopenWrapper.run([
-          Covalence::TERRAFORM_CMD,
-          "-v #{Dir.pwd()}:/path -w /path #{Covalence::TERRAFORM_IMG}",
-          "init",
-          "-get=true",
-          "-input=false"],
-          '',
-          path,
-          args,
-          ignore_exitcode: ignore_exitcode)
-        (output == 0)
-      end
+      output = PopenWrapper.run([
+        Covalence::TERRAFORM_CMD, "init", "-get=false", "-input=false"],
+        path,
+        args,
+        ignore_exitcode: ignore_exitcode)
+      (output == 0)
     end
 
     def self.terraform_output(output_var, args: '')
@@ -94,14 +76,8 @@ module Covalence
 
             next if respond_to?(terraform_cmd.to_sym)
             define_singleton_method(terraform_cmd) do |path=Dir.pwd(), args: ''|
-              if Covalence::TERRAFORM_IMG.blank?
-                output = PopenWrapper.run([Covalence::TERRAFORM_CMD, cmd], path, args)
-                (output == 0)
-              else
-                parent, base = docker_scope_path(path)
-                output = PopenWrapper.run([Covalence::TERRAFORM_CMD, "-v #{parent}:/tf_base -w #{File.join('/tf_base', base)} #{Covalence::TERRAFORM_IMG}", cmd], '', args)
-                (output == 0)
-              end
+              output = PopenWrapper.run([Covalence::TERRAFORM_CMD, cmd], path, args)
+              (output == 0)
             end
           elsif sub_hash.is_a?(Hash)
             sub_hash.keys.each do |sub_command|
@@ -109,14 +85,8 @@ module Covalence
 
               next if respond_to?(terraform_cmd.to_sym)
               define_singleton_method(terraform_cmd) do |path=Dir.pwd(), args: ''|
-                if Covalence::TERRAFORM_IMG.blank?
-                  output = PopenWrapper.run([Covalence::TERRAFORM_CMD, cmd, sub_command], path, args)
-                  (output == 0)
-                else
-                  parent, base = docker_scope_path(path)
-                  output = PopenWrapper.run([Covalence::TERRAFORM_CMD, "-v #{parent}:/tf_base -w #{File.join('/tf_base', base)} #{Covalence::TERRAFORM_IMG}", cmd, sub_command], '', args)
-                  (output == 0)
-                end
+                output = PopenWrapper.run([Covalence::TERRAFORM_CMD, cmd, sub_command], path, args)
+                (output == 0)
               end
             end
           else
@@ -124,16 +94,6 @@ module Covalence
           end
         end
       end #init_terraform_cmds
-
-      # When terraform runs inside a container, dir scoping and volume mounts need to be considered.
-      # This enforces the standard that terraform modules need to be scoped under the WORKSPACE dir module
-      # to avoid volume mount problems.
-      def docker_scope_path(path)
-        if !path.start_with?(WORKSPACE)
-          raise "cannot target terraform module #{path} outside WORKSPACE base path: #{WORKSPACE}"
-        end
-        [WORKSPACE, path.sub(WORKSPACE, "")]
-      end
     end #private
   end #TerraformCli
 end
