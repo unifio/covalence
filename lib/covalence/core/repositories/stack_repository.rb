@@ -25,13 +25,23 @@ module Covalence
         name: stack_name,
         environment_name: environment_name,
         module_path: stack_module,
-        dependencies: lookup_dependencies(stack_data_store, stack_name),
-        packer_template: lookup_packer_template(stack_data_store, stack_name),
-        state_stores: StateStoreRepository.query_by_stack_name(stack_data_store, stack_name, tool),
-        contexts: ContextRepository.query_by_namespace(stack_data_store, shared_namespace, tool),
-        inputs: InputRepository.query_by_namespace(stack_data_store, shared_namespace, tool),
-        args: find_args_by_namespace(stack_data_store, shared_namespace),
       )
+    end
+
+    def self.populate(data_store, stack)
+      stack_scope = {
+        'environment' => stack.environment_name,
+        'stack' => stack.name,
+      }
+      stack_data_store = data_store.initialize_scope(stack_scope)
+      shared_namespace = stack.module_path.gsub('/', '::')
+
+      stack.dependencies = lookup_dependencies(stack_data_store, stack.name)
+      stack.packer_template = lookup_packer_template(stack_data_store, stack.name)
+      stack.state_stores = StateStoreRepository.query_by_stack_name(stack_data_store, stack.name, stack.type)
+      stack.contexts = ContextRepository.query_by_namespace(stack_data_store, shared_namespace, stack.type)
+      stack.inputs = InputRepository.query_by_namespace(stack_data_store, shared_namespace, stack.type)
+      stack.args = find_args_by_namespace(stack_data_store, shared_namespace)
     end
 
     class << self
