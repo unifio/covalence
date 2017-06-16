@@ -13,7 +13,6 @@ Fabricator(:stack, from: 'Covalence::Stack') do
   args "-no-color"
   #state_stores - terraform only
   #packer_template - packer only
-  #state_stores - terraform only
 
   after_build(&:valid?)
 end
