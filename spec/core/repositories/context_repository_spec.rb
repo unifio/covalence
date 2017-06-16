@@ -17,21 +17,14 @@ module Covalence
       end
     end
 
-    describe ".query_terraform_by_namespace" do
+    describe ".query_by_namespace" do
       it_behaves_like "a ContextRepository query" do
-        let(:query_result) { described_class.query_terraform_by_namespace(datastore, 'foo') }
-      end
-    end
-
-
-    describe ".query_packer_by_namespace" do
-      it_behaves_like "a ContextRepository query" do
-        let(:query_result) { described_class.query_packer_by_namespace(datastore, 'foo') }
+        let(:query_result) { described_class.query_by_namespace(datastore, 'foo', 'terraform') }
       end
     end
 
     context "Terraform" do
-      let(:query_result) { described_class.query_terraform_by_namespace(datastore, 'foo') }
+      let(:query_result) { described_class.query_by_namespace(datastore, 'foo', 'terraform') }
 
       context "with context" do
         it "creates context and global context" do
@@ -47,7 +40,7 @@ module Covalence
     end
 
     context "Packer" do
-      let(:query_result) { described_class.query_packer_by_namespace(datastore, 'foo') }
+      let(:query_result) { described_class.query_by_namespace(datastore, 'foo', 'packer') }
 
       context "with context" do
         it "creates a global context only" do
