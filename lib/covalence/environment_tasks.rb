@@ -13,19 +13,28 @@ module Covalence
     attr_reader :environments, :logger
 
     def initialize
-      @environments = EnvironmentRepository.all
       @logger = Covalence::LOGGER
+      @environments = EnvironmentRepository.all
     end
 
     # :reek:NestedIterators
     # :reek:TooManyStatements
     def run
-      all_namespace_terraform_tasks
+      task = get_task_attr(ARGV.first)
+      if task['environment'].nil?
+        all_namespace_terraform_tasks
+      end
+
       environments.each do |environment|
+        next if !task['environment'].nil? && environment.name != task['environment']
+        logger.debug("Rendering #{environment.name} environment tasks")
         environment_namespace_terraform_tasks(environment)
         environment_namespace_packer_tasks(environment)
 
         environment.stacks.each do |stack|
+          next if !task['stack'].nil? && stack.name != task['stack']
+          logger.debug("Rendering #{stack.name} stack tasks")
+          EnvironmentRepository.stack(stack)
           case stack.type
           when 'terraform'
             tf_tasks = TerraformStackTasks.new(stack)
@@ -286,6 +295,25 @@ module Covalence
       # strips out [<rake_task>, "--"]
       ARGV.drop(2)
     end
+
+    def get_task_attr(input)
+      logger.info("Task: #{input}")
+      task = input.to_s.split(':')
+      task_comps = Hash.new
+      return task_comps if task.length == 1 || task[0] == 'all'
+
+      if task.length >= 2
+        task_comps['environment'] = task[0]
+        logger.info("Applying environment filter: #{task[0]}")
+      end
+      if task.length >= 3
+        task_comps['stack'] = task[1]
+        logger.info("Applying stack filter: #{task[1]}")
+      end
+
+      task_comps
+    end
+
   end
 end
 
