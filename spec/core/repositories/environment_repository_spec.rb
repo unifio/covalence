@@ -3,7 +3,7 @@ require_relative File.join(Covalence::GEM_ROOT, 'core/repositories/environment_r
 
 module Covalence
   RSpec.describe EnvironmentRepository do
-    describe ".all" do
+    describe ".find_all" do
       context "with valid Terraform stacks" do
         it "succeeds" do
           data_store = Object.new
@@ -13,7 +13,7 @@ module Covalence
                       environment_name: 'environment_name',
                       name: 'terraform_name'))
 
-          result = described_class.all(data_store)
+          result = described_class.find_all(data_store)
           expect(result.size).to eq(1)
           expect(result.first.stacks.size).to eq(1)
           expect(result.first.stacks.first.environment_name).to eq('environment_name')
@@ -31,7 +31,7 @@ module Covalence
                       environment_name: 'environment_name',
                       name: 'packer_name'), nil)
 
-          result = described_class.all(data_store)
+          result = described_class.find_all(data_store)
           expect(result.size).to eq(1)
           expect(result.first.stacks.size).to eq(1)
           expect(result.first.stacks.first.environment_name).to eq('environment_name')
@@ -44,7 +44,7 @@ module Covalence
         let(:data_store) { HieraDB::Client.new("spec/fixtures/covalence_bad_state.yaml") }
 
         it "raise an error" do
-          expect { described_class.all(data_store) }.to raise_error(RuntimeError, /Invalid stack\(s\) \["bad_state"\]/)
+          expect { described_class.find_all(data_store) }.to raise_error(RuntimeError, /Invalid stack\(s\) \["bad_state"\]/)
         end
       end
     end

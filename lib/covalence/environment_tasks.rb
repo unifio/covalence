@@ -10,31 +10,36 @@ module Covalence
   class EnvironmentTasks
     include Rake::DSL
 
-    attr_reader :environments, :logger
+    attr_reader :logger
 
     def initialize
       @logger = Covalence::LOGGER
-      @environments = EnvironmentRepository.all
     end
 
     # :reek:NestedIterators
     # :reek:TooManyStatements
     def run
       task = get_task_attr(ARGV.first)
-      if task['environment'].nil?
-        all_namespace_terraform_tasks
+      if !task.empty?
+        environments = EnvironmentRepository.find_filtered(task)
+      else
+        environments = EnvironmentRepository.find_all
+      end
+
+      if !task.has_key? 'environment'
+        all_namespace_terraform_tasks(environments)
       end
 
       environments.each do |environment|
-        next if !task['environment'].nil? && environment.name != task['environment']
+        next if task.has_key? 'environment' && environment.name != task['environment']
         logger.debug("Rendering #{environment.name} environment tasks")
         environment_namespace_terraform_tasks(environment)
         environment_namespace_packer_tasks(environment)
 
         environment.stacks.each do |stack|
-          next if !task['stack'].nil? && stack.name != task['stack']
+          next if task.has_key? 'stack' && stack.name != task['stack']
           logger.debug("Rendering #{stack.name} stack tasks")
-          EnvironmentRepository.stack(stack)
+          EnvironmentRepository.populate_stack(stack)
           case stack.type
           when 'terraform'
             tf_tasks = TerraformStackTasks.new(stack)
@@ -254,7 +259,7 @@ module Covalence
     end
 
     # :reek:TooManyStatements
-    def all_namespace_terraform_tasks
+    def all_namespace_terraform_tasks(environments)
       desc "Clean all environments"
       task "all:clean" do
         environments.each { |environ| invoke_rake_task(environ.name, "clean") }
@@ -300,7 +305,7 @@ module Covalence
       logger.info("Task: #{input}")
       task = input.to_s.split(':')
       task_comps = Hash.new
-      return task_comps if task.length == 1 || task[0] == 'all'
+      return task_comps if task.length <= 1 || task[0] == 'all'
 
       if task.length >= 2
         task_comps['environment'] = task[0]
