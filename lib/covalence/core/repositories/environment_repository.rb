@@ -5,7 +5,6 @@ require_relative 'stack_repository'
 
 module Covalence
   class EnvironmentRepository
-    # Do we need all or can it be more focused?
     class << self
       def all(data_store = HieraDB::Client.new(Covalence::CONFIG))
         environments_hash = data_store.hash_lookup('environments')
@@ -23,6 +22,10 @@ module Covalence
           Environment.new(name: environment_name,
                           stacks: stacks)
         end
+      end
+
+      def stack(stack, data_store = HieraDB::Client.new(Covalence::CONFIG))
+        StackRepository.populate(data_store, stack)
       end
 
       private
