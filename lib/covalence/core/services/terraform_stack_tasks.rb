@@ -56,6 +56,8 @@ module Covalence
 
           stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
+          TerraformCli.terraform_init
+
           TerraformCli.terraform_refresh
         end
       end

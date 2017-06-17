@@ -6,14 +6,15 @@ require_relative '../entities/input'
 module Covalence
   class InputRepository
     class << self
-      def query_terraform_by_namespace(data_store, namespace)
-        results = parse_var_file('terraform', data_store, namespace)
-        results.merge(query_tool_by_namespace('terraform', data_store, namespace))
-      end
+      def query_by_namespace(data_store, namespace, tool)
+        results = Hash.new
+        if tool == 'terraform'
+          results = parse_var_file('terraform', data_store, namespace)
+        else
+          results = parse_var_file('packer', data_store, namespace)
+        end
 
-      def query_packer_by_namespace(data_store, namespace)
-        results = parse_var_file('packer', data_store, namespace)
-        results.merge(query_tool_by_namespace('packer', data_store, namespace))
+        results.merge(query_tool_by_namespace(data_store, namespace))
       end
 
       private
@@ -44,7 +45,7 @@ module Covalence
         end
       end
 
-      def query_tool_by_namespace(tool, data_store, namespace)
+      def query_tool_by_namespace(data_store, namespace)
         tmp_hash = data_store.hash_lookup("#{namespace}::vars", {}).map do |name, raw_value|
           [ name, Input.new(name: name, raw_value: raw_value) ]
         end
