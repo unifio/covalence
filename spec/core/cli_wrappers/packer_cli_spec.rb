@@ -13,12 +13,11 @@ module Covalence
 
     before(:each) do
       @cached_env = {}
-      %w(PACKER_IMG PACKER_CMD COVALENCE_WORKSPACE COVALENCE_PACKER_DIR).each do |env_var|
+      %w(PACKER_CMD COVALENCE_WORKSPACE COVALENCE_PACKER_DIR).each do |env_var|
         @cached_env[env_var] = ENV[env_var]
       end
       allow(PopenWrapper).to receive(:print_cmd_string)
 
-      ENV['PACKER_IMG'] = ""
       ENV['PACKER_CMD'] = "packer"
       # force constants to re-init
       Kernel.silence_warnings {
@@ -27,7 +26,7 @@ module Covalence
     end
 
     after(:each) do
-      %w(PACKER_IMG PACKER_CMD COVALENCE_WORKSPACE COVALENCE_PACKER_DIR).each do |env_var|
+      %w(PACKER_CMD COVALENCE_WORKSPACE COVALENCE_PACKER_DIR).each do |env_var|
         ENV[env_var] = @cached_env[env_var]
       end
       Kernel.silence_warnings {

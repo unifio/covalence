@@ -9,56 +9,39 @@ require_relative 'context_repository'
 module Covalence
   class StackRepository
     def self.find(data_store, environment_name, stack_name)
-      tool = 'terraform'
       stack_scope = {
         'environment' => environment_name,
         'stack' => stack_name,
-        'tool' => tool
       }
-      return if invalid_stack_scope(data_store, stack_scope, tool)
+      tool = lookup_tool(data_store, stack_scope)
+      return if tool.nil?
 
       stack_data_store = data_store.initialize_scope(stack_scope)
-      terraform_module = lookup_shared_namespace(stack_data_store, stack_name)
-      shared_namespace = terraform_module.gsub('/', '::') unless terraform_module.nil?
+      stack_module = lookup_shared_namespace(stack_data_store, stack_name)
+      shared_namespace = stack_module.gsub('/', '::') unless stack_module.nil?
 
       Stack.new(
         type: tool,
         name: stack_name,
         environment_name: environment_name,
-        module_path: terraform_module,
-        dependencies: lookup_dependencies(stack_data_store, stack_name),
-        state_stores: StateStoreRepository.query_terraform_by_stack_name(stack_data_store, stack_name),
-        contexts: ContextRepository.query_terraform_by_namespace(stack_data_store, shared_namespace),
-        inputs: InputRepository.query_terraform_by_namespace(stack_data_store, shared_namespace),
-        args: find_args_by_namespace(stack_data_store, shared_namespace),
+        module_path: stack_module,
       )
     end
 
-    def self.packer_find(data_store, environment_name, stack_name)
-      tool = 'packer'
+    def self.populate(data_store, stack)
       stack_scope = {
-        'environment' => environment_name,
-        'stack' => stack_name,
-        'tool' => tool
+        'environment' => stack.environment_name,
+        'stack' => stack.name,
       }
-      return if invalid_stack_scope(data_store, stack_scope, tool)
-
       stack_data_store = data_store.initialize_scope(stack_scope)
-      packer_module = lookup_shared_namespace(stack_data_store, stack_name)
-      shared_namespace = packer_module.gsub('/', '::') unless packer_module.nil?
+      shared_namespace = stack.module_path.gsub('/', '::')
 
-      Stack.new(
-        type: tool,
-        name: stack_name,
-        environment_name: environment_name,
-        module_path: packer_module,
-        dependencies: lookup_dependencies(stack_data_store, stack_name),
-        packer_template: lookup_packer_template(stack_data_store, stack_name),
-        state_stores: StateStoreRepository.query_packer_by_stack_name(stack_data_store, stack_name),
-        contexts: ContextRepository.query_packer_by_namespace(stack_data_store, shared_namespace),
-        inputs: InputRepository.query_packer_by_namespace(stack_data_store, shared_namespace),
-        args: find_args_by_namespace(stack_data_store, shared_namespace),
-      )
+      stack.dependencies = lookup_dependencies(stack_data_store, stack.name)
+      stack.packer_template = lookup_packer_template(stack_data_store, stack.name)
+      stack.state_stores = StateStoreRepository.query_by_stack_name(stack_data_store, stack.name, stack.type)
+      stack.contexts = ContextRepository.query_by_namespace(stack_data_store, shared_namespace, stack.type)
+      stack.inputs = InputRepository.query_by_namespace(stack_data_store, shared_namespace, stack.type)
+      stack.args = find_args_by_namespace(stack_data_store, shared_namespace)
     end
 
     class << self
@@ -80,20 +63,14 @@ module Covalence
         data_store.lookup("#{namespace}::args", "")
       end
 
-      # :reek:FeatureEnvy
-      # :reek:NilCheck
-      def invalid_stack_scope(data_store, arguments, tool)
-        case tool
-        when 'terraform'
-          if data_store.lookup("#{arguments['stack']}::state", nil, arguments).nil?
-            logger.debug"#{arguments['environment']}:#{arguments['stack']} is not a valid Terraform stack ('state' parameter hash unspecified)"
-          end
-        when 'packer'
-          if data_store.lookup("#{arguments['stack']}::packer-template", nil, arguments).nil?
-            logger.debug "#{arguments['environment']}:#{arguments['stack']} is not a valid Packer stack ('packer-template' parameter unspecified)"
-          end
+      def lookup_tool(data_store, arguments)
+        if !data_store.lookup("#{arguments['stack']}::state", nil, arguments).nil?
+          return 'terraform'
+        elsif !data_store.lookup("#{arguments['stack']}::packer-template", nil, arguments).nil?
+          return 'packer'
         else
-          logger.debug "#{arguments['environment']}:#{arguments['stack']} is not a valid stack type ('#{tool}' type unsupported)"
+          logger.debug "#{arguments['environment']}:#{arguments['stack']} is neither a valid Terraform or Packer stack."
+          return nil
         end
       end
 
