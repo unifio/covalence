@@ -2,6 +2,16 @@
 * Add support for Terraform environments
 * Add ability to toggle primary state store
 
+## 0.7.2 (June 17, 2017)
+IMPROVEMENTS:
+- Added input logging for Packer stacks.
+- Removed logic for driving Docker containers with Covalence. Default mode of operation is now within a container.
+- Further merged Terraform and Packer internal structures.
+- Various performance improvements in the way in which stacks are loaded and processed.
+
+FIXES:
+- Fixed Terraform `refresh` task.
+
 ## 0.7.1 (May 15, 2017)
 IMPROVEMENTS:
 - Updated Hiera to 3.3.1 to enable `list` and `map` lookups from within the data using the alias lookup function.
@@ -15,11 +25,11 @@ BACKWARDS INCOMPATIBILITIES:
 - The Packer stack `packer-module` parameter has been replaced by `module` for standardization with Terraform stacks.
 - The Packer namespace `packer-template` parameter has been moved to the stack scope and is now a relative path to the module (e.g. `packer::build::packer-template: 'fully/qualified/path/template.json'` would become `mystack::packer-template: 'template.json'` for `mystack::module: 'fully/qualified/path'`)
 - The Packer namespace `packer-targets` parameter has been removed.
-- The `COVLANCE_TERRAFORM_DIR` and `COVALENCE_PACKER_DIR` environment variables now default to the same value as `COVALENCE_WORKPACE` and are now deprecated.
+- The `COVALENCE_TERRAFORM_DIR` and `COVALENCE_PACKER_DIR` environment variables now default to the same value as `COVALENCE_WORKSPACE` and are now deprecated.
 
 FEATURES:
 - Terraform input variables are now fed in via `-var-file` instead of individual `-var` arguments.
-- Depedencies can now be specified at the stack scope using `<stack>::deps`, which is an Array of directory paths that are to be made available in the working directory. Paths are relative to the Covalence root directory.
+- Dependencies can now be specified at the stack scope using `<stack>::deps`, which is an Array of directory paths that are to be made available in the working directory. Paths are relative to the Covalence root directory.
 - Added support for `list` and `map` input types.
 
 IMPROVEMENTS:
