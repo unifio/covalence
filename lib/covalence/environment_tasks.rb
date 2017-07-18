@@ -31,6 +31,9 @@ module Covalence
       end
 
       environments.each do |environment|
+        # We do not want to render individual tasks for the reserved 'ci' and 'spec' namespaces
+        break if task.has_key? 'environment' && task['environment'] == 'ci' || task['environment'] == 'spec'
+
         next if task.has_key? 'environment' && environment.name != task['environment']
         logger.debug("Rendering #{environment.name} environment tasks")
         environment_namespace_terraform_tasks(environment)
