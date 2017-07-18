@@ -45,7 +45,7 @@ module Covalence
           t.verbose = true
         end
 
-        desc 'Check syntax of all .yaml files'
+        desc 'Check syntax of all YAML files'
         RSpec::Core::RakeTask.new("spec:check_yaml") do |t|
           t.pattern = "#{File.join(Covalence::GEM_ROOT, 'rake/rspec/yaml_spec.rb')}"
           t.rspec_opts = '--color --format documentation'
