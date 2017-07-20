@@ -17,9 +17,8 @@ module Covalence
   PACKER = File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_PACKER_DIR'] || '.')))
   TERRAFORM =  File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_TERRAFORM_DIR'] || '.')))
   TEST_ENVS = (ENV['COVALENCE_TEST_ENVS'] || "").split(',')
-  RESERVED_NS = (ENV['COVALENCE_RESERVED_NAMESPACE'] || "").split(',')
-  # Append our reserved namespace
-  RESERVED_NS += ['ci', 'spec']
+  # Reserved namespace including default ci and spec
+  RESERVED_NS = [(ENV['COVALENCE_RESERVED_NAMESPACE'] || "").split(','), 'ci', 'spec']
 
   TERRAFORM_CMD = ENV['TERRAFORM_CMD'] || "terraform"
   TERRAFORM_VERSION = ENV['TERRAFORM_VERSION'] || `#{TERRAFORM_CMD} version`.split("\n", 2)[0].gsub('Terraform v','')
