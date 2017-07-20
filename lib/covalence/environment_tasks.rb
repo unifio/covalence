@@ -31,8 +31,8 @@ module Covalence
       end
 
       environments.each do |environment|
-        # We do not want to render individual tasks for the reserved 'ci' and 'spec' namespaces
-        break if task.has_key? 'environment' && task['environment'] == 'ci' || task['environment'] == 'spec'
+        # We do not want to render individual tasks for the reserved 'ci' and 'spec' namespaces, or any other specified with COVALENCE_RESERVED_NAMESPACE
+        break if task.has_key? 'environment' && RESERVED_NS.include? task['environment']
 
         next if task.has_key? 'environment' && environment.name != task['environment']
         logger.debug("Rendering #{environment.name} environment tasks")
