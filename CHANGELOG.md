@@ -2,6 +2,13 @@
 * Add support for Terraform environments
 * Add ability to toggle primary state store
 
+## 0.7.3 (June 20, 2017)
+IMPROVEMENTS:
+- Tasks within the 'ci' and 'spec' namespaces will no longer load all individual stack tasks like the 'all' namespace.
+
+FIXES:
+- Tasks in the reserved 'ci' and 'spec' namespaces were failing in the environments filter logic. These namespaces are not properly ignored.
+
 ## 0.7.2 (June 17, 2017)
 IMPROVEMENTS:
 - Added input logging for Packer stacks.
@@ -25,6 +32,7 @@ BACKWARDS INCOMPATIBILITIES:
 - The Packer stack `packer-module` parameter has been replaced by `module` for standardization with Terraform stacks.
 - The Packer namespace `packer-template` parameter has been moved to the stack scope and is now a relative path to the module (e.g. `packer::build::packer-template: 'fully/qualified/path/template.json'` would become `mystack::packer-template: 'template.json'` for `mystack::module: 'fully/qualified/path'`)
 - The Packer namespace `packer-targets` parameter has been removed.
+- The Packer namespace `packer-vars` parameter has been replaced by `vars` for standardization with Terraform stacks.
 - The `COVALENCE_TERRAFORM_DIR` and `COVALENCE_PACKER_DIR` environment variables now default to the same value as `COVALENCE_WORKSPACE` and are now deprecated.
 
 FEATURES:
