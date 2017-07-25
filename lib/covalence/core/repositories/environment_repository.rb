@@ -27,7 +27,15 @@ module Covalence
         environments_hash = lookup_environments(data_store)
         env_request = task['environment']
         stk_request = task['stack']
-        raise "'#{env_request}' not found in environments" if (env_request.nil? || !environments_hash.has_key?(env_request))
+
+        if (env_request.nil? || !environments_hash.has_key?(env_request))
+          if RESERVED_NS.include?(env_request)
+            return Array.new(1, Environment.new(name: env_request,
+                                     stacks: stk_request))
+          else
+            raise "'#{env_request}' not found in environments"
+          end
+        end
 
         stacks = nil
         if (!stk_request.nil? && environments_hash[env_request].include?(stk_request))
