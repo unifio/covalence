@@ -1,5 +1,5 @@
 ---
-version: Terraform v0.9.5
+version: Terraform v0.10.6
 commands:
   apply:
   #console:
@@ -17,6 +17,7 @@ commands:
   #init:
   #output:
   plan:
+  providers:
   push:
   refresh:
   show:

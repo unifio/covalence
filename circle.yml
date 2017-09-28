@@ -5,7 +5,7 @@ machine:
     COVALENCE_VERSION: 0.6.0
     ATLAS_TOKEN: GryCCpG3GRBqQw.atlasv1.1ASD0jMKyVmLmUVlqP7ca6xdxqzY1nNroAVtTSKRBYR7fnLxciPCboidfwKR6bXBaWQ
     RUBY_TAG: 2.3.4
-    TERRAFORM_TAG: 0.9.2
+    TERRAFORM_TAG: 0.10.6
 
 test:
   pre:
