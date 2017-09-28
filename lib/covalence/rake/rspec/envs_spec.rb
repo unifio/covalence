@@ -42,8 +42,10 @@ module Covalence
               TerraformCli.terraform_get(path)
               TerraformCli.terraform_init
 
+              stack.materialize_cmd_inputs
+
               expect {
-                expect(TerraformCli.terraform_validate).to be true
+                expect(TerraformCli.terraform_validate("-input=false -var-file=covalence-inputs.tfvars")).to be true
               }.to_not raise_error
             end
           end
