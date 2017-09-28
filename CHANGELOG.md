@@ -2,6 +2,11 @@
 * Add support for Terraform environments
 * Add ability to toggle primary state store
 
+## 0.7.4 (September 26, 2017)
+IMPROVEMENTS:
+- Updated Covalence to work with Terraform 0.10.x.  Updates were made in 0.10.x that requires all variables set for validate to run.
+- Also added setting for the apply to auto approve.  This will be required in upcoming releases and will prompt for input from user.
+
 ## 0.7.3 (June 20, 2017)
 IMPROVEMENTS:
 - Tasks within the 'ci' and 'spec' namespaces will no longer load all individual stack tasks like the 'all' namespace.
