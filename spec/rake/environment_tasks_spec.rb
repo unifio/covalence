@@ -72,11 +72,6 @@ module Covalence
         subject.invoke
       end
 
-      it "executes template validation" do
-        expect(TerraformCli).to receive(:terraform_validate)
-        subject.invoke
-      end
-
       it "generates an inputs varfile" do
         buffer = StringIO.new()
         filename = 'covalence-inputs.tfvars'
@@ -96,6 +91,13 @@ CONF
         allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
         subject.invoke
         expect(buffer.string).to eq(content)
+      end
+
+      it "executes template validation" do
+        expect(TerraformCli).to receive(:terraform_validate).with(hash_including(args: array_including(
+          "-var-file=covalence-inputs.tfvars"
+        )))
+        subject.invoke
       end
 
       it "executes a plan" do
@@ -320,6 +322,7 @@ CONF
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: array_including(
           "-input=false",
+          "-auto-approve=true",
           "-no-color",
           "-target=\"module.az0\"",
           "-var-file=covalence-inputs.tfvars"
@@ -572,6 +575,7 @@ CONF
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: array_including(
           "-input=false",
+          "-auto-approve=true",
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\"",
@@ -838,6 +842,7 @@ CONF
       it "executes an apply" do
         expect(TerraformCli).to receive(:terraform_apply).with(hash_including(args: [
           "-input=false",
+          "-auto-approve=true",
           "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke
