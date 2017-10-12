@@ -2,6 +2,10 @@
 * Add support for Terraform environments
 * Add ability to toggle primary state store
 
+## 0.7.5 (October 12, 2017)
+IMPROVEMENTS:
+- Fix the sync command to call Terraform get prior to init command.  This is required with new version of Terraform.
+
 ## 0.7.4 (September 26, 2017)
 IMPROVEMENTS:
 - Updated Covalence to work with Terraform 0.10.x.  Updates were made in 0.10.x that requires all variables set for validate to run.
