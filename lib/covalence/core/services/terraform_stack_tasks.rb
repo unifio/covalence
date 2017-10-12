@@ -71,6 +71,7 @@ module Covalence
           logger.info "In #{tmpdir}:"
 
           stack.materialize_state_inputs
+          TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
           stack.state_stores.drop(1).each do |store|
