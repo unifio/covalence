@@ -40,7 +40,9 @@ module Covalence
 
             Dir.chdir(tmp_dir) do
               TerraformCli.terraform_get(path)
-              TerraformCli.terraform_init
+              expect {
+                expect(TerraformCli.terraform_init).to be true
+              }.to_not raise_error
 
               stack.materialize_cmd_inputs
 
