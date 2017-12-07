@@ -2,6 +2,10 @@
 * Add support for Terraform environments
 * Add ability to toggle primary state store
 
+## 0.7.6 (December 6, 2017)
+IMPROVEMENTS:
+- Terraform init failures were not being reported.  Update spec tests to catch errors with 'terraform init'.
+
 ## 0.7.5 (October 12, 2017)
 IMPROVEMENTS:
 - Fix the sync command to call Terraform get prior to init command.  This is required with new version of Terraform.
