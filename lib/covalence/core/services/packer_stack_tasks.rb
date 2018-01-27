@@ -34,7 +34,7 @@ module Covalence
         end
 
         # Copy files back to workspace in case files were generated as part of build
-        FileUtils.cp_r workspace, @path
+        FileUtils.cp_r tmpdir, @path
         
       end
     end
