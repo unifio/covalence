@@ -32,6 +32,10 @@ module Covalence
 
           call_packer_cmd("packer_build", args)
         end
+
+        # Copy files back to workspace in case files were generated as part of build
+        FileUtils.cp_r workspace, @path
+        
       end
     end
 
