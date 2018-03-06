@@ -1,5 +1,5 @@
 # Covalence
-[![CircleCI](https://circleci.com/gh/unifio/covalence.svg?style=svg&circle-token=42737f88bb5153c24dce3ecc2550a6aee7eb8283)](https://circleci.com/gh/unifio/covalence)
+[![CircleCI](https://circleci.com/gh/unifio/covalence.svg?style=svg)](https://circleci.com/gh/unifio/covalence)
 
 A tool for the management and orchestration of data used by HashiCorp infrastructure tooling.
 
