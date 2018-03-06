@@ -12,15 +12,12 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Unif.io"]
   spec.email         = ["support@unif.io"]
 
-  spec.summary       = "Ruby orchestration framework for HashiCorp based deployment pipelines."
-  #spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "http://unif.io"
-  spec.license       = "MIT"
+  spec.summary       = "A tool for the management and orchestration of data used by HashiCorp infrastructure tooling."
+  spec.homepage      = "https://unif.io"
+  spec.license       = "MPL-2.0"
 
-  # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
-  # delete this section to allow pushing this gem to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
+    spec.metadata['allowed_push_host'] = "https://repo.fury.io/unifio/"
   else
     raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
   end
