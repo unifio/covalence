@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+COVALENCE_SCRIPT="https://s3.amazonaws.com/unifio-covalence/covalence?versionId=k_MRX2uIWItAsCR1YFrJWZOaDIB9FFAR"
+
+cd `dirname $0`
+
+if [[ ! -e ./.covalence/launcher ]]; then
+  mkdir -p .covalence
+  curl -o .covalence/launcher -s $COVALENCE_SCRIPT
+  chmod 0755 .covalence/launcher
+fi
+
+bash .covalence/launcher "$@"
