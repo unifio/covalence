@@ -1,0 +1,29 @@
+version: 2
+
+jobs:
+  build:
+    working_directory: ~/repo
+
+    docker:
+      - image: circleci/ruby:2.3.6
+
+    environment:
+      COVALENCE_VERSION: 0.7.6
+      TERRAFORM_VERSION: 0.11.3
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            # Install Terraform
+            wget -q "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
+            unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+            # Install gem bundle
+            bundle install
+
+      - run:
+          name: Run tests
+          command: bundle exec rake ci:covalence
