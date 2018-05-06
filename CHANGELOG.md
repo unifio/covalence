@@ -5,6 +5,7 @@
 ## 0.7.7
 IMPROVEMENTS:
 - Extended shell interpolation for input values to support nesting and escaping
+- Improved support for Terraform plugin caching
 
 FIXES:
 - Updated input processing to support nested complex types properly.

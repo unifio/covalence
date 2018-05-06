@@ -11,7 +11,7 @@ end
 module Covalence
   # Configurable constants
   #TODO: look into how WORKSPACE is being used, maybe this can just be an internal ROOT and make CONFIG not depend on WORKSPACE
-  WORKSPACE = File.absolute_path((ENV['COVALENCE_WORKSPACE'] || '.'))
+  WORKSPACE = File.absolute_path(ENV['COVALENCE_WORKSPACE'] || '.')
   CONFIG = File.join(WORKSPACE, (ENV['COVALENCE_CONFIG'] || 'covalence.yaml'))
   # TODO: could use better naming
   PACKER = File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_PACKER_DIR'] || '.')))
@@ -22,6 +22,7 @@ module Covalence
 
   TERRAFORM_CMD = ENV['TERRAFORM_CMD'] || "terraform"
   TERRAFORM_VERSION = ENV['TERRAFORM_VERSION'] || `#{TERRAFORM_CMD} version`.split("\n", 2)[0].gsub('Terraform v','')
+  TERRAFORM_PLUGIN_CACHE = File.absolute_path(ENV['TF_PLUGIN_CACHE_DIR'] || "#{ENV['HOME']}/.terraform.d/plugin-cache")
 
   PACKER_CMD = ENV['PACKER_CMD'] || "packer"
 
