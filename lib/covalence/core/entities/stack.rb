@@ -53,8 +53,9 @@ module Covalence
         inputs.each do |name, input|
           config[name] = input.value
         end
-        logger.info "\nStack inputs:\n\n#{JSON.generate(config)}"
-        File.open('covalence-inputs.json','w') {|f| f.write(JSON.generate(config))}
+        config_json = JSON.generate(config)
+        logger.info "\nStack inputs:\n\n#{config_json}"
+        File.open('covalence-inputs.json','w') {|f| f.write(config_json)}
       end
     end
 
