@@ -2,6 +2,13 @@
 * Add support for Terraform environments
 * Add ability to toggle primary state store
 
+## 0.7.7
+IMPROVEMENTS:
+- Extended shell interpolation for input values to support nesting and escaping
+
+FIXES:
+- Updated input processing to support nested complex types properly.
+
 ## 0.7.6 (December 6, 2017)
 IMPROVEMENTS:
 - Terraform init failures were not being reported.  Update spec tests to catch errors with 'terraform init'.

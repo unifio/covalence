@@ -2,7 +2,8 @@ require 'virtus'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 require 'active_model'
-require 'open3'
+
+require_relative '../../helpers/shell_interpolation'
 
 module Covalence
   class Input
@@ -24,33 +25,7 @@ module Covalence
     end
 
     def to_command_option
-      parsed_value = value()
-
-      if parsed_value.nil?
-        "#{name} = \"\""
-
-      elsif parsed_value.is_a?(Hash)
-        config = "#{name} = {\n"
-        parsed_value.each do |k,v|
-          config += "  \"#{k}\" = \"#{v}\"\n"
-        end
-        config += "}"
-
-      elsif parsed_value.is_a?(Array)
-        config = "#{name} = [\n"
-        parsed_value.each do |v|
-          config += "  \"#{v}\",\n"
-        end
-        config += "]"
-
-      elsif parsed_value.start_with?("$(")
-        Covalence::LOGGER.info "Evaluating interpolated value: \"#{parsed_value}\""
-        interpolated_value = Open3.capture2e(ENV, "echo \"#{parsed_value}\"")[0].chomp
-        "#{name} = \"#{interpolated_value}\""
-
-      else
-        "#{name} = \"#{parsed_value}\""
-      end
+      "#{name} = #{parse_input(value())}"
     end
 
     private
@@ -69,6 +44,40 @@ module Covalence
         input.stringify_keys.fetch('value')
       else
         input
+      end
+    end
+
+    def parse_array(input)
+      config = "[\n"
+      input.each do |v|
+        config += "  #{parse_input(v)},\n"
+      end
+      config += "]"
+    end
+
+    def parse_hash(input)
+      config = "{\n"
+      input.each do |k,v|
+        config += "  \"#{k}\" = #{parse_input(v)}\n"
+      end
+      config += "}"
+    end
+
+    def parse_input(input)
+      if input.nil?
+        "\"\""
+
+      elsif input.is_a?(Hash)
+        parse_hash(input)
+
+      elsif input.is_a?(Array)
+        parse_array(input)
+
+      elsif input.include?("$(")
+        "\"#{Covalence::Helpers::ShellInterpolation.parse_shell(input)}\""
+
+      else
+        "\"#{input}\""
       end
     end
 
