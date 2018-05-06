@@ -22,7 +22,7 @@ module Covalence
 
   TERRAFORM_CMD = ENV['TERRAFORM_CMD'] || "terraform"
   TERRAFORM_VERSION = ENV['TERRAFORM_VERSION'] || `#{TERRAFORM_CMD} version`.split("\n", 2)[0].gsub('Terraform v','')
-  TERRAFORM_PLUGIN_CACHE = File.absolute_path(ENV['TF_PLUGIN_CACHE_DIR'] || "#{ENV['HOME']}/.terraform.d/plugin-cache")
+  TERRAFORM_PLUGIN_CACHE = File.absolute_path("#{ENV['TF_PLUGIN_CACHE_DIR']}/linux_amd64" || "#{ENV['HOME']}/.terraform.d/plugin-cache/linus_amd64")
 
   PACKER_CMD = ENV['PACKER_CMD'] || "packer"
 
