@@ -1,11 +1,15 @@
 ## Unreleased
-* Add support for Terraform environments
+* Add support for Terraform workspaces
 * Add ability to toggle primary state store
 
-## 0.7.7
+## 0.7.7 (May 6, 2018)
+BACKWARDS INCOMPATIBILITIES:
+- Versions of Terraform prior to v0.11.4 are no longer supported.
+
 IMPROVEMENTS:
 - Extended shell interpolation for input values to support nesting and escaping
 - Improved support for Terraform plugin caching
+- Replaced deprecated `-force` option for Terraform `destroy` task with `-auto-approve=true`.
 
 FIXES:
 - Updated input processing to support nested complex types properly.
