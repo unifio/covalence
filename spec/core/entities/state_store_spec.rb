@@ -35,6 +35,18 @@ module Covalence
         expect(S3).to receive(:get_state_store).with({"name" => "example/state_store"})
         state_store.get_config
       end
+
+      it "does return a state configuration" do
+        state_store = Fabricate(:state_store, params: { bucket: "test", name: "example/state_store", foo: "bar" })
+
+        expect(state_store.get_config).to eq("terraform {\n  backend \"s3\" {\n    key = \"example/state_store/terraform.tfstate\"\n    bucket = \"test\"\n    foo = \"bar\"\n  }\n}\n")
+      end
+
+      it "does process shell interpolations" do
+        state_store = Fabricate(:state_store, params: { bucket: "test", name: "example/state_store", path: "$(pwd)" })
+
+        expect(state_store.get_config).to eq("terraform {\n  backend \"s3\" {\n    key = \"example/state_store/terraform.tfstate\"\n    bucket = \"test\"\n    path = \"#{`pwd`.chomp}\"\n  }\n}\n")
+      end
     end
 
     describe '#params' do
