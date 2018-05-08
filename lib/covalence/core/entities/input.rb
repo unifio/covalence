@@ -73,7 +73,7 @@ module Covalence
       elsif input.is_a?(Array)
         parse_array(input)
 
-      elsif input.include?("$(")
+      elsif input.to_s.include?("$(")
         "\"#{Covalence::Helpers::ShellInterpolation.parse_shell(input)}\""
 
       else
