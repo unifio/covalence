@@ -26,6 +26,18 @@ module Covalence
         it { expect(input.value).to eq(raw_value) }
       end
 
+      context "simple list with nested complex types" do
+        let(:raw_value) { ["foo", ["bar"], {"foo"=>"bar"}] }
+
+        it { expect(input.value).to eq(raw_value) }
+      end
+
+      context "simple map with nested complex types" do
+        let(:raw_value) { {"foo"=>["bar"], "bar"=>{"foo"=>"bar"}} }
+
+        it { expect(input.value).to eq(raw_value) }
+      end
+
       context "complex string" do
         let(:raw_value) { {"type"=>"string","value"=>"test"} }
 
@@ -33,15 +45,27 @@ module Covalence
       end
 
       context "complex list" do
-        let(:raw_value) { {"type"=>"string","value"=>["test"]} }
+        let(:raw_value) { {"type"=>"list","value"=>["test"]} }
 
         it { expect(input.value).to eq(["test"]) }
       end
 
+      context "complex list with nested complex types" do
+        let(:raw_value) { {"type"=>"list", "value"=>["foo", ["bar"], {"foo"=>"bar"}]} }
+
+        it { expect(input.value).to eq(["foo", ["bar"], {"foo"=>"bar"}]) }
+      end
+
       context "complex map" do
-        let(:raw_value) { {"type"=>"string","value"=>{"foo"=>"bar"}} }
+        let(:raw_value) { {"type"=>"map","value"=>{"foo"=>"bar"}} }
 
         it { expect(input.value).to eq({"foo"=>"bar"}) }
+      end
+
+      context "complex map with nested complex types" do
+        let(:raw_value) { {"type"=>"map", "value"=>{"foo"=>["bar"], "bar"=>{"foo"=>"bar"}}} }
+
+        it { expect(input.value).to eq({"foo"=>["bar"], "bar"=>{"foo"=>"bar"}}) }
       end
     end
 
@@ -110,6 +134,24 @@ module Covalence
         let(:raw_value) { "$(pwd)" }
 
         it { expect(input.to_command_option).to eq("input = \"#{`pwd`.chomp}\"") }
+      end
+
+      context "with nested interpolated shell value" do
+        let(:raw_value) { "this-is-a-test-$(pwd)" }
+
+        it { expect(input.to_command_option).to eq("input = \"this-is-a-test-#{`pwd`.chomp}\"") }
+      end
+
+      context "with nested interpolated shell values" do
+        let(:raw_value) { "this-is-a-test-$(pwd)-and-$(date)" }
+
+        it { expect(input.to_command_option).to eq("input = \"this-is-a-test-#{`pwd`.chomp}-and-#{`date`.chomp}\"") }
+      end
+
+      context "with nested interpolated shell values with escapes" do
+        let(:raw_value) { "this-is-a-test-\\$(pwd)-and-$(date)" }
+
+        it { expect(input.to_command_option).to eq("input = \"this-is-a-test-$(pwd)-and-#{`date`.chomp}\"") }
       end
 
       context "all other values" do

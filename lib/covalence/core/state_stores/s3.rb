@@ -1,6 +1,8 @@
 require 'json'
 require 'aws-sdk'
 
+require_relative '../../helpers/shell_interpolation'
+
 module Covalence
   module S3
 
@@ -70,14 +72,26 @@ module Covalence
         raise "Missing '#{param}' store parameter" unless params.has_key?(param)
       end
 
-      config = <<-CONF
+      if params.has_key?('key')
+        config = <<-CONF
+terraform {
+  backend "s3" {
+CONF
+
+      else
+        config = <<-CONF
 terraform {
   backend "s3" {
     key = "#{params['name']}/terraform.tfstate"
 CONF
 
+        Covalence::LOGGER.debug "'key' parameter not specified. Inferring value from 'name' parameter."
+      end
+
       params.delete('name')
+
       params.each do |k,v|
+        v = Covalence::Helpers::ShellInterpolation.parse_shell(v) if v.to_s.include?("$(")
         config += "    #{k} = \"#{v}\"\n"
       end
 
