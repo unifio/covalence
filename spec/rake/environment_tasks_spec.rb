@@ -387,7 +387,7 @@ CONF
           "-input=false",
           "-no-color",
           "-target=\"module.az0\"",
-          "-force",
+          "-auto-approve=true",
           "-var-file=covalence-inputs.tfvars"
         )))
         subject.invoke
@@ -639,7 +639,7 @@ CONF
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: [
           "-input=false",
-          "-force",
+          "-auto-approve=true",
           "-no-color",
           "-target=\"module.az1\"",
           "-target=\"module.common.aws_eip.myapp\"",
@@ -898,7 +898,7 @@ CONF
       it "executes a destroy" do
         expect(TerraformCli).to receive(:terraform_destroy).with(hash_including(args: [
           "-input=false",
-          "-force",
+          "-auto-approve=true",
           "-var-file=covalence-inputs.tfvars"
         ]))
         subject.invoke

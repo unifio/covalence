@@ -2,6 +2,8 @@ require 'json'
 require 'rest-client'
 require 'base64'
 
+require_relative '../../helpers/shell_interpolation'
+
 module Covalence
   module Consul
 
@@ -99,6 +101,7 @@ CONF
 
       params.delete('name')
       params.each do |k,v|
+        v = Covalence::Helpers::ShellInterpolation.parse_shell(v) if v.include?("$(")
         config += "    #{k} = \"#{v}\"\n"
       end
 

@@ -163,7 +163,7 @@ module Covalence
 
           stack.materialize_cmd_inputs
           args = collect_args("-input=false",
-                              "-force",
+                              "-auto-approve=true",
                               stack.args,
                               additional_args,
                               "-var-file=covalence-inputs.tfvars")

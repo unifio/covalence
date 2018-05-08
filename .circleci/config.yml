@@ -8,8 +8,8 @@ jobs:
       - image: circleci/ruby:2.3.6
 
     environment:
-      COVALENCE_VERSION: 0.7.6
-      TERRAFORM_VERSION: 0.11.3
+      COVALENCE_VERSION: 0.7.7
+      TERRAFORM_VERSION: 0.11.7
 
     steps:
       - checkout

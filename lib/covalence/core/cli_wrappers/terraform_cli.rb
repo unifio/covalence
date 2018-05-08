@@ -41,8 +41,14 @@ module Covalence
     end
 
     def self.terraform_init(path='', args: '', ignore_exitcode: false)
-      output = PopenWrapper.run([
-        Covalence::TERRAFORM_CMD, "init", "-get=false", "-input=false"],
+      if ENV['TF_PLUGIN_LOCAL'] == 'true'
+        cmd = [Covalence::TERRAFORM_CMD, "init", "-get=false", "-input=false", "-plugin-dir=#{Covalence::TERRAFORM_PLUGIN_CACHE}"]
+      else
+        cmd = [Covalence::TERRAFORM_CMD, "init", "-get=false", "-input=false"]
+      end
+
+      output = PopenWrapper.run(
+        cmd,
         path,
         args,
         ignore_exitcode: ignore_exitcode)
