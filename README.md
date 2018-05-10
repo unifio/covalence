@@ -190,6 +190,20 @@ vpc::state:                                           # Terraform backend config
       address: 'consul.example.com:8500'
       name: "%{environment}/%{stack}"
 
+# Workspace
+vpc::workspace: 'blue'                                # Terraform workspace configuration. The key is
+                                                      # prepended with the stack name, as the backend
+                                                      # configuration is stack specific.
+
+## Dependencies
+vpc::deps:                                            # List of paths to files or directories outside
+                                                      # of the module directory that are to be copied
+                                                      # into the working directory of the module during
+                                                      # Covalence execution. An example of this would be
+                                                      # an SSH key for cloning a private Terraform
+                                                      # module.
+  - '.ssh'
+
 # Execution targets
 terraform::vpc::targets:                              # Resource targeting. The key is prepended with
                                                       # the module name, as target assignment can be

@@ -22,6 +22,7 @@ module Covalence
     attribute :contexts, Array[Context]
     attribute :inputs, Hash[String => Input]
     attribute :args, String
+    attribute :workspace, String
 
     validates! :type, inclusion: {
       in: %w(terraform packer)

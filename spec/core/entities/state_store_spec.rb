@@ -6,7 +6,8 @@ module Covalence
     let(:state_store) do
       Fabricate(:state_store,
                 params: { name: "example/state_store" },
-                backend: "s3")
+                backend: "s3",
+                workspace_enabled: false)
     end
 
     describe "validators" do
@@ -32,7 +33,7 @@ module Covalence
 
     describe '#get_config' do
       it "does call through to the backend to get the state store" do
-        expect(S3).to receive(:get_state_store).with({"name" => "example/state_store"})
+        expect(S3).to receive(:get_state_store).with({"name" => "example/state_store"}, false)
         state_store.get_config
       end
 
@@ -40,6 +41,12 @@ module Covalence
         state_store = Fabricate(:state_store, params: { bucket: "test", name: "example/state_store", foo: "bar" })
 
         expect(state_store.get_config).to eq("terraform {\n  backend \"s3\" {\n    key = \"example/state_store/terraform.tfstate\"\n    bucket = \"test\"\n    foo = \"bar\"\n  }\n}\n")
+      end
+
+      it "does return a state configuration for a workspace" do
+        state_store = Fabricate(:state_store, params: { bucket: "test", name: "example/state_store", foo: "bar" }, workspace_enabled: true)
+
+        expect(state_store.get_config).to eq("terraform {\n  backend \"s3\" {\n    key = \"terraform.tfstate\"\n    workspace_key_prefix = \"example/state_store\"\n    bucket = \"test\"\n    foo = \"bar\"\n  }\n}\n")
       end
 
       it "does process shell interpolations" do
