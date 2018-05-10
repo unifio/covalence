@@ -102,7 +102,7 @@ CONF
 
     it "should yield a workspace" do
       expect(stack.workspace).to be_instance_of String
-      expect(stack.contexts.all? {|store| store.instance_of?(Context)}).to be true
+      expect(stack.workspace).to eq('blue')
     end
   end
 end
