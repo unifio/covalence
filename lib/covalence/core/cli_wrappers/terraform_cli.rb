@@ -55,6 +55,18 @@ module Covalence
       (output == 0)
     end
 
+    def self.terraform_workspace(workspace, path='', args: '', ignore_exitcode: false)
+      cmd = [Covalence::TERRAFORM_CMD, "workspace", "new", workspace]
+
+      output = PopenWrapper.run(
+        cmd,
+        path,
+        args,
+        ignore_exitcode: ignore_exitcode)
+
+      (output == 0)
+    end
+
     def self.terraform_output(output_var, args: '')
       raise "TODO: implement me"
     end

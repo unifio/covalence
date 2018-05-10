@@ -62,7 +62,7 @@ module Covalence
     end
 
     # Return configuration for remote state store.
-    def self.get_state_store(params)
+    def self.get_state_store(params, workspace_enabled=false)
       raise "State store parameters must be a Hash" unless params.is_a?(Hash)
       required_params = [
         'bucket',
@@ -72,20 +72,26 @@ module Covalence
         raise "Missing '#{param}' store parameter" unless params.has_key?(param)
       end
 
-      if params.has_key?('key')
-        config = <<-CONF
+      config = <<-CONF
 terraform {
   backend "s3" {
 CONF
 
-      else
-        config = <<-CONF
-terraform {
-  backend "s3" {
-    key = "#{params['name']}/terraform.tfstate"
-CONF
-
+      if !params.has_key?('key')
         Covalence::LOGGER.debug "'key' parameter not specified. Inferring value from 'name' parameter."
+
+        if workspace_enabled
+          config += "    key = \"terraform.tfstate\"\n"
+        else
+          config += "    key = \"#{params['name']}/terraform.tfstate\"\n"
+        end
+      end
+
+      if !params.has_key?('workspace_key_prefix')
+        if workspace_enabled
+          Covalence::LOGGER.debug "'workspace_key_prefix' parameter not specified. Inferring value from 'name' parameter."
+          config += "    workspace_key_prefix = \"#{params['name']}\"\n"
+        end
       end
 
       params.delete('name')
