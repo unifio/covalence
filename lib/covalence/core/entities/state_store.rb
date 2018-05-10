@@ -15,6 +15,7 @@ module Covalence
 
     attribute :params, Hash, :writer => :private
     attribute :backend, Object, :writer => :private
+    attribute :workspace_enabled, Boolean
 
     validate :validate_params_has_name,
       :backend_has_state_store
@@ -40,7 +41,7 @@ module Covalence
     end
 
     def get_config
-      backend::get_state_store(@params)
+      backend::get_state_store(@params, @workspace_enabled)
     end
 
     private

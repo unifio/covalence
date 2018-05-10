@@ -38,7 +38,8 @@ module Covalence
 
       stack.dependencies = lookup_dependencies(stack_data_store, stack.name)
       stack.packer_template = lookup_packer_template(stack_data_store, stack.name)
-      stack.state_stores = StateStoreRepository.query_by_stack_name(stack_data_store, stack.name, stack.type)
+      stack.workspace = lookup_workspace(stack_data_store, stack.name)
+      stack.state_stores = StateStoreRepository.query_by_stack_name(stack_data_store, stack.name, stack.workspace, stack.type)
       stack.contexts = ContextRepository.query_by_namespace(stack_data_store, shared_namespace, stack.type)
       stack.inputs = InputRepository.query_by_namespace(stack_data_store, shared_namespace, stack.type)
       stack.args = find_args_by_namespace(stack_data_store, shared_namespace)
@@ -56,6 +57,12 @@ module Covalence
 
       def lookup_shared_namespace(data_store, stack_name)
         data_store.lookup("#{stack_name}::module", stack_name)
+      end
+
+      def lookup_workspace(data_store, stack_name)
+        wrkspc = data_store.lookup("#{stack_name}::workspace", "")
+        wrkspc = Covalence::Helpers::ShellInterpolation.parse_shell(wrkspc) if wrkspc.to_s.include?("$(")
+        return wrkspc
       end
 
       # maybe arg_string instead of args

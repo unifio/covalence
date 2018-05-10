@@ -29,6 +29,11 @@ commands:
     #rm:
     #show:
   #taint:
-  #untaint:
   validate:
+  #untaint:
+  workspace:
+    list:
+    select:
+    new:
+    delete:
   version:

@@ -1,6 +1,11 @@
 ## Unreleased
-* Add support for Terraform workspaces
 * Add ability to toggle primary state store
+* Add environment variable interpolation for input variables
+* Add support for sops encryption / decryption of hierarchy data
+
+## 0.7.8 (May 9, 2018)
+IMPROVEMENTS:
+- Added support for Terraform workspaces
 
 ## 0.7.7 (May 6, 2018)
 BACKWARDS INCOMPATIBILITIES:
@@ -13,6 +18,7 @@ IMPROVEMENTS:
 
 FIXES:
 - Updated input processing to support nested complex types properly.
+- Updated input processing to properly handle non-string values for non-complex input types.
 
 ## 0.7.6 (December 6, 2017)
 IMPROVEMENTS:

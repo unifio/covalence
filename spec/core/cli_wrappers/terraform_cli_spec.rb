@@ -106,6 +106,12 @@ module Covalence
       expect(described_class.terraform_version(@tmp_dir)).to be true
     end
 
+    it "#terraform_workspace" do
+      expected_args = [ENV, "terraform workspace new example", anything]
+      expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
+      expect(described_class.terraform_workspace('example')).to be true
+    end
+
     it "#terraform_clean" do
       Dir.mktmpdir do |dir|
         FileUtils.touch(File.join(dir, 'foo.tfstate'))
