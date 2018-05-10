@@ -54,6 +54,8 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
+          TerraformCli.terraform_workspace(@stack.workspace) unless stack.workspace.to_s.empty?
+
           stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
@@ -69,6 +71,8 @@ module Covalence
         populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
+
+          TerraformCli.terraform_workspace(@stack.workspace) unless stack.workspace.to_s.empty?
 
           stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
@@ -88,6 +92,8 @@ module Covalence
         populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
+
+          TerraformCli.terraform_workspace(@stack.workspace) unless stack.workspace.to_s.empty?
 
           stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
@@ -110,6 +116,8 @@ module Covalence
         populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
+
+          TerraformCli.terraform_workspace(@stack.workspace) unless stack.workspace.to_s.empty?
 
           stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
@@ -134,6 +142,8 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
+          TerraformCli.terraform_workspace(@stack.workspace) unless stack.workspace.to_s.empty?
+
           stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
@@ -156,6 +166,8 @@ module Covalence
         populate_workspace(tmpdir)
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
+
+          TerraformCli.terraform_workspace(@stack.workspace) unless stack.workspace.to_s.empty?
 
           stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)

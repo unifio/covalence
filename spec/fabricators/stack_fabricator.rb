@@ -21,7 +21,8 @@ Fabricator(:terraform_stack, from: :stack) do
   on_init do
     init_with(name: "example_stack",
               type: "terraform",
-              state_stores: Fabricate.times(3, :state_store))
+              state_stores: Fabricate.times(3, :state_store),
+              workspace: "blue")
   end
 end
 

@@ -83,7 +83,7 @@ module Covalence
     end
 
     # Return configuration for remote state store.
-    def self.get_state_store(params)
+    def self.get_state_store(params, workspace_enabled=false)
       raise "State store parameters must be a Hash" unless params.is_a?(Hash)
       required_params = [
         'access_token',

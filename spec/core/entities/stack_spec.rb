@@ -77,6 +77,10 @@ CONF
       expect(Fabricate(:terraform_stack, contexts: []).contexts).to eql([])
     end
 
+    it "should accept an empty workspace" do
+      expect(Fabricate(:terraform_stack, workspace: '').workspace).to eql('')
+    end
+
     it "should yield state stores" do
       expect(stack.state_stores).to be_instance_of Array
       expect(stack.state_stores.all? {|store| store.instance_of?(StateStore)}).to be true
@@ -93,6 +97,11 @@ CONF
 
     it "should yield contexts" do
       expect(stack.contexts).to be_instance_of Array
+      expect(stack.contexts.all? {|store| store.instance_of?(Context)}).to be true
+    end
+
+    it "should yield a workspace" do
+      expect(stack.workspace).to be_instance_of String
       expect(stack.contexts.all? {|store| store.instance_of?(Context)}).to be true
     end
   end

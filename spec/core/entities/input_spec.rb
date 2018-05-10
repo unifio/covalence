@@ -149,9 +149,9 @@ module Covalence
       end
 
       context "with nested interpolated shell values with escapes" do
-        let(:raw_value) { "this-is-a-test-\\$(pwd)-and-$(date)" }
+        let(:raw_value) { "this-is-a-test-$(pwd)-and-\\$(date)" }
 
-        it { expect(input.to_command_option).to eq("input = \"this-is-a-test-$(pwd)-and-#{`date`.chomp}\"") }
+        it { expect(input.to_command_option).to eq("input = \"this-is-a-test-#{`pwd`.chomp}-and-$(date)\"") }
       end
 
       context "all other values" do
