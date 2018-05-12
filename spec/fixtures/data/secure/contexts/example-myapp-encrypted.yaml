@@ -1,0 +1,13 @@
+myapp::vars:
+    some_secret: ENC[AES256_GCM,data:Or9AJCcuEL+u,iv:ZasjAjIKRnM5P2YmCvfYSkTq5+M+u7JjX6/pwEslbwo=,tag:t+6DKhlCy6DhknPxciB/7Q==,type:str]
+sops:
+    kms:
+    -   arn: arn:aws:kms:us-east-1:261363125332:key/0c9d2ef3-080f-49d9-b64b-4526d0ab0ebb
+        created_at: '2018-05-24T13:00:36Z'
+        enc: AQICAHjwKGLaMcnhX2xwWYTzol4tBXI+C7D3xdfj5BJ5MghHBQGRHCRospbL3i2rCdEQaVZqAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMtvzIF7WyT31DF0xWAgEQgDtCcU1sc4PQaTTsWf+ZRKs71OCLxlpiguYm53ivHWHMJ3adiN2bn0HgGtNXzBozBrkBm9BscJN570hI9g==
+    gcp_kms: []
+    lastmodified: '2018-05-24T13:00:36Z'
+    mac: ENC[AES256_GCM,data:CDDbadJ2fqqMWCn2PMGebAlYHc2wHypWxcltV0p8/QczeeuxLSuA2pymWvTMpazx6xItrY9X9G48EGM7uJjy644uOc3KYrugYbK6TQKXmzbQmETr5R48v+OFMcXZYwlPyBuOAAwnDx6kkQPjkyYmMVJP7AK7/48mFX8fvBBvjYc=,iv:RcPF37OZynsPDHjmX05FjvNkVHm8NUvXLZSPYWfnE8c=,tag:zxbd3jgXgtWKCRaxWsldFw==,type:str]
+    pgp: []
+    unencrypted_suffix: _unencrypted
+    version: 3.0.5

@@ -1,5 +1,6 @@
 # Covalence
 [![CircleCI](https://circleci.com/gh/unifio/covalence.svg?style=svg)](https://circleci.com/gh/unifio/covalence)
+[![Dependency Status](https://gemnasium.com/badges/github.com/unifio/covalence.svg)](https://gemnasium.com/github.com/unifio/covalence)
 
 A tool for the management and orchestration of data used by HashiCorp infrastructure tooling.
 
@@ -503,8 +504,11 @@ vpc_id:
 
 Covalence is packaged as a Ruby Gem.
 
+You will probably need the following packages installed locally
+- Terraform
+- Packer
+- Sops
+
 Execute the following to build the gem:
 
 `$ gem build covalence.gemspec`
-
-Gem artifacts are hosted at https://repo.fury.io/unifio/.

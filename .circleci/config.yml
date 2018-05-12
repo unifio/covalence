@@ -5,11 +5,12 @@ jobs:
     working_directory: ~/repo
 
     docker:
-      - image: circleci/ruby:2.3.6
+      - image: circleci/ruby:2.5.1
 
     environment:
       COVALENCE_VERSION: 0.7.8
       TERRAFORM_VERSION: 0.11.7
+      SOPS_VERSION: 3.0.5
 
     steps:
       - checkout
@@ -21,9 +22,33 @@ jobs:
             wget -q "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
             unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 
+            # Install Sops
+            sudo wget -q "https://github.com/mozilla/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux" -O /usr/local/bin/sops
+            sudo chmod +x /usr/local/bin/sops
+
             # Install gem bundle
             bundle install
 
       - run:
           name: Run tests
           command: bundle exec rake ci:covalence
+
+      - run:
+          name: Setup gem credentials
+          command: |
+            mkdir -p ~/.gem/
+            cat <<EOF >~/.gem/credentials
+            ---
+            :rubygems_api_key: ${RUBYGEMS_API_KEY}
+            EOF
+            chmod 600 ~/.gem/credentials
+
+      - deploy:
+          name: Publish gem to rubygems
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              gem signin
+              gem build covalence.gemspec
+              COVALENCE_VERSION=$(ruby -e "require \"#{Dir.pwd}/lib/covalence/version\"; puts Covalence::VERSION")
+              gem push covalence-${COVALENCE_VERSION}.gem
+            fi

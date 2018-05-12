@@ -16,40 +16,33 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://unif.io"
   spec.license       = "MPL-2.0"
 
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "https://repo.fury.io/unifio/"
-  else
-    raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
-  end
-
   spec.files         = Dir["*.md", "#{gem_root}/**/*"]
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = [ gem_root ]
   spec.required_ruby_version = '>= 2.0.0'
 
-  spec.add_dependency "deep_merge", "~> 1.0.1"
-  spec.add_dependency "hiera", "~> 3.3.0"
-  spec.add_dependency "json", "~> 1.8.3"
+  spec.add_dependency "deep_merge", "~> 1.2.1"
+  spec.add_dependency "hiera", "~> 3.4.3"
+  spec.add_dependency "json", "~> 2.1.0"
   spec.add_dependency "rest-client", "~> 2.0.0.rc3"
   spec.add_dependency "rake", ">= 11.1.2"
-  spec.add_dependency "aws-sdk", "~> 2.9.5"
+  spec.add_dependency "aws-sdk-s3", "~> 1"
   spec.add_dependency "virtus", "~> 1.0.5"
-  spec.add_dependency "activesupport", "~> 4.2.6"
-  spec.add_dependency "activemodel", "~> 4.2.6"
-  spec.add_dependency "semantic", "~> 1.4.1"
-  spec.add_dependency "slop", "~> 4.4.1"
-  spec.add_dependency "highline", "~> 1.6.0"
+  spec.add_dependency "activesupport", "~> 5.2.0"
+  spec.add_dependency "activemodel", "~> 5.2.0"
+  spec.add_dependency "semantic", "~> 1.6.1"
+  spec.add_dependency "slop", "~> 4.6.2"
+  spec.add_dependency "highline", "~> 1.7.10"
+  spec.add_dependency "consul_loader", "~> 1.0.0"
 
   Covalence::Helpers::SpecDependencies.dependencies.each do |name, requirement|
     spec.add_development_dependency name, requirement
   end
-  spec.add_development_dependency "awesome_print", "~> 1.7.0"
+  spec.add_development_dependency "awesome_print", "~> 1.8.0"
   spec.add_development_dependency "bundler", ">= 1.9.0"
-  spec.add_development_dependency "dotenv", "~> 2.1.0"
-  spec.add_development_dependency "byebug", "~> 9.0.5"
-  spec.add_development_dependency "serverspec", "~> 2.36.0"
-  spec.add_development_dependency "webmock", "~> 2.0.3"
-  spec.add_development_dependency "gemfury", "~> 0.6.0"
-  spec.add_development_dependency "fabrication", "~> 2.15.2"
-  spec.add_development_dependency "simplecov", "~> 0.12.0"
+  spec.add_development_dependency "dotenv", "~> 2.4.0"
+  spec.add_development_dependency "byebug", "~> 10.0.2"
+  spec.add_development_dependency "webmock", "~> 3.4.1"
+  spec.add_development_dependency "fabrication", "~> 2.20.1"
+  spec.add_development_dependency "simplecov", "~> 0.16.1"
 end
