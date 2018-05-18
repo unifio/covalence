@@ -20,7 +20,7 @@ LOCAL_ENVFILE=${LOCAL_ENVFILE:-".env.covalence"}
 DOCKER_WRAPPER=${DOCKER_WRAPPER:-}
 # The docker environment variable file passed to the container
 # Can contain multiple envfiles separated by : env1:env2:env3
-LOAD_ENVFILE=${LOAD_ENVFILE:-".env.docker:.env.secrets"}
+LOAD_ENVFILE=${LOAD_ENVFILE:-".env.docker:.env.secrets:.env.local"}
 # AWS Credentials path to mount (defaults to data/secure/.aws)
 AWS_CREDENTIAL_PATH=${AWS_CREDENTIAL_PATH:-"$HOME/.aws"}
 # The Container home directory
