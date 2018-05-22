@@ -260,7 +260,7 @@ if [[ "${DOCKER_DNS}" ]]; then
 fi
 
 if [[ "${CONTAINER_USER_ID}" ]]; then
-  DOCKER_HOMEDIR=""
+  DOCKER_HOMEDIR="/home/user"
   add_arg_simple "-e" "AWS_CONFIG_FILE=${DOCKER_HOMEDIR}/.aws/config"
   add_arg_simple "-e" "AWS_SHARED_CREDENTIALS_FILE=${DOCKER_HOMEDIR}/.aws/credentials"
   add_arg_simple "-e" "USER=user"
