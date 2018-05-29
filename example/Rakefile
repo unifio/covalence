@@ -2,15 +2,5 @@ require 'rake'
 require 'rspec/core/rake_task'
 require 'covalence/environment_tasks'
 require 'covalence/spec_tasks'
-require 'consul_loader'
-
-def load_yaml(filename)
-  consul_loader = ConsulLoader::Loader.new(ConsulLoader::ConfigParser.new)
-  consul_server = "http://#{ENV['CONSUL_HTTP_ADDR']}"
-  consul_loader.load_config(filename, consul_server)
-end
-
-desc 'Load K/V data into Consul service'
-task 'consul_load' do
-  load_yaml("#{ENV['CONSUL_KV_FILE']}")
-end
+require 'covalence/consul_tasks'
+require 'covalence/sops_tasks'

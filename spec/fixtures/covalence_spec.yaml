@@ -8,6 +8,7 @@
 
 :hierarchy:
   - "stacks/%{environment}-%{stack}"
+  - "secure/contexts/%{environment}-%{stack}-decrypted"
   - "envs/%{environment}"
   - 'envs'
   - 'global'

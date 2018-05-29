@@ -6,7 +6,7 @@ module Covalence
 
       def self.parse_shell(input)
         Covalence::LOGGER.info "Evaluating requested interpolation: \"#{input}\""
-        matches = input.scan(/.?\$\([^)]*\)/)
+        matches = input.scan(/.?\$\([^)]*\)+/)
 
         Covalence::LOGGER.debug "matches: #{matches}"
         matches.each do |cmd|
