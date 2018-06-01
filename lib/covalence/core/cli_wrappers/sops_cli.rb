@@ -3,6 +3,9 @@ require 'fileutils'
 require 'yaml'
 require 'active_support/core_ext/object/blank'
 
+require_relative '../../../covalence'
+require_relative 'popen_wrapper'
+
 module Covalence
   class SopsCli
 
