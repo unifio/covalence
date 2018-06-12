@@ -306,7 +306,11 @@ fi
 
 #Check whether docker wrapper or covalence
 if [[ ! $DOCKER_WRAPPER ]]; then
-  ARGS+=("bundle exec rake")
+  if [[ $RUN_RAKE ]]; then
+    ARGS+=("rake")
+  else
+    ARGS+=("bundle exec rake")
+  fi
 fi
 
 if [[ -r "${COVALENCE_RAKEFILE}" && ! $DOCKER_WRAPPER ]];then
