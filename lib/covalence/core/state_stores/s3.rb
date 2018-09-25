@@ -34,7 +34,7 @@ module Covalence
         @cache[bucket][document] ||= begin
           @s3.get_object(bucket: bucket, key: document).body.read
         rescue Aws::S3::Errors::ServiceError => err
-          raise err, err.message + " Unable to retrieve document '#{document}' from bucket '#{bucket}'"
+          raise err, "Unable to retrieve document '#{document}' from bucket '#{bucket}'"
         end
       end
 
@@ -42,7 +42,7 @@ module Covalence
         begin
           doc = self.get_doc(bucket, document)
         rescue Aws::S3::Errors::ServiceError => err
-          fail err.message + " and the key is: #{name}. Check your variables in .yaml files."
+          fail err.message + " and the key is: #{name}. Check your data files."
         end
 
         # Parse JSON response
