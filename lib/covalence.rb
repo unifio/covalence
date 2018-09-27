@@ -27,7 +27,7 @@ module Covalence
   PACKER_CMD = ENV['PACKER_CMD'] || "packer"
 
   SOPS_CMD = ENV['SOPS_CMD'] || "sops"
-  SOPS_VERSION = ENV['SOPS_VERSION'] || (`#{SOPS_CMD} --version`.gsub(/[^\d\.]/, '') rescue "0.0.0")
+  SOPS_VERSION = ENV['SOPS_VERSION'] || (`#{SOPS_CMD} --version`.split("\n", 2)[0].gsub(/[^\d\.]/, '') rescue "0.0.0")
   SOPS_ENCRYPTED_SUFFIX = ENV['SOPS_ENCRYPTED_SUFFIX'] || "-encrypted"
   SOPS_DECRYPTED_SUFFIX = ENV['SOPS_DECRYPTED_SUFFIX'] || "-decrypted"
 
