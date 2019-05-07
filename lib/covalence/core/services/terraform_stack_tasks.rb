@@ -61,7 +61,13 @@ module Covalence
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          TerraformCli.terraform_refresh
+          stack.materialize_cmd_inputs
+
+          args = collect_args("-input=false",
+                              stack.args,
+                              "-var-file=covalence-inputs.tfvars")
+
+          TerraformCli.terraform_refresh(args: args)
         end
       end
     end
