@@ -57,10 +57,10 @@ module Covalence
 
           TerraformCli.terraform_workspace(@stack.workspace) unless stack.workspace.to_s.empty?
 
+          stack.materialize_state_inputs
+
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
-
-          stack.materialize_state_inputs
 
           args = collect_args("-input=false",
                               stack.args,
