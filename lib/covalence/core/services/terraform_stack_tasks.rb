@@ -35,13 +35,12 @@ module Covalence
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          TerraformCli.terraform_validate(args: stack.args)
-
           stack.materialize_cmd_inputs
           args = collect_args("-input=false",
                               stack.args,
                               "-var-file=covalence-inputs.tfvars")
 
+          TerraformCli.terraform_validate(args: stack.args)
           TerraformCli.terraform_plan(args: args)
         end
       end
