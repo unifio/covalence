@@ -106,9 +106,9 @@ CONF
         end
       end
 
-      params.delete('name')
-
       params.each do |k,v|
+        next if k == 'name'
+
         v = Covalence::Helpers::ShellInterpolation.parse_shell(v) if v.to_s.include?("$(")
         config += "    #{k} = \"#{v}\"\n"
       end
