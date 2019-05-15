@@ -45,4 +45,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "webmock", "~> 3.4.1"
   spec.add_development_dependency "fabrication", "~> 2.20.1"
   spec.add_development_dependency "simplecov", "~> 0.16.1"
+  spec.add_development_dependency "solargraph"
 end
