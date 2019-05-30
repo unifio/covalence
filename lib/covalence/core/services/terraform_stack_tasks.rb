@@ -40,7 +40,16 @@ module Covalence
                               stack.args,
                               "-var-file=covalence-inputs.tfvars")
 
-          TerraformCli.terraform_validate(args: stack.args)
+          tf_vers = Gem::Version.new(Covalence::TERRAFORM_VERSION)
+
+          if tf_vers >= Gem::Version.new('0.12.0')
+            # >= 0.12 does *not* support validating input vars
+            TerraformCli.terraform_validate(args: stack.args)
+          else
+            # < 0.12 supports validating input vars
+            TerraformCli.terraform_validate(args: args)
+          end
+
           TerraformCli.terraform_plan(args: args)
         end
       end
