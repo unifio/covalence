@@ -86,6 +86,15 @@ module Covalence
       if input.stringify_keys.has_key?('type')
         type = input.stringify_keys.fetch('type')
 
+        # HACK This only pays attention to the first element in:
+        # - map(string)     -> ["map", "string"]
+        # - list(string)    -> ["list", "string"]
+        # But then again, this is exactly how Terraform 0.11.x forced
+        # us to handle it, so eh, yolo.
+        if type.respond_to?('each')
+          type = type[0]
+        end
+
         local_types = %w(
           list
           map
