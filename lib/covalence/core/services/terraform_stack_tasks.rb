@@ -26,6 +26,24 @@ module Covalence
     end
 
     # :reek:TooManyStatements
+    def stack_shell
+      Dir.mktmpdir do |tmpdir|
+        populate_workspace(tmpdir)
+        Dir.chdir(tmpdir) do
+          logger.info "In #{tmpdir}:"
+
+          TerraformCli.terraform_get(@path)
+          TerraformCli.terraform_init
+
+          stack.materialize_cmd_inputs
+
+          shell = ENV.fetch('SHELL', 'zsh')
+          system(shell)
+        end
+      end
+    end
+
+    # :reek:TooManyStatements
     def stack_verify
       Dir.mktmpdir do |tmpdir|
         populate_workspace(tmpdir)
