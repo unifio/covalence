@@ -37,7 +37,7 @@ module Covalence
 
           stack.materialize_cmd_inputs
 
-          shell = ENV.fetch('SHELL', 'zsh')
+          shell = ENV.fetch('SHELL', 'sh')
           system(shell)
         end
       end
