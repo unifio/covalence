@@ -99,6 +99,7 @@ module Covalence
           list
           map
           string
+          number
         )
 
         if local_types.any? {|local_type| type == local_type }
