@@ -83,6 +83,8 @@ module Covalence
 
     # :reek:FeatureEnvy
     def parse_type(input)
+      Covalence::LOGGER.debug("parse_type input=#{input.inspect}")
+
       if input.stringify_keys.has_key?('type')
         type = input.stringify_keys.fetch('type')
 
