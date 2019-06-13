@@ -110,6 +110,8 @@ module Covalence
           TerraformCli.terraform_init
 
           stack.state_stores.drop(1).each do |store|
+            Covalence::LOGGER.debug("Stack: #{store.inspect}")
+
             stack.materialize_state_inputs(store: store)
             TerraformCli.terraform_init("-force-copy")
           end
