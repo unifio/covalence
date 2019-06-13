@@ -99,6 +99,7 @@ module Covalence
 
         local_types = %w(
           list
+          set
           map
           string
           number
