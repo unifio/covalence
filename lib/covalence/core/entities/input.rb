@@ -102,6 +102,7 @@ module Covalence
           map
           string
           number
+          tuple
         )
 
         if local_types.any? {|local_type| type == local_type }
