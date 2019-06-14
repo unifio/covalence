@@ -49,16 +49,12 @@ module Covalence
             stack_namespace_terraform_tasks(tf_tasks)
 
             stack.contexts.each do |context|
-              logger.debug("Stack [terraform]: #{stack.inspect}")
-
               context_namespace_terraform_tasks(tf_tasks, context)
             end
           when 'packer'
             packer_tasks = PackerStackTasks.new(stack)
 
             stack.contexts.each do |context|
-              logger.debug("Stack [packer]: #{stack.inspect}")
-
               context_namespace_packer_tasks(packer_tasks, context)
             end
           end
