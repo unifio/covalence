@@ -26,6 +26,24 @@ module Covalence
     end
 
     # :reek:TooManyStatements
+    def stack_shell
+      Dir.mktmpdir do |tmpdir|
+        populate_workspace(tmpdir)
+        Dir.chdir(tmpdir) do
+          logger.info "In #{tmpdir}:"
+
+          TerraformCli.terraform_get(@path)
+          TerraformCli.terraform_init
+
+          stack.materialize_cmd_inputs
+
+          shell = ENV.fetch('SHELL', 'sh')
+          system(shell)
+        end
+      end
+    end
+
+    # :reek:TooManyStatements
     def stack_verify
       Dir.mktmpdir do |tmpdir|
         populate_workspace(tmpdir)
@@ -40,7 +58,15 @@ module Covalence
                               stack.args,
                               "-var-file=covalence-inputs.tfvars")
 
-          TerraformCli.terraform_validate(args: args)
+          tf_vers = Gem::Version.new(Covalence::TERRAFORM_VERSION)
+
+          if tf_vers >= Gem::Version.new('0.12.0')
+            # >= 0.12 does *not* support validating input vars
+            TerraformCli.terraform_validate(args: stack.args)
+          else
+            # < 0.12 supports validating input vars
+            TerraformCli.terraform_validate(args: args)
+          end
 
           TerraformCli.terraform_plan(args: args)
         end
@@ -60,7 +86,12 @@ module Covalence
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          TerraformCli.terraform_refresh
+          stack.materialize_cmd_inputs
+          args = collect_args("-input=false",
+                              stack.args,
+                              "-var-file=covalence-inputs.tfvars")
+
+          TerraformCli.terraform_refresh(args: args)
         end
       end
     end
@@ -79,6 +110,8 @@ module Covalence
           TerraformCli.terraform_init
 
           stack.state_stores.drop(1).each do |store|
+            Covalence::LOGGER.debug("Stack: #{store.inspect}")
+
             stack.materialize_state_inputs(store: store)
             TerraformCli.terraform_init("-force-copy")
           end
