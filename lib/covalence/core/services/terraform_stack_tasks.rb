@@ -32,6 +32,7 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
+          stack.materialize_state_inputs
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
