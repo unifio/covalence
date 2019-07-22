@@ -43,4 +43,7 @@ module Covalence
   LOGGER = Logger.new(STDOUT)
   LOG_LEVEL = String(ENV['COVALENCE_LOG'] || "warn").upcase
   LOGGER.level = Logger.const_get(LOG_LEVEL)
+
+  # worker count
+  WORKER_COUNT = (ENV['WORKER_COUNT'].to_i || 3)
 end
