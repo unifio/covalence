@@ -41,14 +41,14 @@ module Covalence
       "#{environment_name}-#{name}"
     end
 
-    def materialize_cmd_inputs
+    def materialize_cmd_inputs(path)
       if type == "terraform"
         config = ""
         inputs.values.map(&:to_command_option).each do |input|
           config += input + "\n"
         end
-        logger.info "\nStack inputs:\n\n#{config}"
-        File.open('covalence-inputs.tfvars','w') {|f| f.write(config)}
+        logger.info "#{module_path} \nStack inputs:\n\n#{config}"
+        File.open("#{path}/covalence-inputs.tfvars",'w') {|f| f.write(config)}
       elsif type == "packer"
         config = Hash.new
         inputs.each do |name, input|

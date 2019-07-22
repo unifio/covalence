@@ -45,33 +45,29 @@ module Covalence
     end
 
     # :reek:TooManyStatements
-    def stack_verify
-      Dir.mktmpdir do |tmpdir|
-        populate_workspace(tmpdir)
-        Dir.chdir(tmpdir) do
-          logger.info "In #{tmpdir}:"
+    def stack_verify(tmpdir)
+      return false if  !TerraformCli.terraform_check_style(@path)
 
-          TerraformCli.terraform_get(@path)
-          TerraformCli.terraform_init
+      return false if !TerraformCli.terraform_get(path=@path, workdir=tmpdir)
+      populate_workspace(tmpdir)
 
-          stack.materialize_cmd_inputs
-          args = collect_args("-input=false",
-                              stack.args,
-                              "-var-file=covalence-inputs.tfvars")
+      return false if !TerraformCli.terraform_init(path: @path, workdir: tmpdir)
+      stack.materialize_cmd_inputs(tmpdir)
+      args = collect_args("-input=false",
+                          stack.args,
+                          "-var-file=#{tmpdir}/covalence-inputs.tfvars")
 
-          tf_vers = Gem::Version.new(Covalence::TERRAFORM_VERSION)
+      tf_vers = Gem::Version.new(Covalence::TERRAFORM_VERSION)
 
-          if tf_vers >= Gem::Version.new('0.12.0')
-            # >= 0.12 does *not* support validating input vars
-            TerraformCli.terraform_validate(args: stack.args)
-          else
-            # < 0.12 supports validating input vars
-            TerraformCli.terraform_validate(args: args)
-          end
-
-          TerraformCli.terraform_plan(args: args)
-        end
+      if tf_vers >= Gem::Version.new('0.12.0')
+        # >= 0.12 does *not* support validating input vars
+        return false if !TerraformCli.terraform_validate(path=tmpdir, workdir=tmpdir, args: stack.args)
+      else
+        # < 0.12 supports validating input vars
+        return false if !TerraformCli.terraform_validate(path=tmpdir, workdir=tmpdir, args: args)
       end
+
+      TerraformCli.terraform_plan(path: @path , workdir: tmpdir, args: args)
     end
 
     # :reek:TooManyStatements
@@ -133,13 +129,13 @@ module Covalence
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          stack.materialize_cmd_inputs
+          stack.materialize_cmd_inputs(tmpdir)
           args = collect_args("-input=false",
                               stack.args,
                               additional_args,
                               "-var-file=covalence-inputs.tfvars")
 
-          TerraformCli.terraform_plan(args: args)
+          TerraformCli.terraform_plan(path: @path, workdir: tmpdir, args: args)
         end
       end
     end
@@ -228,7 +224,6 @@ module Covalence
 
       # Copy any dependencies to the workspace
       @stack.dependencies.each do |dep|
-        logger.info "Copying '#{dep}' dependency to #{workspace}"
         dep_path = File.expand_path(File.join(Covalence::TERRAFORM, dep))
         FileUtils.cp_r dep_path, workspace
       end
