@@ -36,7 +36,7 @@ module Covalence
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          stack.materialize_cmd_inputs
+          stack.materialize_cmd_inputs(tmpdir)
 
           shell = ENV.fetch('SHELL', 'sh')
           system(shell)
@@ -83,7 +83,7 @@ module Covalence
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          stack.materialize_cmd_inputs
+          stack.materialize_cmd_inputs(tmpdir)
           args = collect_args("-input=false",
                               stack.args,
                               "-var-file=covalence-inputs.tfvars")
@@ -153,7 +153,7 @@ module Covalence
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          stack.materialize_cmd_inputs
+          stack.materialize_cmd_inputs(tmpdir)
           args = collect_args("-destroy",
                               "-input=false",
                               stack.args,
@@ -178,7 +178,7 @@ module Covalence
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          stack.materialize_cmd_inputs
+          stack.materialize_cmd_inputs(tmpdir)
           args = collect_args("-input=false",
                               "-auto-approve=true",
                               stack.args,
@@ -203,7 +203,7 @@ module Covalence
           TerraformCli.terraform_get(@path)
           TerraformCli.terraform_init
 
-          stack.materialize_cmd_inputs
+          stack.materialize_cmd_inputs(tmpdir)
           args = collect_args("-input=false",
                               "-auto-approve=true",
                               stack.args,

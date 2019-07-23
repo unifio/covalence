@@ -51,24 +51,24 @@ module Covalence
         cmd = [Covalence::TERRAFORM_CMD, "init", "-get-plugins=false", "-get=false", "-input=false"]
       end
 
-      output = PopenWrapper.run_in_workdir(
+      output = PopenWrapper.run(
         cmd,
         path,
         args,
-        workdir,
-        ignore_exitcode: ignore_exitcode)
+        ignore_exitcode: ignore_exitcode,
+        workdir: workdir)
       (output == 0)
     end
 
     def self.terraform_get(path=Dir.pwd, workdir=Dir.pwd, args: '', ignore_exitcode: false)
       cmd = [Covalence::TERRAFORM_CMD, "get", path]
 
-      output = PopenWrapper.run_in_workdir(
+      output = PopenWrapper.run(
           cmd,
           path,
           args,
-          workdir,
-          ignore_exitcode: ignore_exitcode)
+          ignore_exitcode: ignore_exitcode,
+          workdir: workdir)
 
       (output == 0)
     end
@@ -76,12 +76,12 @@ module Covalence
     def self.terraform_plan(path: '', workdir: Dir.pwd, args: '', ignore_exitcode: false)
       cmd = [Covalence::TERRAFORM_CMD, "plan"]
 
-      output = PopenWrapper.run_in_workdir(
+      output = PopenWrapper.run(
           cmd,
           path,
           args,
-          workdir,
-          ignore_exitcode: ignore_exitcode)
+          ignore_exitcode: ignore_exitcode,
+          workdir: workdir)
 
       (output == 0)
     end
@@ -89,12 +89,12 @@ module Covalence
     def self.terraform_validate(path, workdir, args: '', ignore_exitcode: false)
       cmd = [Covalence::TERRAFORM_CMD, "validate"]
 
-      output = PopenWrapper.run_in_workdir(
+      output = PopenWrapper.run(
           cmd,
           path,
           args,
-          workdir,
-          ignore_exitcode: ignore_exitcode)
+          ignore_exitcode: ignore_exitcode,
+          workdir: workdir)
 
       (output == 0)
     end

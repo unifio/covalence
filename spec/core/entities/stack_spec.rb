@@ -34,7 +34,7 @@ module Covalence
 
       Dir.mktmpdir do |tmpdir|
         Dir.chdir(tmpdir) do
-          stack.materialize_cmd_inputs
+          stack.materialize_cmd_inputs(tmpdir)
         end
       end
 
