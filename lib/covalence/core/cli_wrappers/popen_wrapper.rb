@@ -118,10 +118,12 @@ module Covalence
                        path: Dir.pwd,
                        workdir: Dir.pwd)
         logger.info "path: #{path} workdir: #{workdir} run_cmd: #{run_cmd}"
-        Signal.trap("INT") {} #Disable parent process from exiting, orphaning the child fork below
+        ## TODO better way to clean up child process if parent dies
+        Signal.trap("INT") { logger.info "Trapped Ctrl-c. Disable parent process from exiting, orphaning the child fork below" }
         wait_thread = nil
         prefix=path.gsub(/^\/workspace*/,'')
-        Open3.popen3(env, "prefixout -p '#{prefix} ' -- " + run_cmd, :chdir=>workdir) do |stdin, stdout, stderr, wait_thr|
+        whole_cmd=['prefixout', '-p', "#{prefix} ", '--'].concat(run_cmd.split)
+        Open3.popen3(env, *whole_cmd, :chdir=>workdir) do |stdin, stdout, stderr, wait_thr|
           mappings = { stdin_io => stdin, stdout => stdout_io, stderr => stderr_io }
           wait_thread = wait_thr
 

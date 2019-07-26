@@ -7,16 +7,16 @@ module Covalence
 
   POOL_SIZE = Covalence::WORKER_COUNT
   jobs = Queue.new
-  ################ populate the job queue
+  # populate the job queue
   environments.each do |environment|
     environment.stacks.each do |stack|
       EnvironmentRepository.populate_stack(stack)
       jobs.push(stack)
     end
   end
-  Covalence::LOGGER.info "======================> jobs.length: #{jobs.length}"
+  Covalence::LOGGER.info "jobs.length: #{jobs.length}"
 
-  ############### start the workers
+  # start the workers
   myworkers = (POOL_SIZE).times.map do
     Thread.new do
       begin
