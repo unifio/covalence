@@ -1,6 +1,7 @@
 require "covalence/version"
 require "logger"
 require 'active_support/core_ext/object/blank'
+require 'etc'
 
 if %w(development test).include?(ENV['RAKE_ENV'])
   require 'byebug'
@@ -45,5 +46,5 @@ module Covalence
   LOGGER.level = Logger.const_get(LOG_LEVEL)
 
   # worker count
-  WORKER_COUNT = (ENV['WORKER_COUNT'].to_i || 3)
+  WORKER_COUNT = (ENV['WORKER_COUNT'].to_i || Etc.nprocessors)
 end
