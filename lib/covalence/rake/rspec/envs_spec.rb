@@ -5,7 +5,6 @@ module Covalence
     TEST_ENVS.include?(environ.name.to_s)
   end
 
-  POOL_SIZE = Covalence::WORKER_COUNT
   jobs = Queue.new
   # populate the job queue
   environments.each do |environment|
@@ -17,7 +16,7 @@ module Covalence
   Covalence::LOGGER.info "jobs.length: #{jobs.length}"
 
   # start the workers
-  myworkers = (POOL_SIZE).times.map do
+  myworkers = (Covalence::WORKER_COUNT).times.map do
     Thread.new do
       begin
         while stack = jobs.pop(true)
