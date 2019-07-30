@@ -86,7 +86,10 @@ module Covalence
                           stderr_io: STDERR,
                           ignore_exitcode: false,
                           path: nil)
-        Signal.trap("INT") {} #Disable parent process from exiting, orphaning the child fork below
+        ## TODO one thing we can try is to use
+        # Prctl.call(Prctl::PR_SET_PDEATHSIG, Signal.list['TERM'], 0, 0, 0)
+        # so when the parent dies, child will know to terminate itself.
+        Signal.trap("INT") { logger.info "Trapped Ctrl-c. Disable parent process from exiting, orphaning the child fork below which may or may not work" }
         wait_thread = nil
 
         Open3.popen3(env, run_cmd) do |stdin, stdout, stderr, wait_thr|
@@ -118,8 +121,10 @@ module Covalence
                        path: Dir.pwd,
                        workdir: Dir.pwd)
         logger.info "path: #{path} workdir: #{workdir} run_cmd: #{run_cmd}"
-        ## TODO better way to clean up child process if parent dies
-        Signal.trap("INT") { logger.info "Trapped Ctrl-c. Disable parent process from exiting, orphaning the child fork below" }
+        ## TODO one thing we can try is to use
+        # Prctl.call(Prctl::PR_SET_PDEATHSIG, Signal.list['TERM'], 0, 0, 0)
+        # so when the parent dies, child will know to terminate itself.
+        Signal.trap("INT") { logger.info "Trapped Ctrl-c. Disable parent process from exiting, orphaning the child fork below which may or may not work" }
         wait_thread = nil
         prefix=path.gsub(/^\/workspace*/,'')
         whole_cmd=['prefixout', '-p', "#{prefix} ", '--'].concat(run_cmd.split)
