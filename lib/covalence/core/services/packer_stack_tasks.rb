@@ -25,7 +25,7 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          stack.materialize_cmd_inputs
+          stack.materialize_cmd_inputs(tmpdir)
           args = collect_args(stack.args,
                               additional_args,
                               "-var-file=covalence-inputs.json")
@@ -52,7 +52,7 @@ module Covalence
         Dir.chdir(tmpdir) do
           logger.info "In #{tmpdir}:"
 
-          stack.materialize_cmd_inputs
+          stack.materialize_cmd_inputs(tmpdir)
           args = collect_args(stack.args,
                               additional_args,
                               "-var-file=covalence-inputs.json")

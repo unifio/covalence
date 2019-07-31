@@ -67,7 +67,7 @@ module Covalence
     it "#terraform_init" do
       expected_args = [ENV, "terraform init -get=false -input=false", anything]
       expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
-      expect(described_class.terraform_init).to be true
+      expect(described_class.terraform_init(@tmp_dir)).to be true
     end
 
     it "#terraform_plan" do
@@ -97,7 +97,7 @@ module Covalence
     it "#terraform_validate" do
       expected_args = [ENV, "terraform validate #{@tmp_dir}", anything]
       expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
-      expect(described_class.terraform_validate(@tmp_dir)).to be true
+      expect(described_class.terraform_validate(path=@tmp_dir, workdir=@tmp_dir)).to be true
     end
 
     it "#terraform_version" do
