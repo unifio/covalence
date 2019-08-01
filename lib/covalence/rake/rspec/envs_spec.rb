@@ -49,9 +49,19 @@ module Covalence
 
               stack.materialize_cmd_inputs
 
-              expect {
-                expect(TerraformCli.terraform_validate("-input=false -var-file=covalence-inputs.tfvars")).to be true
-              }.to_not raise_error
+              tf_vers = Gem::Version.new(Covalence::TERRAFORM_VERSION)
+
+              if tf_vers >= Gem::Version.new('0.12.0')
+                # >= 0.12 does *not* support validating input vars
+                expect {
+                  expect(TerraformCli.terraform_validate()).to be true
+                }.to_not raise_error
+              else
+                # < 0.12 supports validating input vars
+                expect {
+                  expect(TerraformCli.terraform_validate("-input=false -var-file=covalence-inputs.tfvars")).to be true
+                }.to_not raise_error
+              end
             end
           end
 

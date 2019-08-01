@@ -6,3 +6,4 @@ coverage/*
 .DS_Store
 *.gem
 .byebug_history
+/.gtm/

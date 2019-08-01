@@ -158,6 +158,11 @@ module Covalence
       task generate_rake_taskname(environment_name, stack_name, "verify") do
         tf_tasks.stack_verify
       end
+
+      desc "Shell into the #{stack_name} stack of the #{environment_name} environment"
+      task generate_rake_taskname(environment_name, stack_name, "shell") do
+        tf_tasks.stack_shell
+      end
     end
 
     # :reek:TooManyStatements

@@ -53,11 +53,19 @@ module Covalence
         end
 
         # Determine whether the document is a Terraform state file
-        tf_state = true if parsed.has_key?('modules')
+        tf_state = true if parsed.has_key?('terraform_version')
 
         # Return ID for the key specified
         if tf_state
-          outputs = parsed.fetch('modules')[0].fetch('outputs')
+          tf_vers = Gem::Version.new(parsed.fetch('terraform_version'))
+
+          if tf_vers >= Gem::Version.new('0.12.0')
+            root = parsed
+          else
+            root = parsed.fetch('modules')[0]
+          end
+
+          outputs = root.fetch('outputs')
           return outputs.fetch(name)
         end
         return parsed.fetch(name) if parsed.has_key?(name)
@@ -98,9 +106,9 @@ CONF
         end
       end
 
-      params.delete('name')
-
       params.each do |k,v|
+        next if k == 'name'
+
         v = Covalence::Helpers::ShellInterpolation.parse_shell(v) if v.to_s.include?("$(")
         config += "    #{k} = \"#{v}\"\n"
       end
