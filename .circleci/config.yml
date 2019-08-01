@@ -5,12 +5,13 @@ jobs:
     working_directory: ~/repo
 
     docker:
-      - image: circleci/ruby:2.5.1
+      - image: circleci/ruby:2.5.5
 
     environment:
-      COVALENCE_VERSION: 0.8.4
-      TERRAFORM_VERSION: 0.11.7
-      SOPS_VERSION: 3.0.5
+      COVALENCE_VERSION: 0.9.0
+      TERRAFORM_VERSION: 0.12.6
+      SOPS_VERSION: 3.3.1
+      BUNDLER_VERSION: 1.17.2
 
     steps:
       - checkout
@@ -25,7 +26,8 @@ jobs:
             # Install Sops
             sudo wget -q "https://github.com/mozilla/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux" -O /usr/local/bin/sops
             sudo chmod +x /usr/local/bin/sops
-
+            # Insstall bundler version in Gemlock before install
+            gem install bundler:${BUNDLER_VERSION}
             # Install gem bundle
             bundle install
 
