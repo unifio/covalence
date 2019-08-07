@@ -46,5 +46,5 @@ module Covalence
   LOGGER.level = Logger.const_get(LOG_LEVEL)
 
   # worker count
-  WORKER_COUNT = (ENV['WORKER_COUNT'].to_i || Etc.nprocessors)
+  WORKER_COUNT = ENV.has_key?('WORKER_COUNT') ? ENV['WORKER_COUNT'].to_i : Etc.nprocessors
 end
