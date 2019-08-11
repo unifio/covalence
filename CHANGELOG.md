@@ -1,4 +1,4 @@
-## 0.9.0 (Aug 11, 2019)
+## 0.9.2 (Aug 11, 2019)
 
 BACKWARDS INCOMPATIBILITIES:
 - The legacy Atlas Artifact backend is no longer supported.
