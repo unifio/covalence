@@ -1,7 +1,15 @@
-## Unreleased
-* Add ability to toggle primary state store
-* Add environment variable interpolation for input variables
-* Add support for sops encryption / decryption of hierarchy data
+## 0.9.0 (Aug 11, 2019)
+
+BACKWARDS INCOMPATIBILITIES:
+- The legacy Atlas Artifact backend is no longer supported.
+
+IMPROVEMENTS:
+* Ability to toggle primary state store
+* Environment variable interpolation for input variables
+* Support for sops encryption / decryption of hierarchy data
+* Support for Terraform 0.12
+* Support for parallel execution of process.
+* A tool [prefixout](https://github.com/unifio/prefixout/releases/tag/v0.1.0) was added for additional logging.
 
 ## 0.7.8 (May 9, 2018)
 IMPROVEMENTS:
