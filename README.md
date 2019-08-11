@@ -498,7 +498,7 @@ You will probably need the following packages installed locally
 - Terraform
 - Packer
 - Sops
-- [prefixout](https://github.com/unifio/prefixout/releases/tag/v0.1.0)
+- [prefixout](https://github.com/unifio/prefixout/releases)
 
 Execute the following to build the gem:
 
