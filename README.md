@@ -406,16 +406,6 @@ Module for interacting with the Terraform Enterprise backend.
 
 ### Usage
 
-Artifacts:
-
-```yaml
-ami:
-  type: 'atlas.artifact'
-  slug: 'unifio/app/amazon.ami'
-  version: 'latest'
-  key: 'region.us-east-1'
-```
-
 State Outputs:
 
 ```yaml
@@ -508,6 +498,7 @@ You will probably need the following packages installed locally
 - Terraform
 - Packer
 - Sops
+- [prefixout](https://github.com/unifio/prefixout/releases/tag/v0.1.0)
 
 Execute the following to build the gem:
 
