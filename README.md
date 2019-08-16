@@ -105,6 +105,10 @@ The suite can be executed with the following command:
 $ bin/covalence spec
 ```
 
+To run the Rspec test locally without container, you will need to install the following:
+* prefixout -- https://github.com/WhistleLabs/prefixout
+* sops -- https://github.com/mozilla/sops
+
 ### UAT
 
 User acceptance tests targeting execution in a continuous integration (CI) environment.

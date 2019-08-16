@@ -4,8 +4,10 @@ module_test::module: 'myapp2'
 
 # State store
 module_test::state:
-  - atlas:
-      name: 'example/myapp'
+  - s3:
+      bucket: 'some_bucket'
+      name: 'some_name'
+      region: 'some_region'
 
 # Input variables
 myapp2::vars:

@@ -33,7 +33,7 @@ module Covalence
   SOPS_DECRYPTED_SUFFIX = ENV['SOPS_DECRYPTED_SUFFIX'] || "-decrypted"
 
   # No-op shell command. Should not need to modify for most unix shells.
-  DRY_RUN_CMD = (ENV['COVALENCE_DRY_RUN_CMD'] || ":")
+  DRY_RUN_CMD = (ENV['COVALENCE_DRY_RUN_CMD'] || "true")
   DEBUG_CLI = (ENV['COVALENCE_DEBUG'] || 'false') =~ (/(true|t|yes|y|1)$/i)
 
   #DOCKER_ENV_FILE

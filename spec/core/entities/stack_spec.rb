@@ -24,18 +24,17 @@ module Covalence
     end
 
     it "#materialize_cmd_inputs" do
+      tmpdir = Dir.mktmpdir
       buffer = StringIO.new()
-      filename = 'covalence-inputs.tfvars'
+      filename = "#{tmpdir}/covalence-inputs.tfvars"
       content = "local_input = \"foo\"\n"
 
       allow(File).to receive(:open).and_call_original
       allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
       allow_any_instance_of(Input).to receive(:to_command_option).and_return("local_input = \"foo\"")
 
-      Dir.mktmpdir do |tmpdir|
-        Dir.chdir(tmpdir) do
-          stack.materialize_cmd_inputs(tmpdir)
-        end
+      Dir.chdir(tmpdir) do
+        stack.materialize_cmd_inputs(tmpdir)
       end
 
       expect(buffer.string).to eq(content)
@@ -46,7 +45,7 @@ module Covalence
       filename = 'covalence-state.tf'
       content = <<-CONF
 terraform {
-  backend "atlas" {
+  backend "s3" {
     name = "exmpl/stack"
   }
 }
