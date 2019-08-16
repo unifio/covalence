@@ -1,14 +1,11 @@
 {
-    "terraform_version": "0.11.0",
-    "modules": [
-        {
-            "path": [
-                "root"
-            ],
-            "outputs": {
-                "vpc_id": "vpc-12345678"
-            },
-            "resources": {}
-        }
-    ]
+    "terraform_version": "0.12.6",
+    "path": [
+        "root"
+    ],
+    "outputs": {
+        "vpc_id": "vpc-12345678"
+    },
+    "resources": {}
 }
+

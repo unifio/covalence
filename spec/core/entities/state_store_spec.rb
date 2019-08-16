@@ -64,11 +64,5 @@ module Covalence
       end
     end
 
-    describe '#backend' do
-      it "does set the backend class given a backend name string" do
-        state_store = Fabricate(:state_store, backend: 'atlas')
-        expect(state_store.backend).to eq(Atlas)
-      end
-    end
   end
 end

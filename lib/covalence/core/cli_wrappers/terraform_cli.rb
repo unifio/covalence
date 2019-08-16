@@ -34,24 +34,68 @@ module Covalence
     end
 
     def self.terraform_check_style(path)
-      output, status = Open3.capture2e(ENV, Covalence::TERRAFORM_CMD, "fmt", "-write=false", path)
-      return false unless status.success?
-      output = output.split("\n")
-      (output.size == 0)
+      cmd = [Covalence::TERRAFORM_CMD, "fmt", "-check"]
+
+      output = PopenWrapper.run(
+          cmd,
+          path,
+          '',
+          ignore_exitcode: false)
+      (output == 0)
     end
 
-    def self.terraform_init(path='', args: '', ignore_exitcode: false)
+    def self.terraform_init(path: '', workdir: Dir.pwd, args: '', ignore_exitcode: false)
       if ENV['TF_PLUGIN_LOCAL'] == 'true'
-        cmd = [Covalence::TERRAFORM_CMD, "init", "-get=false", "-input=false", "-plugin-dir=#{Covalence::TERRAFORM_PLUGIN_CACHE}"]
+        cmd = [Covalence::TERRAFORM_CMD, "init", "-get-plugins=false", "-get=false", "-input=false", "-plugin-dir=#{Covalence::TERRAFORM_PLUGIN_CACHE}"]
       else
-        cmd = [Covalence::TERRAFORM_CMD, "init", "-get=false", "-input=false"]
+        cmd = [Covalence::TERRAFORM_CMD, "init", "-get-plugins=false", "-get=false", "-input=false"]
       end
 
       output = PopenWrapper.run(
         cmd,
         path,
         args,
-        ignore_exitcode: ignore_exitcode)
+        ignore_exitcode: ignore_exitcode,
+        workdir: workdir)
+      (output == 0)
+    end
+
+    def self.terraform_get(path=Dir.pwd, workdir=Dir.pwd, args: '', ignore_exitcode: false)
+      cmd = [Covalence::TERRAFORM_CMD, "get", path]
+
+      output = PopenWrapper.run(
+          cmd,
+          path,
+          args,
+          ignore_exitcode: ignore_exitcode,
+          workdir: workdir)
+
+      (output == 0)
+    end
+
+    def self.terraform_plan(path: '', workdir: Dir.pwd, args: '', ignore_exitcode: false)
+      cmd = [Covalence::TERRAFORM_CMD, "plan"]
+
+      output = PopenWrapper.run(
+          cmd,
+          path,
+          args,
+          ignore_exitcode: ignore_exitcode,
+          workdir: workdir)
+
+      (output == 0)
+    end
+
+    def self.terraform_validate(path, workdir, args: '', ignore_exitcode: false)
+      cmd = [Covalence::TERRAFORM_CMD, "validate"]
+
+      output = PopenWrapper.run(
+          cmd,
+          path,
+          args,
+          ignore_exitcode: ignore_exitcode,
+          workdir: workdir)
+
       (output == 0)
     end
 
@@ -79,6 +123,9 @@ module Covalence
       raise "TODO: implement me"
     end
 
+    def self.logger
+      Covalence::LOGGER
+    end
 
     class << self
       private

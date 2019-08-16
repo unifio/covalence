@@ -1,8 +1,6 @@
 ---
 # State store
 myapp::state:
-  - atlas:
-      name: 'example/myapp'
   - s3:
       bucket: 'some_bucket'
       name: 'some_name'

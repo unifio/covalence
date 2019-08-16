@@ -13,13 +13,14 @@ module Covalence
               stderr_io: STDERR,
               debug: Covalence::DEBUG_CLI,
               dry_run: false,
-              ignore_exitcode: false)
+              ignore_exitcode: false,
+              workdir: nil)
 
         # TODO: implement path prefix for the docker runs, see @tf_cmd
         cmd_string = [*cmds]
         # TODO: cmd escape issues with -var.
         cmd_string += [*args] unless args.blank?
-        cmd_string << path unless path.blank?
+        cmd_string << path unless workdir
 
         #TODO debug command string maybe
         #TODO debug command args maybe
@@ -34,12 +35,27 @@ module Covalence
           return 0 unless HighLine.new.agree('Execute? [y/n]')
         end
 
-        spawn_subprocess(ENV, run_cmd, {
-          stdin_io: stdin_io,
-          stdout_io: stdout_io,
-          stderr_io: stderr_io,
-          ignore_exitcode: ignore_exitcode
-        })
+        if workdir
+          spawn_subprocess(ENV, run_cmd,
+                           stdin_io: stdin_io,
+                           stdout_io: stdout_io,
+                           stderr_io: stderr_io,
+                           ignore_exitcode: ignore_exitcode,
+                           path: path,
+                           workdir: workdir)
+        else
+          spawn_subprocess(ENV, run_cmd,
+                           stdin_io: stdin_io,
+                           stdout_io: stdout_io,
+                           stderr_io: stderr_io,
+                           ignore_exitcode: ignore_exitcode,
+                           path: path)
+        end
+
+      end
+
+      def logger
+        Covalence::LOGGER
       end
 
       private
@@ -49,21 +65,27 @@ module Covalence
       end
 
       def spawn_subprocess(env, run_cmd,
-                           stdin_io: STDIN,
-                           stdout_io: STDOUT,
-                           stderr_io: STDERR,
-                           ignore_exitcode: false)
-        Signal.trap("INT") {} #Disable parent process from exiting, orphaning the child fork below
+                       stdin_io: STDIN,
+                       stdout_io: STDOUT,
+                       stderr_io: STDERR,
+                       ignore_exitcode: false,
+                       path: Dir.pwd,
+                       workdir: Dir.pwd)
+        logger.info "path: #{path} workdir: #{workdir} run_cmd: #{run_cmd}"
+        ## TODO one thing we can try is to use
+        # Prctl.call(Prctl::PR_SET_PDEATHSIG, Signal.list['TERM'], 0, 0, 0)
+        # so when the parent dies, child will know to terminate itself.
+        Signal.trap("INT") { logger.info "Trapped Ctrl-c. Disable parent process from exiting, orphaning the child fork below which may or may not work" }
         wait_thread = nil
-
-        Open3.popen3(env, run_cmd) do |stdin, stdout, stderr, wait_thr|
+        prefix=path.gsub(/^\/workspace*/,'')
+        whole_cmd=['prefixout', '-p', "#{prefix} ", '--'].concat(run_cmd.split)
+        Open3.popen3(env, *whole_cmd, :chdir=>workdir) do |stdin, stdout, stderr, wait_thr|
           mappings = { stdin_io => stdin, stdout => stdout_io, stderr => stderr_io }
           wait_thread = wait_thr
 
           Signal.trap("INT") {
             Process.kill("INT", wait_thr.pid)
             Process.wait(wait_thr.pid, Process::WNOHANG)
-
             exit(wait_thr.value.exitstatus)
           } # let SIGINT drop into the child process
 

@@ -156,7 +156,8 @@ module Covalence
       desc "Verify the #{stack_name} stack of the #{environment_name} environment"
       # Maybe verify_local to highlight that it skips pulling in remote state
       task generate_rake_taskname(environment_name, stack_name, "verify") do
-        tf_tasks.stack_verify
+        _tmp_dir = Dir.mktmpdir
+        tf_tasks.stack_verify(_tmp_dir)
       end
 
       desc "Shell into the #{stack_name} stack of the #{environment_name} environment"

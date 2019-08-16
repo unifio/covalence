@@ -1,6 +1,7 @@
 require "covalence/version"
 require "logger"
 require 'active_support/core_ext/object/blank'
+require 'etc'
 
 if %w(development test).include?(ENV['RAKE_ENV'])
   require 'byebug'
@@ -32,7 +33,7 @@ module Covalence
   SOPS_DECRYPTED_SUFFIX = ENV['SOPS_DECRYPTED_SUFFIX'] || "-decrypted"
 
   # No-op shell command. Should not need to modify for most unix shells.
-  DRY_RUN_CMD = (ENV['COVALENCE_DRY_RUN_CMD'] || ":")
+  DRY_RUN_CMD = (ENV['COVALENCE_DRY_RUN_CMD'] || "true")
   DEBUG_CLI = (ENV['COVALENCE_DEBUG'] || 'false') =~ (/(true|t|yes|y|1)$/i)
 
   #DOCKER_ENV_FILE
@@ -43,4 +44,7 @@ module Covalence
   LOGGER = Logger.new(STDOUT)
   LOG_LEVEL = String(ENV['COVALENCE_LOG'] || "warn").upcase
   LOGGER.level = Logger.const_get(LOG_LEVEL)
+
+  # worker count
+  WORKER_COUNT = ENV.has_key?('WORKER_COUNT') ? ENV['WORKER_COUNT'].to_i : Etc.nprocessors
 end

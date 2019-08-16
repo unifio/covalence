@@ -1,1 +1,1 @@
-provider "atlas" {}
+provider "aws" {}

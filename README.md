@@ -105,6 +105,10 @@ The suite can be executed with the following command:
 $ bin/covalence spec
 ```
 
+To run the Rspec test locally without container, you will need to install the following:
+* prefixout -- https://github.com/WhistleLabs/prefixout
+* sops -- https://github.com/mozilla/sops
+
 ### UAT
 
 User acceptance tests targeting execution in a continuous integration (CI) environment.
@@ -406,16 +410,6 @@ Module for interacting with the Terraform Enterprise backend.
 
 ### Usage
 
-Artifacts:
-
-```yaml
-ami:
-  type: 'atlas.artifact'
-  slug: 'unifio/app/amazon.ami'
-  version: 'latest'
-  key: 'region.us-east-1'
-```
-
 State Outputs:
 
 ```yaml
@@ -508,6 +502,7 @@ You will probably need the following packages installed locally
 - Terraform
 - Packer
 - Sops
+- [prefixout](https://github.com/unifio/prefixout/releases)
 
 Execute the following to build the gem:
 
