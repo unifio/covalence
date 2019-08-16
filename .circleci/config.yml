@@ -20,9 +20,9 @@ jobs:
           name: Install dependencies
           command: |
             # Install Terraform
-            wget -q "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
-            unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-
+            sudo wget -qO /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" && \
+            sudo unzip -d /usr/local/bin /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+            sudo chmod +x /usr/local/bin/terraform;
             # Install Sops
             sudo wget -q "https://github.com/mozilla/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux" -O /usr/local/bin/sops
             sudo chmod +x /usr/local/bin/sops
