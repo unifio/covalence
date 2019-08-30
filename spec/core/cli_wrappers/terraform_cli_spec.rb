@@ -65,7 +65,7 @@ module Covalence
     end
 
     it "#terraform_init" do
-      expected_args = [ENV, "terraform init -get-plugins=false -get=false -input=false", anything]
+      expected_args = [ENV, "terraform init -get-plugins=#{Covalence::TERRAFORM_GET_PLUGINS ? 'true' : 'false'} -get=false -input=false", anything]
       expect(PopenWrapper).to receive(:spawn_subprocess).with(*expected_args).and_return(0)
       expect(described_class.terraform_init(workdir: @tmp_dir)).to be true
     end
@@ -136,6 +136,7 @@ module Covalence
 
     it "executes terraform commands with custom settings" do
       ENV['TERRAFORM_CMD'] = "/usr/local/bin/terraform"
+      ENV['TF_PLUGIN_LOCAL'] = "true"
       # force constants to re-init
       Kernel.silence_warnings {
         # swallow all rescue from non-existant terraform binary above.

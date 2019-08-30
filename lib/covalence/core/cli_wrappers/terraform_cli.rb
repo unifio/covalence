@@ -48,7 +48,7 @@ module Covalence
       if ENV['TF_PLUGIN_LOCAL'] == 'true'
         cmd = [Covalence::TERRAFORM_CMD, "init", "-get-plugins=false", "-get=false", "-input=false", "-plugin-dir=#{Covalence::TERRAFORM_PLUGIN_CACHE}"]
       else
-        cmd = [Covalence::TERRAFORM_CMD, "init", "-get-plugins=false", "-get=false", "-input=false"]
+        cmd = [Covalence::TERRAFORM_CMD, "init", "-get-plugins=#{Covalence::TERRAFORM_GET_PLUGINS ? 'true' : 'false'}", "-get=false", "-input=false"]
       end
 
       output = PopenWrapper.run(
