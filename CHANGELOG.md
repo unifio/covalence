@@ -1,3 +1,9 @@
+## 0.9.3 (Aug 30, 2019)
+
+FIXES:
+- Issue [#82](https://github.com/unifio/covalence/issues/82) Introduced in v0.9.2 that prevented terraform cli from being cappable of downloading updated plugins/providers.
+
+
 ## 0.9.2 (Aug 11, 2019)
 
 BACKWARDS INCOMPATIBILITIES:
