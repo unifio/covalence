@@ -164,6 +164,11 @@ module Covalence
       task generate_rake_taskname(environment_name, stack_name, "shell") do
         tf_tasks.stack_shell
       end
+
+      desc "Export the #{stack_name} stack of the #{environment_name} environment to #{Covalence::STACK_EXPORT}"
+      task generate_rake_taskname(environment_name, stack_name, "stack_export") do
+        tf_tasks.stack_export
+      end
     end
 
     # :reek:TooManyStatements

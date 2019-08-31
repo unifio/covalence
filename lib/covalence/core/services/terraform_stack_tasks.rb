@@ -45,6 +45,22 @@ module Covalence
     end
 
     # :reek:TooManyStatements
+    def stack_export
+        stack_export_init(File.expand_path(File.join(Covalence::STACK_EXPORT,'terraform',stack.full_name))).each do |stackdir|
+          logger.info "Created stackdir: #{stackdir}"
+          populate_workspace(stackdir)
+          Dir.chdir(stackdir) do
+            logger.info "In #{stackdir}:"
+            stack.materialize_state_inputs
+            TerraformCli.terraform_get(@path)
+            TerraformCli.terraform_init
+            stack.materialize_cmd_inputs(stackdir)
+            logger.info "Exported to #{stackdir}:"
+          end
+        end
+    end
+
+    # :reek:TooManyStatements
     def stack_verify(tmpdir)
       return false if  !TerraformCli.terraform_check_style(@path)
 
@@ -227,6 +243,23 @@ module Covalence
         dep_path = File.expand_path(File.join(Covalence::TERRAFORM, dep))
         FileUtils.cp_r dep_path, workspace
       end
+    end
+
+    # :reek:BooleanParameter
+    def stack_export_init(stackdir, dry_run: false, verbose: true)
+      if(File.exist?(stackdir))
+        logger.info "Deleting before export: #{stackdir}"
+        FileUtils.rm_rf(stackdir, {
+          noop: dry_run,
+          verbose: verbose,
+          secure: true,
+        })
+      end
+      logger.info "Creating stack directory: #{stackdir}"
+      FileUtils.mkdir_p(stackdir, {
+        noop: dry_run,
+        verbose: verbose,
+      })
     end
 
     def logger
