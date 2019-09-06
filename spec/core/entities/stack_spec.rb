@@ -41,8 +41,9 @@ module Covalence
     end
 
     it "#materialize_state_inputs" do
+      tmpdir = Dir.mktmpdir
       buffer = StringIO.new()
-      filename = 'covalence-state.tf'
+      filename = "#{tmpdir}/covalence-state.tf"
       content = <<-CONF
 terraform {
   backend "s3" {
@@ -55,10 +56,8 @@ CONF
       allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
       allow_any_instance_of(StateStore).to receive(:get_config).and_return(content)
 
-      Dir.mktmpdir do |tmpdir|
-        Dir.chdir(tmpdir) do
-          stack.materialize_state_inputs
-        end
+      Dir.chdir(tmpdir) do
+        stack.materialize_state_inputs(path: tmpdir)
       end
 
       expect(buffer.string).to eq(content)

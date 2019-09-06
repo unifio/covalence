@@ -60,10 +60,10 @@ module Covalence
       end
     end
 
-    def materialize_state_inputs(store: state_stores.first)
+    def materialize_state_inputs(store: state_stores.first, path: '.')
       config = store.get_config
       logger.info "\nState store configuration:\n\n#{config}"
-      File.open('covalence-state.tf','w') {|f| f.write(config)}
+      File.open("#{path}/covalence-state.tf",'w') {|f| f.write(config)}
     end
 
     def logger

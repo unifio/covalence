@@ -47,16 +47,12 @@ module Covalence
     # :reek:TooManyStatements
     def stack_export
         stack_export_init(File.expand_path(File.join(Covalence::STACK_EXPORT,'terraform',stack.full_name))).each do |stackdir|
-          logger.info "Created stackdir: #{stackdir}"
           populate_workspace(stackdir)
-          Dir.chdir(stackdir) do
-            logger.info "In #{stackdir}:"
-            stack.materialize_state_inputs
-            TerraformCli.terraform_get(@path)
-            TerraformCli.terraform_init
-            stack.materialize_cmd_inputs(stackdir)
-            logger.info "Exported to #{stackdir}:"
-          end
+          stack.materialize_state_inputs(path: stackdir)
+          TerraformCli.terraform_get(path=@path, workdir=stackdir)
+          TerraformCli.terraform_init(path: @path, workdir: stackdir)
+          stack.materialize_cmd_inputs(stackdir)
+          logger.info "Exported to #{stackdir}:"
         end
     end
 
