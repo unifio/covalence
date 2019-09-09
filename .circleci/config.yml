@@ -8,7 +8,7 @@ jobs:
       - image: circleci/ruby:2.5.5
 
     environment:
-      COVALENCE_VERSION: 0.9.5
+      COVALENCE_VERSION: 0.9.6
       TERRAFORM_VERSION: 0.12.6
       SOPS_VERSION: 3.3.1
       BUNDLER_VERSION: 1.17.2

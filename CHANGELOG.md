@@ -1,4 +1,4 @@
-## 0.9.5 (Sep 9, 2019)
+## 0.9.6 (Sep 9, 2019)
 
 IMPROVEMENTS:
 - Issue [#86](https://github.com/unifio/covalence/issues/86) Add ability to export stacks to a stack_exports directory.
