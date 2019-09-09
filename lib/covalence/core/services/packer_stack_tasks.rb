@@ -62,6 +62,14 @@ module Covalence
       end
     end
 
+    # :reek:TooManyStatements
+    def packer_stack_export()
+        packer_stack_export_init(File.expand_path(File.join(Covalence::STACK_EXPORT,'packer',stack.full_name))).each do |stackdir|
+          populate_workspace(stackdir)
+          stack.materialize_cmd_inputs(stackdir)
+          logger.info "Exported to #{stackdir}:"
+        end
+    end
     private
     attr_reader :template_path, :stack
 
@@ -95,6 +103,23 @@ module Covalence
 
     def collect_args(*args)
       args.flatten.compact.reject(&:empty?).map(&:strip)
+    end
+
+    # :reek:BooleanParameter
+    def packer_stack_export_init(stackdir, dry_run: false, verbose: true)
+      if(File.exist?(stackdir))
+        logger.info "Deleting before export: #{stackdir}"
+        FileUtils.rm_rf(stackdir, {
+          noop: dry_run,
+          verbose: verbose,
+          secure: true,
+        })
+      end
+      logger.info "Creating stack directory: #{stackdir}"
+      FileUtils.mkdir_p(stackdir, {
+        noop: dry_run,
+        verbose: verbose,
+      })
     end
 
     def logger

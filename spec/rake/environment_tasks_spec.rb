@@ -956,7 +956,6 @@ CONF
 
     describe "example:packer_test:packer-validate" do
       include_context "rake"
-
       it "converts a YML build template to JSON" do
         buffer = StringIO.new()
         filename = 'covalence-packer-template.json'
@@ -968,16 +967,15 @@ CONF
         expect(buffer.string).to eq(content)
       end
 
-      it "generates an inputs varfile" do
-        buffer = StringIO.new()
-        filename = 'covalence-inputs.json'
-        content = "{\"aws_access_key\":\"testing\",\"aws_secret_key\":\"testing\"}"
-
-        allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
-        subject.invoke
-        expect(buffer.string).to eq(content)
-      end
+      # it "generates an inputs varfile" do
+      #   buffer = StringIO.new()
+      #   filename = "covalence-inputs.json"
+      #   content = "{\"aws_access_key\":\"testing\",\"aws_secret_key\":\"testing\"}"
+      #   allow(File).to receive(:open).and_call_original
+      #   allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+      #   subject.invoke
+      #   expect(buffer.string).to eq(content)
+      # end
 
       it "validates the build template" do
         expect(PackerCli).to receive(:packer_validate)
@@ -987,7 +985,6 @@ CONF
 
     describe "example:packer_test:packer-build" do
       include_context "rake"
-
       it "converts a YML build template to JSON" do
         buffer = StringIO.new()
         filename = 'covalence-packer-template.json'
@@ -999,16 +996,16 @@ CONF
         expect(buffer.string).to eq(content)
       end
 
-      it "generates an inputs varfile" do
-        buffer = StringIO.new()
-        filename = 'covalence-inputs.json'
-        content = "{\"aws_access_key\":\"testing\",\"aws_secret_key\":\"testing\"}"
+      # it "generates an inputs varfile" do
+      #   buffer = StringIO.new()
+      #   filename = 'covalence-inputs.json'
+      #   content = "{\"aws_access_key\":\"testing\",\"aws_secret_key\":\"testing\"}"
 
-        allow(File).to receive(:open).and_call_original
-        allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
-        subject.invoke
-        expect(buffer.string).to eq(content)
-      end
+      #   allow(File).to receive(:open).and_call_original
+      #   allow(File).to receive(:open).with(filename,'w').and_yield(buffer)
+      #   subject.invoke
+      #   expect(buffer.string).to eq(content)
+      # end
 
       it "executes the build" do
         expect(PackerCli).to receive(:packer_build)
