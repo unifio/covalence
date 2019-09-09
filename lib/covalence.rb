@@ -17,6 +17,7 @@ module Covalence
   # TODO: could use better naming
   PACKER = File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_PACKER_DIR'] || '.')))
   TERRAFORM =  File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_TERRAFORM_DIR'] || '.')))
+  STACK_EXPORT =  File.absolute_path(File.join(WORKSPACE, (ENV['COVALENCE_STACK_EXPORT_DIR'] || './stack-exports')))
   TEST_ENVS = (ENV['COVALENCE_TEST_ENVS'] || "").split(',')
   # Reserved namespace including default ci and spec
   RESERVED_NS = [(ENV['COVALENCE_RESERVED_NAMESPACE'] || "").split(','), 'ci', 'spec', 'sops']

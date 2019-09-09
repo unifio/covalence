@@ -55,15 +55,15 @@ module Covalence
           config[name] = input.value
         end
         config_json = JSON.generate(config)
-        logger.info "\nStack inputs:\n\n#{config_json}"
-        File.open('covalence-inputs.json','w') {|f| f.write(config_json)}
+        logger.info "path: #{path} module_path: #{module_path}\nStack inputs:\n\n#{config_json}"
+        File.open("#{path}/covalence-inputs.json",'w') {|f| f.write(config_json)}
       end
     end
 
-    def materialize_state_inputs(store: state_stores.first)
+    def materialize_state_inputs(store: state_stores.first, path: '.')
       config = store.get_config
       logger.info "\nState store configuration:\n\n#{config}"
-      File.open('covalence-state.tf','w') {|f| f.write(config)}
+      File.open("#{path}/covalence-state.tf",'w') {|f| f.write(config)}
     end
 
     def logger
