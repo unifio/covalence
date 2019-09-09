@@ -127,7 +127,7 @@ module Covalence
         packer_tasks.context_validate(target_args, custom_opts.args)
       end
 
-      desc "Export the #{stack_name} stack of the #{environment_name} environment to packer/#{Covalence::STACK_EXPORT}"
+      desc "Export the #{stack_name} stack of the #{environment_name} environment to #{Covalence::STACK_EXPORT}/packer"
       task generate_rake_taskname(environment_name, stack_name, "packer_stack_export") do
         packer_tasks.packer_stack_export()
       end
@@ -171,7 +171,7 @@ module Covalence
         tf_tasks.stack_shell
       end
 
-      desc "Export the #{stack_name} stack of the #{environment_name} environment to terraform/#{Covalence::STACK_EXPORT}"
+      desc "Export the #{stack_name} stack of the #{environment_name} environment to #{Covalence::STACK_EXPORT}/terraform"
       task generate_rake_taskname(environment_name, stack_name, "stack_export") do
         tf_tasks.stack_export
       end
