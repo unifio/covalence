@@ -28,6 +28,10 @@ module Covalence
       "#{name} = #{parse_input(value())}"
     end
 
+    def to_command_hash_elements
+       return name, parse_input(value()).delete_prefix('"').delete_suffix('"')
+    end
+
     private
 
     def get_value(input)

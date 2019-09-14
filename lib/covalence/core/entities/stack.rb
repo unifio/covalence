@@ -51,8 +51,8 @@ module Covalence
         File.open("#{path}/covalence-inputs.tfvars",'w') {|f| f.write(config)}
       elsif type == "packer"
         config = Hash.new
-        inputs.each do |name, input|
-          config[name] = input.value
+        inputs.values.map(&:to_command_hash_elements).each do |name, input|
+          config["#{name}"] = input
         end
         config_json = JSON.generate(config)
         logger.info "path: #{path} module_path: #{module_path}\nStack inputs:\n\n#{config_json}"
