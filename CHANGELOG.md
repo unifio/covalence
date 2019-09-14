@@ -1,3 +1,9 @@
+## 0.9.7 (Sep 14, 2019)
+
+IMPROVEMENTS:
+- Issue [#88](https://github.com/unifio/covalence/issues/88) Add input processing to packer stacks. Allows for shell interpolation processing on inputs for packer stacks.
+- Can use the shell interpolation in the template to generate AWS assume role temporary keys to populate template. This allows for role assumption since role assumption is not supported from `~/.aws/config` attributes.
+
 ## 0.9.6 (Sep 9, 2019)
 
 IMPROVEMENTS:
