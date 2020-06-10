@@ -106,7 +106,6 @@ $ bin/covalence spec
 ```
 
 To run the Rspec test locally without container, you will need to install the following:
-* prefixout -- https://github.com/WhistleLabs/prefixout
 * sops -- https://github.com/mozilla/sops
 
 ### UAT
@@ -502,7 +501,6 @@ You will probably need the following packages installed locally
 - Terraform
 - Packer
 - Sops
-- [prefixout](https://github.com/unifio/prefixout/releases)
 
 Execute the following to build the gem:
 

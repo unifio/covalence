@@ -77,9 +77,7 @@ module Covalence
         # so when the parent dies, child will know to terminate itself.
         Signal.trap("INT") { logger.info "Trapped Ctrl-c. Disable parent process from exiting, orphaning the child fork below which may or may not work" }
         wait_thread = nil
-        prefix=path.gsub(/^\/workspace*/,'')
-        whole_cmd=['prefixout', '-p', "#{prefix} ", '--'].concat(run_cmd.split)
-        Open3.popen3(env, *whole_cmd, :chdir=>workdir) do |stdin, stdout, stderr, wait_thr|
+        Open3.popen3(env, *run_cmd, :chdir=>workdir) do |stdin, stdout, stderr, wait_thr|
           mappings = { stdin_io => stdin, stdout => stdout_io, stderr => stderr_io }
           wait_thread = wait_thr
 
