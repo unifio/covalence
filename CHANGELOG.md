@@ -1,3 +1,14 @@
+## 0.9.8 (Jun 10, 2020)
+IMPROVEMENTS:
+- Updated all gems to the latest in the Gemfile.lock.
+
+BACKWARDS INCOMPATIBILITIES:
+- Issue [#90](https://github.com/unifio/covalence/issues/90) Removed prefixout dependency from covalence. Directory prefix will no longer be displayed in output. Directory is already output prior to execution.
+
+FIXES:
+- [activesupport](https://github.com/advisories/GHSA-2p68-f74v-9wc6) upgraded activesupport to version 5.2.4.3 or later.
+- [nokogiri](https://github.com/advisories/GHSA-7553-jr98-vx47) Upgrade nokogiri to version 1.10.8 or later.
+
 ## 0.9.7 (Sep 14, 2019)
 
 IMPROVEMENTS:

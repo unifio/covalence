@@ -8,10 +8,10 @@ jobs:
       - image: circleci/ruby:2.5.5
 
     environment:
-      COVALENCE_VERSION: 0.9.7
-      TERRAFORM_VERSION: 0.12.6
+      COVALENCE_VERSION: 0.9.8
+      TERRAFORM_VERSION: 0.12.26
       SOPS_VERSION: 3.3.1
-      BUNDLER_VERSION: 1.17.2
+      BUNDLER_VERSION: 1.17.3
 
     steps:
       - checkout
@@ -25,11 +25,7 @@ jobs:
             sudo chmod +x /usr/local/bin/terraform;
             # Install Sops
             sudo wget -q "https://github.com/mozilla/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux" -O /usr/local/bin/sops
-            sudo chmod +x /usr/local/bin/sops
-            # prefixout used in covaelnce for logging output of commands delivered
-            sudo wget -qO /tmp/prefixout_0.1.0_linux_amd64.zip "https://github.com/unifio/prefixout/releases/download/v0.1.0/prefixout_0.1.0_linux_amd64.zip" && \
-            sudo unzip -d /usr/local/bin /tmp/prefixout_0.1.0_linux_amd64.zip && \
-            sudo chmod +x /usr/local/bin/prefixout;
+            sudo chmod +x /usr/local/bin/sops;
             # Insstall bundler version in Gemlock before install
             gem install bundler:${BUNDLER_VERSION}
             # Install gem bundle
