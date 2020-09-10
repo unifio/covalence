@@ -1,3 +1,7 @@
+## 0.9.9 (Sept 10, 2020)
+IMPROVEMENTS:
+- Updated all gems to the latest in the Gemfile.lock.
+
 ## 0.9.8 (Jun 10, 2020)
 IMPROVEMENTS:
 - Updated all gems to the latest in the Gemfile.lock.

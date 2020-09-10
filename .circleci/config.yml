@@ -8,9 +8,9 @@ jobs:
       - image: circleci/ruby:2.5.5
 
     environment:
-      COVALENCE_VERSION: 0.9.8
-      TERRAFORM_VERSION: 0.12.26
-      SOPS_VERSION: 3.3.1
+      COVALENCE_VERSION: 0.9.9
+      TERRAFORM_VERSION: 0.12.29
+      SOPS_VERSION: 3.6.0
       BUNDLER_VERSION: 1.17.3
 
     steps:
@@ -24,9 +24,9 @@ jobs:
             sudo unzip -d /usr/local/bin /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
             sudo chmod +x /usr/local/bin/terraform;
             # Install Sops
-            sudo wget -q "https://github.com/mozilla/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux" -O /usr/local/bin/sops
+            sudo wget -q "https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux" -O /usr/local/bin/sops
             sudo chmod +x /usr/local/bin/sops;
-            # Insstall bundler version in Gemlock before install
+            # Install bundler version in Gemlock before install
             gem install bundler:${BUNDLER_VERSION}
             # Install gem bundle
             bundle install
